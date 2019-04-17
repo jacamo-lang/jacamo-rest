@@ -3,6 +3,6 @@ mas bobandalice {
     agent bob
     agent alice
 
-    platform: jacamo.web.JCMRest("--connect localhost:2181") // connects to platform at 2181
+    platform: jacamo.rest.JCMRest("--connect localhost:2181") // connects to platform at 2181
 
 }
