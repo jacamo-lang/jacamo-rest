@@ -3,7 +3,6 @@ JaCaMo REST provides a REST API to interact with agents, artifact and the organi
 To run:
 * `gradle marcos` runs agent marcos and the REST platform
 * `gradle bob` runs agents bob and alice. Bob sends a message to marcos using its rest API.
-* see http://yourIP:8080 for a web interface (see the console for the right IP)
 
 With docker:
 * `docker build  -t jomifred/jacamo-runrest .` to build a docker image

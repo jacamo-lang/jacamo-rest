@@ -11,7 +11,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version '0.1-SNAPSHOT'
+version '0.2-SNAPSHOT'
 group   'org.jacamo'
 
 sourceCompatibility = 1.8
@@ -21,7 +21,6 @@ repositories {
     mavenCentral()
 
     maven { url "http://jacamo.sourceforge.net/maven2" }
-    maven { url "http://jade.tilab.com/maven/" }
 
     flatDir {
        dirs 'lib'
@@ -194,6 +193,33 @@ task publishMavenSF(dependsOn: [ 'build', 'publishToMavenLocal']) {
     exec {
         commandLine 'scp', 'maven-metadata.xml', tdir
         workingDir wdir
+    }
+  }
+}
+
+task publishMavenGitHub(dependsOn: [ 'build', 'publishToMavenLocal']) {
+  doLast {
+    def wdir = System.getProperty("user.home")+'/.m2/repository/org/jacamo/jacamo-rest'
+    def rdir = System.getProperty("user.home")+'/pro/jacamo-mvn-repo'
+    exec {
+        commandLine 'git', 'pull'
+        workingDir rdir
+    }
+    copy {
+        from wdir
+        into rdir + '/org/jacamo/jacamo-rest'
+    }
+    exec {
+        commandLine 'git', 'add', '*'
+        workingDir rdir
+    }
+    exec {
+        commandLine 'git', 'commit', '-a', '-m', 'new version of jacamo rest '+project.version
+        workingDir rdir
+    }
+    exec {
+        commandLine 'git', 'push'
+        workingDir rdir
     }
   }
 }
