@@ -1,5 +1,39 @@
 JaCaMo REST provides a REST API to interact with agents, artifact and the organisation. Currently, only the agents side is implemented.
 
+# Using this project
+
+Include jacamo-rest dependency in `build.gradle`:
+
+```
+repositories {
+    mavenCentral()
+
+    maven { url "https://raw.github.com/jacamo-lang/mvn-repo/master" }
+    maven { url "http://jacamo.sourceforge.net/maven2" }
+
+}
+
+dependencies {
+    compile group: 'org.jacamo, name: 'jacamo-rest', version: '0.2-SNAPSHOT'
+}
+```
+
+and start the API server in your `.jcm` application file:
+
+```
+mas yourmas {
+
+    ...
+
+    // starts rest api on port 8080
+    platform: jacamo.rest.JCMRest("--main 2181 --restPort 8080") 
+
+}
+
+```
+
+# Running this project
+
 To run:
 * `gradle marcos` runs agent marcos and the REST platform
 * `gradle bob` runs agents bob and alice. Bob sends a message to marcos using its rest API.
@@ -20,24 +54,26 @@ See ClientTest.java for an example of Java client. It can be run with `gradle te
 
 # REST API
 
-## for humans
-
-* GET HTML `/agents`:
+* GET JSON `/agents`:
     returns the list of running agents
-
-* GET HTML `/agents/{agentname}/mind`
-    returns the mind state of the agent
-
-* GET HTML `/services`
-    returns the DF state
-
-## for machine (or intelligent humans)
 
 * POST `/agents/{agentname}`
     creates a new agent.
 
 * DELETE `/agents/{agentname}`
     Kills the agent.
+
+* GET JSON `/agents/{agentname}/status`
+    returns the agent's status (if idle, number of intentions, ....)
+
+* GET XML  `/agents/{agentname}/mind`
+    returns the mind state of the agent (beliefs, plans, intentions, ...)
+
+* GET HTML `/agents/{agentname}/mind`
+    returns the mind state of the agent
+
+* GET JSON `/agents/{agentname}/mind/bb`
+    returns the agent's beliefs as a list of strings
 
 * POST XML `/agents/{agentname}/mb`
     Adds a message in the agent's mailbox. See class Message.java for details of the fields.
@@ -52,5 +88,5 @@ See ClientTest.java for an example of Java client. It can be run with `gradle te
 * POST FORM `/agents/{agentname}/plans`
     upload some plans into the agent's plan library
 
-
-See RestImpl.java for more
+* GET HTML `/services`
+    returns the DF state

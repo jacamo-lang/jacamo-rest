@@ -14,23 +14,23 @@ public class ClientTest {
 
     private void t() {
         try {
-            String url = "http://10.0.1.2:3281/";
+            String url = "http://10.0.1.2:8080/";
             
             Client client = ClientBuilder.newClient();
             Response response = client
                     .target(url)
-                    .path("agents/bob/all")
-                    .request(MediaType.APPLICATION_XML)
+                    .path("agents/marcos/mind/bb")
+                    .request(MediaType.APPLICATION_JSON)
                     .get();
 
             System.out.println(response.toString() 
                     + "\n   "+response.getEntity() 
                     + "\n   "+response.readEntity(String.class));
 
-            Message m = new Message("33","tell","jomi","bob","oi");             
+            Message m = new Message("33","signal","jomi","marcos","oi");             
             String r = client
                     .target(url)
-                    .path("agents/bob/mb")
+                    .path("agents/marcos/mb")
                     .request(MediaType.APPLICATION_XML)
                     .accept(MediaType.TEXT_PLAIN)
                     .post(Entity.xml(m), String.class);

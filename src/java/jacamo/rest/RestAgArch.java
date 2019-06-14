@@ -48,8 +48,7 @@ public class RestAgArch extends AgArch {
             
             // register the agent in ZK
             if (zkClient.checkExists().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+getAgName()) != null) {
-                System.err.println("Agent "+getAgName()+" is already registered in zookeeper!");
-                
+                System.err.println("Agent "+getAgName()+" is already registered in zookeeper!");                
             } else {
                 zkClient.create().withMode(CreateMode.EPHEMERAL).forPath(JCMRest.JaCaMoZKAgNodeId+"/"+getAgName(), (JCMRest.getRestHost()+"agents/"+getAgName()).getBytes());
                 zkAsync  = AsyncCuratorFramework.wrap(zkClient);
@@ -103,33 +102,37 @@ public class RestAgArch extends AgArch {
             super.sendMsg(m);
             return;
         } catch (ReceiverNotFoundException e) {
-            String adr = null;
-
-            if (m.getReceiver().startsWith("http://")) {
-                adr = m.getReceiver();
-            } else {
-                // try ZK
-                byte[] badr = zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+m.getReceiver());
-                if (badr != null)
-                    adr = new String(badr);
-            }
-            
-            // try by rest to send the message by REST API
-            if (adr != null) {
-                // do POST
-                String r = null;
-                if (adr.startsWith("http")) {
-                    r = restClient
-                              .target(adr)
-                              .path("mb")
-                              .request(MediaType.APPLICATION_XML)
-                              .accept(MediaType.TEXT_PLAIN)
-                              .post(Entity.xml( new jacamo.rest.Message(m)), String.class);
+            try {
+                String adr = null;
+    
+                if (m.getReceiver().startsWith("http://")) {
+                    adr = m.getReceiver();
+                } else {
+                    // try ZK
+                    byte[] badr = zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+m.getReceiver());
+                    if (badr != null)
+                        adr = new String(badr);
                 }
-                if (!"ok".equals(r)) {
+                
+                // try by rest to send the message by REST API
+                if (adr != null) {
+                    // do POST
+                    String r = null;
+                    if (adr.startsWith("http")) {
+                        r = restClient
+                                  .target(adr)
+                                  .path("mb")
+                                  .request(MediaType.APPLICATION_XML)
+                                  .accept(MediaType.TEXT_PLAIN)
+                                  .post(Entity.xml( new jacamo.rest.Message(m)), String.class);
+                    }
+                    if (!"ok".equals(r)) {
+                        throw e;
+                    }
+                } else {
                     throw e;
                 }
-            } else {
+            } catch (Exception ex) {
                 throw e;
             }
         }        
