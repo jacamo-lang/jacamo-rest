@@ -10,6 +10,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class RestAppConfig extends ResourceConfig {
     public RestAppConfig() {
         registerInstances(new RestImplAg());
+        registerInstances(new RestImplDF());
         
         addProperties(new HashMap<String,Object>() {{ put("jersey.config.server.provider.classnames", "org.glassfish.jersey.media.multipart.MultiPartFeature"); }} );   
     }

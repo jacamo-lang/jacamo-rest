@@ -78,9 +78,6 @@ See ClientTest.java for an example of Java client. It can be run with `gradle te
 * POST XML `/agents/{agentname}/mb`
     Adds a message in the agent's mailbox. See class Message.java for details of the fields.
 
-* GET XML `/agents/{agentname}/mind`
-    returns the mind state of the agent
-
 * GET TXT `/agents/{agentname}/plans`
     returns the agent's plans. A label can be used as argument:
     `/agents/{agentname}/plans?label=planT`
