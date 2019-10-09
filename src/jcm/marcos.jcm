@@ -26,7 +26,7 @@ mas marcos {
         //scheme build_house_sch : build_house_sch
     //}
 
-    //platform: jacamo.web.JCMRest("--connect localhost:2181") // connects to platform at 2181
+    //platform: jacamo.rest.JCMRest("--connect localhost:2181") // connects to platform at 2181
     platform: jacamo.rest.JCMRest("--main 2181 --restPort 8080") // connects to platform at 2181
 
 }

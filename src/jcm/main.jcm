@@ -4,6 +4,6 @@
 
 mas plat {
 
-    platform: jacamo.web.JCMRest("--main 2181") // starts platform on port 2181
+    platform: jacamo.rest.JCMRest("--main 2181") // starts platform on port 2181
 
 }
