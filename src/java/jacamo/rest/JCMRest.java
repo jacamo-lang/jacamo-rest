@@ -21,9 +21,6 @@ import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ZooKeeperServer;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.message.DeflateEncoder;
-import org.glassfish.jersey.message.GZipEncoder;
-import org.glassfish.jersey.server.filter.EncodingFilter;
 
 import jacamo.platform.DefaultPlatformImpl;
 import jason.infra.centralised.BaseCentralisedMAS;
@@ -34,13 +31,13 @@ public class JCMRest extends DefaultPlatformImpl {
     public static String JaCaMoZKAgNodeId = "/jacamo/agents";
     public static String JaCaMoZKDFNodeId = "/jacamo/df";
     
-    HttpServer restHttpServer = null;
+    protected HttpServer restHttpServer = null;
 
-    static URI restServerURI = null;
+    protected static URI restServerURI = null;
     
-    ServerCnxnFactory zkFactory = null;
-    static String zkHost = null;
-    static CuratorFramework zkClient;
+    protected ServerCnxnFactory zkFactory = null;
+    protected static String zkHost = null;
+    protected static CuratorFramework zkClient;
     
     static public String getRestHost() {
         return restServerURI.toString();
@@ -57,21 +54,20 @@ public class JCMRest extends DefaultPlatformImpl {
     @Override
     public void init(String[] args) throws Exception {
         
-        // adds RestAgArch in the configuration of all agents in the project
-        /*List<AgentParameters> lags = new ArrayList<>();
-        for (AgentParameters ap: project.getAgents()) {
-            if (ap.getNbInstances() > 0) {
-                lags.add(ap);
-                ap.insertArchClass(new ClassParameters(RestAgArch.class.getName()));
-            }
-        }*/
-        
         // adds RestAgArch as default ag arch when using this platform
         BaseCentralisedMAS.getRunner().getRuntimeServices().registerDefaultAgArch(RestAgArch.class.getName());
         
         int restPort = 3280;
         int zkPort   = 2181;
         boolean useZK = false;
+
+        // Used when deploying on heroku
+        String webPort = System.getenv("PORT");
+        if (webPort == null || webPort.isEmpty()) {
+            restPort = 8080;
+        } else {
+            restPort = Integer.parseInt(webPort);
+        }
         
         if (args.length > 0) {
             String la = "";
@@ -160,22 +156,14 @@ public class JCMRest extends DefaultPlatformImpl {
     }
     
     public HttpServer startRestServer(int port) {
-        //ResourceConfig config = new RestAppConfig(); //RestAgArch.class);
-        //config.registerInstances(new RestImpl());
-        //config.addProperties(new HashMap<String,Object>() {{ put("jersey.config.server.provider.classnames", "org.glassfish.jersey.media.multipart.MultiPartFeature"); }} );
         try {
             restServerURI = UriBuilder.fromUri("http://"+InetAddress.getLocalHost().getHostAddress()+"/").port(port).build();
             
-            // gzip compression configuration
             RestAppConfig rc = new RestAppConfig();
-            rc.registerClasses(EncodingFilter.class, GZipEncoder.class, DeflateEncoder.class);
             
             // get a server from factory
             HttpServer s = GrizzlyHttpServerFactory.createHttpServer(restServerURI, rc);
             
-            // other possiblecontainers:
-            //JettyHttpContainerFactory.createServer(baseUri, config);
-            //JdkHttpServerFactory.createHttpServer(baseUri, config);
             System.out.println("JaCaMo Rest API is running on "+restServerURI);
             return s;
         } catch (javax.ws.rs.ProcessingException e) {           

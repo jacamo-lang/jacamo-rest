@@ -82,7 +82,7 @@ import ora4mas.nopl.oe.Group;
 @Path("/agents")
 public class RestImplAg extends AbstractBinder {
 
-    Map<String, StringBuilder> agLog = new HashMap<>();
+    protected Map<String, StringBuilder> agLog = new HashMap<>();
     Gson gson = new Gson();     
     
     @Override

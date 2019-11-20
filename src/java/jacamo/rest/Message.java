@@ -33,7 +33,7 @@ public class Message {
         this.inReplyTo = m.getInReplyTo();
     }
 
-    jason.asSemantics.Message getAsJasonMsg() {
+    public jason.asSemantics.Message getAsJasonMsg() {
         jason.asSemantics.Message jm = new jason.asSemantics.Message(performative, sender, receiver, content, msgId);
         jm.setInReplyTo(inReplyTo);
         return jm;
