@@ -132,8 +132,8 @@ public class RestImplDF extends AbstractBinder {
             return Response.ok().entity(gson.toJson(jsonifiedDF)).header("Access-Control-Allow-Origin", "*").build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
 
-        return Response.status(500).build();
     }
 }

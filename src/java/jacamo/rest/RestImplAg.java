@@ -117,7 +117,7 @@ public class RestImplAg extends AbstractBinder {
     {
         show.put("annots", Config.get().getBoolean(Config.SHOW_ANNOTS));
     }
-
+    
     @Path("/{agentname}/hide")
     @GET
     @Produces(MediaType.TEXT_HTML)
@@ -156,7 +156,7 @@ public class RestImplAg extends AbstractBinder {
     //@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     //@Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_HTML)
-    public String createNewAgent(@PathParam("agentname") String agName) { //@FormParam("name") String agName) {
+    public Response createNewAgent(@PathParam("agentname") String agName) { //@FormParam("name") String agName) {
         try {
             String name = BaseCentralisedMAS.getRunner().getRuntimeServices().createAgent(agName, null, null, null, null, null, null);
             BaseCentralisedMAS.getRunner().getRuntimeServices().startAgent(name);
@@ -164,7 +164,7 @@ public class RestImplAg extends AbstractBinder {
             Agent ag = getAgent(name);
             
             try {
-                
+                // TODO: create an agent without plans! use POST plans for that
                 File f = new File("src/agt/" + agName + ".asl");
                 if (!f.exists()) {
                     f.createNewFile(); 
@@ -189,10 +189,10 @@ public class RestImplAg extends AbstractBinder {
             //ag.setASLSrc("no-inicial.asl");
             createAgLog(agName, ag);
             
-            return "<head><meta http-equiv=\"refresh\" content=\"2; URL='/agents/"+name+"/mind'\" /></head>ok for "+name;
+            return Response.ok().build(); //"<head><meta http-equiv=\"refresh\" content=\"2; URL='/agents/"+name+"/mind'\" /></head>ok for "+name;
         } catch (Exception e) {
             e.printStackTrace();
-            return "error "+e.getMessage();
+            return Response.status(500, e.getMessage()).build();
         }
     }
 
@@ -501,6 +501,9 @@ public class RestImplAg extends AbstractBinder {
             return "receiver not found";
         }
     }
+    
+    // TODO: add JSON version of add msg
+    
     
     @Path("/{agentname}/mind/img.svg")
     @GET
