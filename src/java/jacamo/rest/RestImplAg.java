@@ -491,15 +491,13 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/mb")
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.TEXT_PLAIN)
-    public String addAgMsg(Message m, @PathParam("agentname") String agName) {
+    public Response addAgMsgXml(Message m, @PathParam("agentname") String agName) {
         CentralisedAgArch a = BaseCentralisedMAS.getRunner().getAg(agName);
         if (a != null) {
             a.receiveMsg(m.getAsJasonMsg());
-            return "ok";
-        } else {
-            return "receiver not found";
+            return Response.ok().build();
         }
+        return Response.status(500, "receiver "+agName+" not found").build();
     }
     
     // TODO: add JSON version of add msg

@@ -26,7 +26,7 @@ mas yourmas {
     ...
 
     // starts rest api on port 8080
-    platform: jacamo.rest.JCMRest("--main 2181 --restPort 8080") 
+    platform: jacamo.rest.JCMRest("--main 2181 --restPort 8080")
 
 }
 
@@ -66,11 +66,8 @@ See ClientTest.java for an example of Java client. It can be run with `gradle te
 * GET JSON `/agents/{agentname}/status`
     returns the agent's status (if idle, number of intentions, ....)
 
-* GET XML  `/agents/{agentname}/mind`
+* GET XML/HTML  `/agents/{agentname}/mind`
     returns the mind state of the agent (beliefs, plans, intentions, ...)
-
-* GET HTML `/agents/{agentname}/mind`
-    returns the mind state of the agent
 
 * GET JSON `/agents/{agentname}/mind/bb`
     returns the agent's beliefs as a list of strings
@@ -85,5 +82,5 @@ See ClientTest.java for an example of Java client. It can be run with `gradle te
 * POST FORM `/agents/{agentname}/plans`
     upload some plans into the agent's plan library
 
-* GET HTML `/services`
+* GET JSON/HTML `/services`
     returns the DF state
