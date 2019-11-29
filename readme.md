@@ -34,26 +34,31 @@ mas yourmas {
 
 # Running this project
 
-To run:
-* `gradle marcos` runs agent marcos and the REST platform
-* `gradle bob` runs agents bob and alice. Bob sends a message to marcos using its rest API.
+### Using a local gradle
+* `$ gradle marcos` runs agent marcos and the REST platform
+* `$ gradle bob` runs agents bob and alice. Bob sends a message to marcos using its rest API.
 
-With docker:
-* `docker build  -t jomifred/jacamo-runrest .` to build a docker image
-* `docker network create jcm_net`
-* `docker run -ti --rm --net jcm_net  --name host1 -v "$(pwd)":/app jomifred/jacamo-runrest gradle marcos` to run marcos.jcm
-* `docker run -ti --rm --net jcm_net  --name host2 -v "$(pwd)":/app jomifred/jacamo-runrest gradle bob_d` to run bob.jcm
+### Using a local docker
+```sh
+$ docker build  -t jomifred/jacamo-runrest .
+$ docker network create jcm_net
+$ docker run -ti --rm --net jcm_net  --name host1 -v "$(pwd)":/app jomifred/jacamo-runrest gradle marcos
+$ docker run -ti --rm --net jcm_net  --name host2 -v "$(pwd)":/app jomifred/jacamo-runrest gradle bob_d
+```
+These commands build a docker image and launch marcos and bob projects. Usually super user privileges are necessary.
 
-Notes:
+# More about jacamo-web
+
 * Each agent has a REST API to receive message and be inspected
 * ZooKeeper is used for name service. Bob can send a message to `marcos` using its name. ZooKeeper maps the name to a URL.
 * DF service is provided also by ZooKeeper
 * Java JAX-RS is used for the API
 
-See ClientTest.java for an example of Java client. It can be run with `gradle test1`.
-
 # REST API
 
+* GET JSON `/overview`:
+    returns an overview of the system including agents, artefacts and organisations
+    
 * GET JSON `/agents`:
     returns the list of running agents
 
@@ -66,21 +71,13 @@ See ClientTest.java for an example of Java client. It can be run with `gradle te
 * GET JSON `/agents/{agentname}/status`
     returns the agent's status (if idle, number of intentions, ....)
 
-* GET XML/HTML  `/agents/{agentname}/mind`
-    returns the mind state of the agent (beliefs, plans, intentions, ...)
-
 * GET JSON `/agents/{agentname}/mind/bb`
     returns the agent's beliefs as a list of strings
 
-* POST XML `/agents/{agentname}/mb`
-    Adds a message in the agent's mailbox. See class Message.java for details of the fields.
+* GET JSON `/workspaces`
+    returns the list of workspaces of the system
 
-* GET TXT `/agents/{agentname}/plans`
-    returns the agent's plans. A label can be used as argument:
-    `/agents/{agentname}/plans?label=planT`
-
-* POST FORM `/agents/{agentname}/plans`
-    upload some plans into the agent's plan library
-
-* GET JSON/HTML `/services`
-    returns the DF state
+* GET JSON `/oe`
+    returns the list of organisations of the system
+    
+* Full documentation: [jacamo-rest 0.3](https://app.swaggerhub.com/apis/sma-das/jacamo-rest/0.3)
