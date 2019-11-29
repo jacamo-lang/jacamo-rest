@@ -11,7 +11,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version '0.2-SNAPSHOT'
+version '0.3-SNAPSHOT'
 group   'org.jacamo'
 
 sourceCompatibility = 1.8
@@ -56,9 +56,6 @@ dependencies {
 	compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
 
     compile 'com.google.code.gson:gson:2.8.5'
-    
-	//compile files ('lib/moise-0.12-SNAPSHOT.jar')	
-	//compile files ('lib/jason-2.4-SNAPSHOT.jar')
 }
 
 sourceSets {
@@ -72,6 +69,11 @@ sourceSets {
         resources {
             srcDir 'src/resources'
         }
+    }
+    test {
+    	java {
+    		srcDir 'src/test'
+    	}
     }
 }
 
