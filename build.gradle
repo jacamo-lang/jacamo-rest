@@ -148,6 +148,18 @@ jar {
     baseName 'jacamo-rest'
 }
 
+task copyToLib(type: Copy) {
+    into "$buildDir/libs"
+    from(configurations.compile)
+}
+
+task stage(dependsOn: ['jar', 'copyToLib', 'clean']) {
+	copyToLib.mustRunAfter clean
+	jar.mustRunAfter copyToLib
+}
+
+stage.dependsOn(copyToLib)
+
 // the following lines is used to avoid errors while generating javadoc
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
