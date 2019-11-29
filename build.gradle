@@ -146,6 +146,13 @@ clean {
 
 jar {
     baseName 'jacamo-rest'
+    manifest {
+      attributes(
+        'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+        'Main-Class': 'jacamo.infra.JaCaMoLauncher',
+        'args': 'src/jcm/marcos.jcm'
+      )
+    }
 }
 
 task copyToLib(type: Copy) {
