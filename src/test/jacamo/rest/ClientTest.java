@@ -1,43 +1,72 @@
 package jacamo.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import jacamo.infra.JaCaMoLauncher;
 
 public class ClientTest {
+    URI uri;
 
-    public static void main(String[] args) {
-        new ClientTest().t();
-    }
-
-    private void t() {
+    @Before
+    public void launchSystem() {
         try {
-            String url = "http://10.0.1.2:8080/";
-            
-            Client client = ClientBuilder.newClient();
-            Response response = client
-                    .target(url)
-                    .path("agents/marcos/mind/bb")
-                    .request(MediaType.APPLICATION_JSON)
-                    .get();
+            // Launch jacamo and jacamo-rest running marcos.jcm
+            JaCaMoLauncher jacamo = new JaCaMoLauncher();
+            String[] arg = { "src/jcm/marcos.jcm" };
+            jacamo.init(arg);
+            jacamo.createEnvironment();
+            jacamo.createAgs();
+            JCMRest jcmrest = new JCMRest();
+            String[] arg2 = { "--main 2181 --restPort 8080" };
+            jcmrest.init(arg2);
 
-            System.out.println(response.toString() 
-                    + "\n   "+response.getEntity() 
-                    + "\n   "+response.readEntity(String.class));
-
-            Message m = new Message("33","signal","jomi","marcos","oi");             
-            String r = client
-                    .target(url)
-                    .path("agents/marcos/mb")
-                    .request(MediaType.APPLICATION_XML)
-                    .accept(MediaType.TEXT_PLAIN)
-                    .post(Entity.xml(m), String.class);
-
-            System.out.println("Message sent result: "+r);
+            uri = UriBuilder.fromUri("http://" + InetAddress.getLocalHost().getHostAddress() + "/").port(8080).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testPutMessageBeliefBase() {
+        Client client = ClientBuilder.newClient();
+        Response response = client.target(uri.toString()).path("agents/marcos/mind/bb")
+                .request(MediaType.APPLICATION_JSON).get();
+
+        String bb = response.readEntity(String.class);
+
+        System.out.println("\n\nResponse: " + response.toString() + "\n" + bb.substring(1, 31));
+        System.out.println("Expected: \"price(banana,X)[source(self)]");
+		System.out.println("Received: " + bb.substring(1, 31));
+
+		assertEquals("\"price(banana,X)[source(self)]", bb.substring(1, 31));
+    }
+
+    @Test
+    public void testPutMessageInMailBox() {
+        Client client = ClientBuilder.newClient();
+
+        Message m = new Message("33", "signal", "jomi", "marcos", "oi");
+        Response r = client.target(uri.toString()).path("agents/marcos/mb").request(MediaType.APPLICATION_XML)
+                .accept(MediaType.TEXT_PLAIN).post(Entity.xml(m));
+
+        System.out.println("Message sent result: " + r);
+
+        assertEquals(200, r.getStatus());
     }
 }

@@ -56,6 +56,9 @@ dependencies {
 	compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
 
     compile 'com.google.code.gson:gson:2.8.5'
+    
+	// https://mvnrepository.com/artifact/junit/junit
+	testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 sourceSets {
