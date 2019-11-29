@@ -1,4 +1,4 @@
-JaCaMo REST provides a REST API to interact with agents, artifact and the organisation. Currently, only the agents side is implemented.
+JaCaMo REST provides a REST API to interact with agents, artifact and the organisation.
 
 # Using this project
 
