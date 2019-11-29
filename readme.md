@@ -47,7 +47,7 @@ $ docker run -ti --rm --net jcm_net  --name host2 -v "$(pwd)":/app jomifred/jaca
 ```
 These commands build a docker image and launch marcos and bob projects. Usually super user privileges are necessary.
 
-# More about jacamo-web
+# More about jacamo-rest
 
 * Each agent has a REST API to receive message and be inspected
 * ZooKeeper is used for name service. Bob can send a message to `marcos` using its name. ZooKeeper maps the name to a URL.
