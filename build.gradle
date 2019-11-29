@@ -150,7 +150,7 @@ jar {
       attributes(
         'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
         'Main-Class': 'jacamo.infra.JaCaMoLauncher',
-        'args': 'src/jcm/marcos.jcm'
+        'args': 'src/jcm/main.jcm'
       )
     }
 }
