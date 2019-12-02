@@ -13,7 +13,7 @@ import org.glassfish.jersey.server.filter.EncodingFilter;
 public class RestAppConfig extends ResourceConfig {
     public RestAppConfig() {
         // Registering resource classes
-        registerClasses(RestImpl.class, RestImplAg.class, RestImplEnv.class, RestImplOrg.class, RestImplDF.class, RestImplJCM.class);
+        registerClasses(RestImpl.class, RestImplAg.class, RestImplEnv.class, RestImplOrg.class, RestImplDF.class);
         
         // gzip compression
         registerClasses(EncodingFilter.class, GZipEncoder.class, DeflateEncoder.class);
