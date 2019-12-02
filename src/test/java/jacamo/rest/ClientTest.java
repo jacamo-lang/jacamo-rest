@@ -52,9 +52,9 @@ public class ClientTest {
 
         System.out.println("\n\nResponse: " + response.toString() + "\n" + bb.substring(1, 31));
         System.out.println("Expected: \"price(banana,X)[source(self)]");
-		System.out.println("Received: " + bb.substring(1, 31));
+		    System.out.println("Received: " + bb.substring(1, 31));
 
-		assertEquals("\"price(banana,X)[source(self)]", bb.substring(1, 31));
+		    assertEquals("\"price(banana,X)[source(self)]", bb.substring(1, 31));
     }
 
     @Test
