@@ -105,7 +105,7 @@ public class RestAgArch extends AgArch {
             try {
                 String adr = null;
     
-                if (m.getReceiver().startsWith("http://")) {
+                if (m.getReceiver().startsWith("http")) {
                     adr = m.getReceiver();
                 } else {
                     // try ZK
@@ -126,9 +126,9 @@ public class RestAgArch extends AgArch {
                                   .accept(MediaType.TEXT_PLAIN)
                                   .post(Entity.xml( new jacamo.rest.Message(m)), String.class);
                     }
-                    if (!"ok".equals(r)) {
-                        throw e;
-                    }
+                    //if (!"ok".equals(r)) {
+                    //  throw e;
+                    //}
                 } else {
                     throw e;
                 }
