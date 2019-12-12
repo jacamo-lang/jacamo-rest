@@ -36,7 +36,6 @@ public class RestAgArch extends AgArch {
     
     Client                restClient = null;
     
-    
     @Override
     public void init() throws Exception {
         //System.out.println("my ag arch init "+getAgName());
@@ -117,18 +116,14 @@ public class RestAgArch extends AgArch {
                 // try by rest to send the message by REST API
                 if (adr != null) {
                     // do POST
-                    String r = null;
                     if (adr.startsWith("http")) {
-                        r = restClient
+                        restClient
                                   .target(adr)
                                   .path("mb")
                                   .request(MediaType.APPLICATION_XML)
                                   .accept(MediaType.TEXT_PLAIN)
                                   .post(Entity.xml( new jacamo.rest.Message(m)), String.class);
                     }
-                    //if (!"ok".equals(r)) {
-                    //  throw e;
-                    //}
                 } else {
                     throw e;
                 }

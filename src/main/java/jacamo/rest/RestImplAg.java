@@ -1,10 +1,10 @@
 package jacamo.rest;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -16,6 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
@@ -40,7 +45,6 @@ import org.w3c.dom.Document;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
-
 import com.google.gson.Gson;
 
 import cartago.ArtifactId;
@@ -53,6 +57,7 @@ import jason.ReceiverNotFoundException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Circumstance;
+import jason.asSemantics.CircumstanceListener;
 import jason.asSemantics.IntendedMeans;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Option;
@@ -65,6 +70,8 @@ import jason.asSyntax.PlanBody;
 import jason.asSyntax.PlanLibrary;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.Trigger.TEType;
+import jason.asSyntax.VarTerm;
+import jason.asSyntax.parser.ParseException;
 import jason.infra.centralised.BaseCentralisedMAS;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.stdlib.print;
@@ -88,6 +95,8 @@ public class RestImplAg extends AbstractBinder {
     protected void configure() {
         bind(new RestImplAg()).to(RestImplAg.class);
     }
+    
+    Executor executor = Executors.newFixedThreadPool(4);
 
     /**
      * Produces JSON containing the list of existing agents Example: ["ag1","ag2"]
@@ -550,14 +559,28 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/cmd")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response runCmdPost(@FormParam("c") String cmd, @PathParam("agentname") String agName) {
-        String r;
+        Agent ag = getAgent(agName);
+        if (ag == null) {
+            return Response.status(500, "Receiver '" + agName + "' not found").build();
+        }
         try {
-            r = execCmd(agName, cmd.trim());
-            addAgLog(agName, "Command " + cmd + ": " + r);
+            createAgLog(agName, ag);
+            
+            cmd = cmd.trim();
+            if (cmd.endsWith(".")) cmd = cmd.substring(0, cmd.length() - 1);
 
-            return Response.ok(r).build();
+            Unifier u = execCmd(ag, ASSyntax.parsePlanBody(cmd));
+            addAgLog(agName, "Command " + cmd + ": " + u);
+
+            Map<String,String> um = new HashMap<String, String>();
+            for (VarTerm v: u) {
+                um.put(v.toString(), u.get(v).toString());
+            }
+            return Response.ok(gson.toJson(um)).build();
+        } catch (ParseException e) {
+            return Response.status(500, "Error parsing '" + cmd + "."+e.getMessage()).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -615,29 +638,86 @@ public class RestImplAg extends AbstractBinder {
      * @param agName name of the agent
      * @param sCmd   command to be executed
      * @return Status message
+     * @throws ParseException 
      */
-    String execCmd(String agName, String sCmd) {
-        try {
-            if (sCmd.endsWith("."))
-                sCmd = sCmd.substring(0, sCmd.length() - 1);
-            PlanBody lCmd = ASSyntax.parsePlanBody(sCmd);
-            Trigger te = ASSyntax.parseTrigger("+!run_repl_expr");
-            Intention i = new Intention();
-            i.push(new IntendedMeans(new Option(new Plan(null, te, null, lCmd), new Unifier()), te));
+    Unifier execCmd(Agent ag, PlanBody lCmd) throws ParseException {
+        Trigger te = ASSyntax.parseTrigger("+!run_repl_expr");
+        Intention i = new Intention();
+        IntendedMeans im = new IntendedMeans(new Option(new Plan(null, te, null, lCmd), new Unifier()), te);
+        i.push(im);
 
-            Agent ag = getAgent(agName);
-            if (ag != null) {
+        Lock lock = new ReentrantLock();
+        Condition goalFinished  = lock.newCondition();
+        executor.execute( () -> {
+                /*GoalListener gl = new GoalListener() {                 
+                    public void goalSuspended(Trigger goal, String reason) {}
+                    public void goalStarted(Event goal) {}
+                    public void goalResumed(Trigger goal) {}
+                    public void goalFinished(Trigger goal, FinishStates result) {
+                        System.out.println("finished!");
+                        if (goal.equals(te)) {
+                            // finished
+                            //if (result.equals(FinishStates.achieved)) {
+                            //}                           
+                            try {
+                                lock.lock();
+                                goalFinished.signalAll();
+                            } finally {
+                                lock.unlock();
+                            }
+                        }                       
+                    }
+                    public void goalFailed(Trigger goal) {
+                        if (goal.equals(te)) {
+                            try {
+                                lock.lock();
+                                goalFinished.signalAll();
+                            } finally {
+                                lock.unlock();
+                            }
+                        }                                                   
+                    }
+                };*/
+                CircumstanceListener cl = new CircumstanceListener() {
+                    public void intentionDropped(Intention ci) {
+                        System.out.println("*finished!"+ci);
+                        if (ci.equals(i)) {
+                            try {
+                                lock.lock();
+                                goalFinished.signalAll();
+                            } finally {
+                                lock.unlock();
+                            }
+                        }
+                    };
+
+                };
                 TransitionSystem ts = ag.getTS();
-                ts.getC().addRunningIntention(i);
-                ts.getUserAgArch().wake();
-                createAgLog(agName, ag);
-                return "included for execution";
-            } else {
-                return "not implemented";
-            }
-        } catch (Exception e) {
-            return ("Error parsing " + sCmd + "\n" + e);
+                try {
+                    lock.lock();
+                    //ts.addGoalListener(gl);
+                    ts.getC().addEventListener(cl);
+                    ts.getC().addRunningIntention(i);
+                    ts.getUserAgArch().wake();
+                    goalFinished.await();
+                    //ts.removeGoalListener(gl);
+                    ts.getC().removeEventListener(cl);
+                } catch (InterruptedException e) {                          
+                } finally {
+                    lock.unlock();
+                }
+                System.out.println("fim thread");
+        });
+        try {
+            lock.lock();
+            goalFinished.await();
+            
+            return im.getUnif();
+        } catch (InterruptedException e) {
+        } finally {
+            lock.unlock();
         }
+        return null;
     }
 
     /**

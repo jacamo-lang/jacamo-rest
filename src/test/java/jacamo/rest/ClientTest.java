@@ -2,7 +2,6 @@ package jacamo.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import java.net.InetAddress;
 import java.net.URI;
 
 import javax.ws.rs.client.Client;
@@ -32,8 +31,7 @@ public class ClientTest {
             JCMRest jcmrest = new JCMRest();
             String[] arg2 = { "--main 2181 --restPort 8080" };
             jcmrest.init(arg2);
-
-            uri = UriBuilder.fromUri("http://" + InetAddress.getLocalHost().getHostAddress() + "/").port(8080).build();
+            uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
         } catch (Exception e) {
             e.printStackTrace();
         }

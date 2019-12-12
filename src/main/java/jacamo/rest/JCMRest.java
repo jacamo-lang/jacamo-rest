@@ -40,7 +40,10 @@ public class JCMRest extends DefaultPlatformImpl {
     protected static CuratorFramework zkClient;
     
     static public String getRestHost() {
-        return restServerURI.toString();
+        if (restServerURI == null)
+            return null;
+        else
+            return restServerURI.toString();
     }
     
     static public String getZKHost() {
