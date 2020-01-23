@@ -57,10 +57,14 @@ public class RestAgArch extends AgArch {
     
     @Override
     public void stop() {
-        if (zkClient != null)
+        if (zkClient != null) {
             zkClient.close();
-        if (restClient != null)
+            zkClient = null;
+        }
+        if (restClient != null) {
             restClient.close();
+            restClient = null;
+        }
     }
 
     RuntimeServices singRTS = null;
