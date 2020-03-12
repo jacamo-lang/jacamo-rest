@@ -132,13 +132,13 @@ public class JCMRest extends DefaultPlatformImpl {
         if (zkClient != null)
             zkClient.close();
         
-        if (zkTmpDir != null) {
+        /*if (zkTmpDir != null) {
             try {
                 FileUtils.deleteDirectory(zkTmpDir);
             } catch (IOException e) {
             }
             zkTmpDir = null;
-        }
+        }*/
     }
     
     static void confLog4j() {
@@ -189,14 +189,18 @@ public class JCMRest extends DefaultPlatformImpl {
     }
     
     File zkTmpDir = null;
+    static String zkTmpFileName = "jcm-zookeeper";
+    
     public ServerCnxnFactory startZookeeper(int port) {
         int numConnections = 500;
         int tickTime = 2000;
 
         try {
+            cleanZK();
+            
             zkHost = InetAddress.getLocalHost().getHostAddress()+":"+port;
 
-            zkTmpDir = Files.createTempDirectory("zookeeper").toFile(); 
+            zkTmpDir = Files.createTempDirectory(zkTmpFileName).toFile(); 
             //System.out.println("ZK data at "+zkTmpDir);
             ZooKeeperServer server = new ZooKeeperServer(zkTmpDir, zkTmpDir, tickTime);
             server.setMaxSessionTimeout(4000);
@@ -218,6 +222,17 @@ public class JCMRest extends DefaultPlatformImpl {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+    
+    void cleanZK() {
+        for (File f: FileUtils.getTempDirectory().listFiles()) {
+            if (f.getName().startsWith(zkTmpFileName)) {
+                try {
+                    FileUtils.deleteDirectory(f);
+                } catch (IOException e) {
+                }
+            }
         }
     }
 
