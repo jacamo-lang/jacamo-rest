@@ -129,6 +129,11 @@ public class JCMRest extends DefaultPlatformImpl {
 
         if (zkClient != null)
             zkClient.close();
+        
+        if (zkTmpDir != null) {
+            zkTmpDir.delete();
+            zkTmpDir = null;
+        }
     }
     
     static void confLog4j() {
@@ -178,6 +183,7 @@ public class JCMRest extends DefaultPlatformImpl {
         }
     }
     
+    File zkTmpDir = null;
     public ServerCnxnFactory startZookeeper(int port) {
         int numConnections = 500;
         int tickTime = 2000;
@@ -185,9 +191,12 @@ public class JCMRest extends DefaultPlatformImpl {
         try {
             zkHost = InetAddress.getLocalHost().getHostAddress()+":"+port;
 
-            File dir = Files.createTempDirectory("zookeeper").toFile(); 
-            ZooKeeperServer server = new ZooKeeperServer(dir, dir, tickTime);
+            zkTmpDir = Files.createTempDirectory("zookeeper").toFile(); 
+            System.out.println("ZK data at "+zkTmpDir);
+            zkTmpDir.deleteOnExit();
+            ZooKeeperServer server = new ZooKeeperServer(zkTmpDir, zkTmpDir, tickTime);
             server.setMaxSessionTimeout(4000);
+            
             
             ServerCnxnFactory factory = new NIOServerCnxnFactory();
             factory.configure(new InetSocketAddress(port), numConnections);
