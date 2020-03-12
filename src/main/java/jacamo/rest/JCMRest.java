@@ -1,6 +1,7 @@
 package jacamo.rest;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -8,6 +9,7 @@ import java.nio.file.Files;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -131,7 +133,10 @@ public class JCMRest extends DefaultPlatformImpl {
             zkClient.close();
         
         if (zkTmpDir != null) {
-            zkTmpDir.delete();
+            try {
+                FileUtils.deleteDirectory(zkTmpDir);
+            } catch (IOException e) {
+            }
             zkTmpDir = null;
         }
     }
@@ -192,11 +197,9 @@ public class JCMRest extends DefaultPlatformImpl {
             zkHost = InetAddress.getLocalHost().getHostAddress()+":"+port;
 
             zkTmpDir = Files.createTempDirectory("zookeeper").toFile(); 
-            System.out.println("ZK data at "+zkTmpDir);
-            zkTmpDir.deleteOnExit();
+            //System.out.println("ZK data at "+zkTmpDir);
             ZooKeeperServer server = new ZooKeeperServer(zkTmpDir, zkTmpDir, tickTime);
             server.setMaxSessionTimeout(4000);
-            
             
             ServerCnxnFactory factory = new NIOServerCnxnFactory();
             factory.configure(new InetSocketAddress(port), numConnections);
