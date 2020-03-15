@@ -785,6 +785,26 @@ public class RestImplAg extends AbstractBinder {
         return Response.status(500).build();
     }
 
+    @Path("/{agentname}/mb")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response addAgMsgJson(Message m, @PathParam("agentname") String agName) {
+        try {
+            CentralisedAgArch a = BaseCentralisedMAS.getRunner().getAg(agName);
+            if (a != null) {
+                a.receiveMsg(m.getAsJasonMsg());
+                return Response.ok().build();
+            } else {
+                return Response.status(500, "Internal Server Error! Receiver '" + agName + "' not found").build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(500).build();
+    }
+
     /**
      * Get agent's CArtAgO architecture
      * 

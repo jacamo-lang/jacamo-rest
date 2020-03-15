@@ -1,6 +1,7 @@
 package jacamo.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 
@@ -14,54 +15,108 @@ import javax.ws.rs.core.UriBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
 import jacamo.infra.JaCaMoLauncher;
+import jason.JasonException;
 
 public class ClientTest {
     URI uri;
 
     @Before
     public void launchSystem() {
+        if (JaCaMoLauncher.getRunner() != null) {
+            uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
+            return;
+        }
         try {
             // Launch jacamo and jacamo-rest running marcos.jcm
-            JaCaMoLauncher jacamo = new JaCaMoLauncher();
-            String[] arg = { "src/jcm/marcos.jcm" };
-            jacamo.init(arg);
-            jacamo.createEnvironment();
-            jacamo.createAgs();
-            JCMRest jcmrest = new JCMRest();
-            String[] arg2 = { "--main 2181 --restPort 8080" };
-            jcmrest.init(arg2);
-            uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
+            new Thread() {
+                public void run() {
+                    String[] arg = { "src/test/test0.jcm" };
+                    try {
+                        JaCaMoLauncher.main(arg);
+                    } catch (JasonException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+            
+            // wait start of jacamo rest
+            while (uri == null) {
+                System.out.println("waiting jacamo to start ....");
+                if (JCMRest.getRestHost() != null)
+                    uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
+                else
+                    Thread.sleep(200);
+            }
+            // wait agents
+            while (JaCaMoLauncher.getRunner().getNbAgents() == 0) {
+                System.out.println("waiting agents to start...");
+                Thread.sleep(200);
+            }
+            Thread.sleep(200);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+
     @Test
     public void testPutMessageBeliefBase() {
         Client client = ClientBuilder.newClient();
-        Response response = client.target(uri.toString()).path("agents/marcos/mind/bb")
+        Response response = client.target(uri.toString()).path("agents/bob/mind/bb")
                 .request(MediaType.APPLICATION_JSON).get();
 
         String bb = response.readEntity(String.class);
 
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + bb.substring(1, 31));
-        System.out.println("Expected: \"price(banana,X)[source(self)]");
-		    System.out.println("Received: " + bb.substring(1, 31));
+        System.out.println("\n\nResponse: " + response.toString() + "\n" + bb);
 
-		    assertEquals("\"price(banana,X)[source(self)]", bb.substring(1, 31));
+        assertTrue(bb.toString().contains("price(banana,45)[source(self)]"));
+
     }
 
     @Test
     public void testPutMessageInMailBox() {
         Client client = ClientBuilder.newClient();
 
-        Message m = new Message("33", "signal", "jomi", "marcos", "oi");
-        Response r = client.target(uri.toString()).path("agents/marcos/mb").request(MediaType.APPLICATION_XML)
+        Message m = new Message("33", "signal", "jomi", "bob", "oi");
+        Response r = client.target(uri.toString()).path("agents/bob/mb")
+                .request(MediaType.APPLICATION_XML)
                 .accept(MediaType.TEXT_PLAIN).post(Entity.xml(m));
 
         System.out.println("Message sent result: " + r);
 
         assertEquals(200, r.getStatus());
+    }
+
+    @Test
+    public void testPutMessageInMailBoxJson() {
+        Client client = ClientBuilder.newClient();
+
+        Message m = new Message("34", "tell", "jomi", "bob", "vl(10)");
+        Gson gson = new Gson();
+
+        //System.out.println("sending "+Entity.json(gson.toJson(m)));
+        // {"performative":"tell","sender":"jomi","receiver":"bob","content":"vl(10)","msgId":"34"}
+        
+        Response r = client.target(uri.toString()).path("agents/bob/mb")
+                .request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_PLAIN)
+                .post(Entity.json(gson.toJson(m)));
+
+        System.out.println("Message sent result: " + r);
+
+        assertEquals(200, r.getStatus());
+
+        r = client.target(uri.toString()).path("agents/bob/mind/bb")
+                .request(MediaType.APPLICATION_JSON).get();
+
+        String bb = r.readEntity(String.class);
+
+        System.out.println("\n\nResponse: " + r.toString() + "\n" + bb.substring(1, 31));
+
+        assertTrue(bb.toString().contains("vl(10)[source(jomi)]"));
+    
     }
 }
