@@ -214,31 +214,7 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgentStatusJSON(@PathParam("agentname") String agName) {
         try {
-            Agent ag = getAgent(agName);
-            Circumstance c = ag.getTS().getC();
-
-            Map<String, Object> props = new HashMap<>();
-
-            props.put("idle", ag.getTS().canSleep());
-
-            props.put("nbIntentions", c.getNbRunningIntentions() + c.getPendingIntentions().size());
-
-            List<Map<String, Object>> ints = new ArrayList<>();
-            Iterator<Intention> ii = c.getAllIntentions();
-            while (ii.hasNext()) {
-                Intention i = ii.next();
-                Map<String, Object> iprops = new HashMap<>();
-                iprops.put("id", i.getId());
-                iprops.put("finished", i.isFinished());
-                iprops.put("suspended", i.isSuspended());
-                if (i.isSuspended()) {
-                    iprops.put("suspendedReason", i.getSuspendedReason());
-                }
-                iprops.put("size", i.size());
-                ints.add(iprops);
-            }
-            props.put("intentions", ints);
-
+            Map<String, Object> props = getAgent(agName).getTS().getUserAgArch().getStatus();
             return Response.ok(gson.toJson(props)).build();
         } catch (Exception e) {
             e.printStackTrace();
