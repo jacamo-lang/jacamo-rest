@@ -83,7 +83,8 @@ public class ClientTest {
         Message m = new Message("33", "signal", "jomi", "bob", "oi");
         Response r = client.target(uri.toString()).path("agents/bob/mb")
                 .request(MediaType.APPLICATION_XML)
-                .accept(MediaType.TEXT_PLAIN).post(Entity.xml(m));
+                .accept(MediaType.TEXT_PLAIN)
+                .post(Entity.xml(m));
 
         System.out.println("Message sent result: " + r);
 

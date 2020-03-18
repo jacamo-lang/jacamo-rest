@@ -6,11 +6,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import cartago.AgentIdCredential;
 import cartago.ArtifactId;
 import cartago.ArtifactInfo;
 import cartago.ArtifactObsProperty;
+import cartago.CartagoContext;
 import cartago.CartagoException;
 import cartago.CartagoService;
+import cartago.Op;
+import cartago.WorkspaceId;
 
 public class TranslEnv {
 
@@ -39,49 +43,7 @@ public class TranslEnv {
 
         Map<String, Object> artifacts = new HashMap<>();
         for (ArtifactId aid : CartagoService.getController(wrksName).getCurrentArtifacts()) {
-            ArtifactInfo info = CartagoService.getController(wrksName).getArtifactInfo(aid.getName());
-
-            // Get artifact's properties
-            Set<Object> properties = new HashSet<>();
-            for (ArtifactObsProperty op : info.getObsProperties()) {
-                for (Object vl : op.getValues()) {
-                    Map<String, Object> property = new HashMap<String, Object>();
-                    property.put(op.getName(), vl);
-                    properties.add(property);
-                }
-            }
-
-            // Get artifact's operations
-            Set<String> operations = new HashSet<>();
-            info.getOperations().forEach(y -> {
-                operations.add(y.getOp().getName());
-            });
-
-            // Get agents that are observing the artifact
-            Set<Object> observers = new HashSet<>();
-            info.getObservers().forEach(y -> {
-                // do not print agents_body observation
-                if (!info.getId().getArtifactType().equals("cartago.AgentBodyArtifact")) {
-                    observers.add(y.getAgentId().getAgentName());
-                }
-            });
-
-            // linked artifacts
-            Set<Object> linkedArtifacts = new HashSet<>();
-            info.getLinkedArtifacts().forEach(y -> {
-                // linked artifact node already exists if it belongs to this workspace
-                linkedArtifacts.add(y.getName());
-            });
-
-            // Build returning object
-            Map<String, Object> artifact = new HashMap<String, Object>();
-            artifact.put("artifact", aid.getName());
-            artifact.put("type", info.getId().getArtifactType());
-            artifact.put("properties", properties);
-            artifact.put("operations", operations);
-            artifact.put("observers", observers);
-            artifact.put("linkedArtifacts", linkedArtifacts);
-            artifacts.put(aid.getName(), artifact);
+            artifacts.put(aid.getName(), getArtifact(wrksName, aid.getName()));
         }
 
         workspace.put("workspace", wrksName);
@@ -90,4 +52,98 @@ public class TranslEnv {
         return workspace;
     }
 
+    /**
+     * Get details about an artifact 
+     * including their properties, operations, observers and linked artifacts
+     * 
+     * @param wrksName name of the workspace
+     * @return A map with workspace details
+     * @throws CartagoException
+     */
+    public Map<String, Object> getArtifact(String wrksName, String artName) throws CartagoException {
+
+        ArtifactInfo info = CartagoService.getController(wrksName).getArtifactInfo(artName);
+
+        // Get artifact's properties
+        Set<Object> properties = new HashSet<>();
+        for (ArtifactObsProperty op : info.getObsProperties()) {
+            for (Object vl : op.getValues()) {
+                Map<String, Object> property = new HashMap<String, Object>();
+                property.put(op.getName(), vl);
+                properties.add(property);
+            }
+        }
+
+        // Get artifact's operations
+        Set<String> operations = new HashSet<>();
+        info.getOperations().forEach(y -> {
+            operations.add(y.getOp().getName());
+        });
+
+        // Get agents that are observing the artifact
+        Set<Object> observers = new HashSet<>();
+        info.getObservers().forEach(y -> {
+            // do not print agents_body observation
+            if (!info.getId().getArtifactType().equals("cartago.AgentBodyArtifact")) {
+                observers.add(y.getAgentId().getAgentName());
+            }
+        });
+
+        // linked artifacts
+        Set<Object> linkedArtifacts = new HashSet<>();
+        info.getLinkedArtifacts().forEach(y -> {
+            // linked artifact node already exists if it belongs to this workspace
+            linkedArtifacts.add(y.getName());
+        });
+
+        // Build returning object
+        Map<String, Object> artifact = new HashMap<String, Object>();
+        artifact.put("artifact", artName);
+        artifact.put("type", info.getId().getArtifactType());
+        artifact.put("properties", properties);
+        artifact.put("operations", operations);
+        artifact.put("observers", observers);
+        artifact.put("linkedArtifacts", linkedArtifacts);
+
+        return artifact;
+    }
+    
+    
+    
+    public Object[] getObsPropValue(String wrksName, String artName, String obsPropId) throws CartagoException {
+        ArtifactInfo info = CartagoService.getController(wrksName).getArtifactInfo(artName);
+        for (ArtifactObsProperty op : info.getObsProperties()) {
+        	if (op.getName().equals(obsPropId)) {
+        		return op.getValues();
+        	}        	
+        }
+        return null;
+    }
+
+    Map<String, CartagoContext> contexts = new HashMap<>();
+
+    public void execOp(String wrksName, String artName, String operation, Object[] values) throws CartagoException {
+        CartagoContext ctxt = getContext(wrksName);
+        ArtifactId aid = ctxt.lookupArtifact(getWId(wrksName), artName);
+        ctxt.doAction(aid, new Op(operation, values));
+    }
+    
+    public void createArtefact(String wrksName, String artName, String javaClass, Object[] values) throws CartagoException {
+        getContext(wrksName).makeArtifact(getWId(wrksName), artName, javaClass, values);
+    }
+    
+    
+    protected CartagoContext getContext(String wrksName) throws CartagoException {
+        CartagoContext ctxt = contexts.get(wrksName);
+        if (ctxt == null) {
+        	ctxt = CartagoService.startSession(wrksName, new AgentIdCredential("restapi_"+wrksName));
+        	contexts.put(wrksName, ctxt);
+        	ctxt.joinWorkspace( wrksName );
+        }
+        return ctxt;
+    }
+    
+    protected WorkspaceId getWId(String wrksName) throws CartagoException {
+    	return getContext(wrksName).getJoinedWspId(wrksName); 
+    }
 }

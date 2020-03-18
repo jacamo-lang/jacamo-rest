@@ -1,12 +1,10 @@
 package jacamo.rest;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import javax.inject.Singleton;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -16,12 +14,6 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
-
-import cartago.ArtifactId;
-import cartago.ArtifactInfo;
-import cartago.ArtifactObsProperty;
-import cartago.CartagoException;
-import cartago.CartagoService;
 
 @Singleton
 @Path("/workspaces")
@@ -45,9 +37,10 @@ public class RestImplEnv extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWorkspacesJSON() {
         try {
-            Gson gson = new Gson();
-
-            return Response.ok().entity(gson.toJson(tEnv.getWorkspaces())).header("Access-Control-Allow-Origin", "*")
+            return Response
+            		.ok()
+            		.entity(new Gson().toJson(tEnv.getWorkspaces()))
+            		.header("Access-Control-Allow-Origin", "*")
                     .build();
 
         } catch (Exception e) {
@@ -75,64 +68,11 @@ public class RestImplEnv extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getWorkspaceJSON(@PathParam("wrksname") String wrksName) {
         try {
-            Gson gson = new Gson();
-
-            Map<String, Object> workspace = new HashMap<String, Object>();
-            try {
-                Map<String, Object> artifacts = new HashMap<>();
-                for (ArtifactId aid : CartagoService.getController(wrksName).getCurrentArtifacts()) {
-                    ArtifactInfo info = CartagoService.getController(wrksName).getArtifactInfo(aid.getName());
-
-                    // Get artifact's properties
-                    Set<Object> properties = new HashSet<>();
-                    for (ArtifactObsProperty op : info.getObsProperties()) {
-                        for (Object vl : op.getValues()) {
-                            Map<String, Object> property = new HashMap<String, Object>();
-                            property.put(op.getName(), vl);
-                            properties.add(property);
-                        }
-                    }
-
-                    // Get artifact's operations
-                    Set<String> operations = new HashSet<>();
-                    info.getOperations().forEach(y -> {
-                        operations.add(y.getOp().getName());
-                    });
-
-                    // Get agents that are observing the artifact
-                    Set<Object> observers = new HashSet<>();
-                    info.getObservers().forEach(y -> {
-                        // do not print agents_body observation
-                        if (!info.getId().getArtifactType().equals("cartago.AgentBodyArtifact")) {
-                            observers.add(y.getAgentId().getAgentName());
-                        }
-                    });
-
-                    // linked artifacts
-                    Set<Object> linkedArtifacts = new HashSet<>();
-                    info.getLinkedArtifacts().forEach(y -> {
-                        // linked artifact node already exists if it belongs to this workspace
-                        linkedArtifacts.add(y.getName());
-                    });
-
-                    // Build returning object
-                    Map<String, Object> artifact = new HashMap<String, Object>();
-                    artifact.put("artifact", aid.getName());
-                    artifact.put("type", info.getId().getArtifactType());
-                    artifact.put("properties", properties);
-                    artifact.put("operations", operations);
-                    artifact.put("observers", observers);
-                    artifact.put("linkedArtifacts", linkedArtifacts);
-                    artifacts.put(aid.getName(), artifact);
-                }
-
-                workspace.put("workspace", wrksName);
-                workspace.put("artifacts", artifacts);
-            } catch (CartagoException e) {
-                e.printStackTrace();
-            }
-
-            return Response.ok().entity(gson.toJson(workspace)).header("Access-Control-Allow-Origin", "*").build();
+            return Response
+            		.ok()
+            		.entity(new Gson().toJson(tEnv.getWorkspace(wrksName)))
+            		.header("Access-Control-Allow-Origin", "*")
+            		.build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -158,52 +98,12 @@ public class RestImplEnv extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getArtifactJSON(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName) {
         try {
-            Gson gson = new Gson();
-
-            ArtifactInfo info = CartagoService.getController(wrksName).getArtifactInfo(artName);
-
-            // Get artifact's properties
-            Set<Object> properties = new HashSet<>();
-            for (ArtifactObsProperty op : info.getObsProperties()) {
-                for (Object vl : op.getValues()) {
-                    Map<String, Object> property = new HashMap<String, Object>();
-                    property.put(op.getName(), vl);
-                    properties.add(property);
-                }
-            }
-
-            // Get artifact's operations
-            Set<String> operations = new HashSet<>();
-            info.getOperations().forEach(y -> {
-                operations.add(y.getOp().getName());
-            });
-
-            // Get agents that are observing the artifact
-            Set<Object> observers = new HashSet<>();
-            info.getObservers().forEach(y -> {
-                // do not print agents_body observation
-                if (!info.getId().getArtifactType().equals("cartago.AgentBodyArtifact")) {
-                    observers.add(y.getAgentId().getAgentName());
-                }
-            });
-
-            // linked artifacts
-            Set<Object> linkedArtifacts = new HashSet<>();
-            info.getLinkedArtifacts().forEach(y -> {
-                // linked artifact node already exists if it belongs to this workspace
-                linkedArtifacts.add(y.getName());
-            });
-
-            // Build returning object
-            Map<String, Object> artifact = new HashMap<String, Object>();
-            artifact.put("artifact", artName);
-            artifact.put("type", info.getId().getArtifactType());
-            artifact.put("properties", properties);
-            artifact.put("operations", operations);
-            artifact.put("observers", observers);
-            artifact.put("linkedArtifacts", linkedArtifacts);
-
-            return Response.ok().entity(gson.toJson(artifact)).header("Access-Control-Allow-Origin", "*").build();
+            return Response
+            		.ok()
+            		.entity(new Gson()
+            				.toJson(tEnv.getArtifact(wrksName, artName)))
+            		.header("Access-Control-Allow-Origin", "*")
+            		.build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,4 +112,73 @@ public class RestImplEnv extends AbstractBinder {
         return Response.status(500).build();
     }
 
+    /**
+     * Get value of an observable property
+     * 
+     * @param wrksName name of the workspace the artifact is situated in
+     * @param artName  name of the artifact to be retrieved
+     * @param obsProp  name of the observable property
+     * @return HTTP 200 Response (ok an array of values) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         Sample:
+     *         [10]
+     */
+    @Path("/{wrksname}/{artname}/obsprops/{obspropid}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getObsPropJSON(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("obspropid") String obsPropId) {
+        try {
+            return Response
+            		.ok()
+            		.entity(new Gson()
+            				.toJson(tEnv.getObsPropValue(wrksName, artName, obsPropId)))
+            		.header("Access-Control-Allow-Origin", "*")
+            		.build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(500).build();
+    }
+
+    /**
+     * Executes an operation in an artifact
+     */
+    @Path("/{wrksname}/{artname}/operations/{opname}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response execOperation(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("opname") String operationName, Object[] values) {
+        try {
+        	tEnv.execOp(wrksName, artName, operationName, values);
+            return Response
+            		.ok()
+            		.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(500).build();
+    }
+
+    /**
+     * creates a new artifact
+     */
+    @Path("/{wrksname}/{artname}/{javaclass}")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response createArt(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("javaclass") String javaClass, Object[] values) {
+        try {
+        	tEnv.createArtefact(wrksName, artName, javaClass, values);
+            return Response
+            		.ok()
+            		.build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(500).build();
+    }
 }
