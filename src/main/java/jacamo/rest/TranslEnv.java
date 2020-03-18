@@ -108,6 +108,13 @@ public class TranslEnv {
         return artifact;
     }
     
+    public void createWorkspace(String wrksName) throws CartagoException {
+        CartagoService.createWorkspace(wrksName);
+    }
+    
+    public void createArtefact(String wrksName, String artName, String javaClass, Object[] values) throws CartagoException {
+        getContext(wrksName).makeArtifact(getWId(wrksName), artName, javaClass, values);
+    }
     
     
     public Object[] getObsPropValue(String wrksName, String artName, String obsPropId) throws CartagoException {
@@ -126,10 +133,6 @@ public class TranslEnv {
         CartagoContext ctxt = getContext(wrksName);
         ArtifactId aid = ctxt.lookupArtifact(getWId(wrksName), artName);
         ctxt.doAction(aid, new Op(operation, values));
-    }
-    
-    public void createArtefact(String wrksName, String artName, String javaClass, Object[] values) throws CartagoException {
-        getContext(wrksName).makeArtifact(getWId(wrksName), artName, javaClass, values);
     }
     
     

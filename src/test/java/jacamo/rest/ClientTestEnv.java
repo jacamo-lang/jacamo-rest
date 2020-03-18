@@ -65,7 +65,7 @@ public class ClientTestEnv {
     @Test
     public void testObsPropAndOperations1() {
 
-        assertEquals( 10, getCount("a"));
+        assertEquals( 10, getCount("testwks","a"));
 
         Client client = ClientBuilder.newClient();
         client
@@ -75,7 +75,7 @@ public class ClientTestEnv {
                 .accept(MediaType.TEXT_PLAIN)
                 .put(Entity.json(new Gson().toJson(new Object[] {})));
         
-        assertEquals( 11, getCount("a"));
+        assertEquals( 11, getCount("testwks","a"));
 
         client
 			.target(uri.toString())
@@ -84,14 +84,14 @@ public class ClientTestEnv {
 	        .accept(MediaType.TEXT_PLAIN)
 	        .put(Entity.json(new Gson().toJson(new Object[] { 40 })));
 
-        assertEquals( 40, getCount("a"));
+        assertEquals( 40, getCount("testwks","a"));
     }
 
-    public int getCount(String art) {
+    public int getCount(String w, String art) {
         Client client = ClientBuilder.newClient();
         Response response = client
         		.target(uri.toString())
-        		.path("workspaces/testwks/"+art+"/obsprops/count")
+        		.path("workspaces/"+w+"/"+art+"/obsprops/count")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
@@ -106,18 +106,26 @@ public class ClientTestEnv {
     @SuppressWarnings("rawtypes")
     public void testCreateArt1() {
         Client client = ClientBuilder.newClient();
+
         client
-        		.target(uri.toString())
-        		.path("workspaces/testwks/newart/tools.Counter")
-                .request(MediaType.APPLICATION_JSON)
-                .accept(MediaType.TEXT_PLAIN)
-                .post(Entity.json(new Gson().toJson(new Object[] { 22 })));
+			.target(uri.toString())
+			.path("workspaces/neww3")
+	        .request(MediaType.APPLICATION_JSON)
+	        .accept(MediaType.TEXT_PLAIN)
+	        .post(Entity.json(new Gson().toJson(new Object[] {  })));
+
+        client
+    		.target(uri.toString())
+    		.path("workspaces/neww3/newart/tools.Counter")
+            .request(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_PLAIN)
+            .post(Entity.json(new Gson().toJson(new Object[] { 22 })));
         
-        assertEquals( 22, getCount("newart"));
+        assertEquals( 22, getCount("neww3","newart"));
 
         Response response = client
         		.target(uri.toString())
-        		.path("workspaces/testwks")
+        		.path("workspaces/neww3")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 

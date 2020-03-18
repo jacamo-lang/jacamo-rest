@@ -81,6 +81,24 @@ public class RestImplEnv extends AbstractBinder {
         return Response.status(500).build();
     }
 
+    @Path("/{wrksname}")
+    @POST
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response createWorkspace(@PathParam("wrksname") String wrksName) {
+        try {
+        	tEnv.createWorkspace(wrksName);
+            return Response
+            		.ok()
+            		.build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Response.status(500).build();
+    }
+
+    
     /**
      * Get details about an artifact including its properties, operations, observers
      * and linked artifacts
