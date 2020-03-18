@@ -11,17 +11,18 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jacamo.infra.JaCaMoLauncher;
 import jason.JasonException;
 
 public class RunCmdTest {
-    URI uri = null;
+    static URI uri = null;
 
-    @Before
-    public void launchSystem() {
+    @BeforeClass
+    public static void launchSystem() {
         try {
             // Launch jacamo and jacamo-rest running marcos.jcm
             new Thread() {
@@ -43,16 +44,22 @@ public class RunCmdTest {
                 else
                     Thread.sleep(200);
             }
+            System.out.println("URI="+uri);
             // wait agents
             while (JaCaMoLauncher.getRunner().getNbAgents() == 0) {
                 System.out.println("waiting agents to start...");
                 Thread.sleep(200);
             }
-            Thread.sleep(200);
+            Thread.sleep(400);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    @AfterClass
+    public static void stopSystem() {
+        JaCaMoLauncher.getRunner().finish();
+    }    
 
     @Test(timeout=2000)
     public void testCmd1() {

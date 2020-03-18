@@ -120,9 +120,9 @@ public class TranslEnv {
     public Object[] getObsPropValue(String wrksName, String artName, String obsPropId) throws CartagoException {
         ArtifactInfo info = CartagoService.getController(wrksName).getArtifactInfo(artName);
         for (ArtifactObsProperty op : info.getObsProperties()) {
-        	if (op.getName().equals(obsPropId)) {
-        		return op.getValues();
-        	}        	
+            if (op.getName().equals(obsPropId)) {
+                return op.getValues();
+            }           
         }
         return null;
     }
@@ -139,14 +139,14 @@ public class TranslEnv {
     protected CartagoContext getContext(String wrksName) throws CartagoException {
         CartagoContext ctxt = contexts.get(wrksName);
         if (ctxt == null) {
-        	ctxt = CartagoService.startSession(wrksName, new AgentIdCredential("restapi_"+wrksName));
-        	contexts.put(wrksName, ctxt);
-        	ctxt.joinWorkspace( wrksName );
+            ctxt = CartagoService.startSession(wrksName, new AgentIdCredential("restapi_"+wrksName));
+            contexts.put(wrksName, ctxt);
+            ctxt.joinWorkspace( wrksName );
         }
         return ctxt;
     }
     
     protected WorkspaceId getWId(String wrksName) throws CartagoException {
-    	return getContext(wrksName).getJoinedWspId(wrksName); 
+        return getContext(wrksName).getJoinedWspId(wrksName); 
     }
 }

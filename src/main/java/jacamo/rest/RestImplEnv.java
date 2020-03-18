@@ -38,9 +38,9 @@ public class RestImplEnv extends AbstractBinder {
     public Response getWorkspacesJSON() {
         try {
             return Response
-            		.ok()
-            		.entity(new Gson().toJson(tEnv.getWorkspaces()))
-            		.header("Access-Control-Allow-Origin", "*")
+                    .ok()
+                    .entity(new Gson().toJson(tEnv.getWorkspaces()))
+                    .header("Access-Control-Allow-Origin", "*")
                     .build();
 
         } catch (Exception e) {
@@ -69,10 +69,10 @@ public class RestImplEnv extends AbstractBinder {
     public Response getWorkspaceJSON(@PathParam("wrksname") String wrksName) {
         try {
             return Response
-            		.ok()
-            		.entity(new Gson().toJson(tEnv.getWorkspace(wrksName)))
-            		.header("Access-Control-Allow-Origin", "*")
-            		.build();
+                    .ok()
+                    .entity(new Gson().toJson(tEnv.getWorkspace(wrksName)))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,10 +86,10 @@ public class RestImplEnv extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response createWorkspace(@PathParam("wrksname") String wrksName) {
         try {
-        	tEnv.createWorkspace(wrksName);
+            tEnv.createWorkspace(wrksName);
             return Response
-            		.ok()
-            		.build();
+                    .ok()
+                    .build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,11 +117,11 @@ public class RestImplEnv extends AbstractBinder {
     public Response getArtifactJSON(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName) {
         try {
             return Response
-            		.ok()
-            		.entity(new Gson()
-            				.toJson(tEnv.getArtifact(wrksName, artName)))
-            		.header("Access-Control-Allow-Origin", "*")
-            		.build();
+                    .ok()
+                    .entity(new Gson()
+                            .toJson(tEnv.getArtifact(wrksName, artName)))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,11 +147,11 @@ public class RestImplEnv extends AbstractBinder {
     public Response getObsPropJSON(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("obspropid") String obsPropId) {
         try {
             return Response
-            		.ok()
-            		.entity(new Gson()
-            				.toJson(tEnv.getObsPropValue(wrksName, artName, obsPropId)))
-            		.header("Access-Control-Allow-Origin", "*")
-            		.build();
+                    .ok()
+                    .entity(new Gson()
+                            .toJson(tEnv.getObsPropValue(wrksName, artName, obsPropId)))
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -169,10 +169,10 @@ public class RestImplEnv extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response execOperation(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("opname") String operationName, Object[] values) {
         try {
-        	tEnv.execOp(wrksName, artName, operationName, values);
+            tEnv.execOp(wrksName, artName, operationName, values);
             return Response
-            		.ok()
-            		.build();
+                    .ok()
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -189,10 +189,10 @@ public class RestImplEnv extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response createArt(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("javaclass") String javaClass, Object[] values) {
         try {
-        	tEnv.createArtefact(wrksName, artName, javaClass, values);
+            tEnv.createArtefact(wrksName, artName, javaClass, values);
             return Response
-            		.ok()
-            		.build();
+                    .ok()
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
         }

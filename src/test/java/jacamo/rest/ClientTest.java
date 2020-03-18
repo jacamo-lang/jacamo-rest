@@ -12,7 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -21,14 +22,10 @@ import jacamo.infra.JaCaMoLauncher;
 import jason.JasonException;
 
 public class ClientTest {
-    URI uri;
+    static URI uri;
 
-    @Before
-    public void launchSystem() {
-        if (JaCaMoLauncher.getRunner() != null) {
-            uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
-            return;
-        }
+    @BeforeClass
+    public static void launchSystem() {
         try {
             // Launch jacamo and jacamo-rest running marcos.jcm
             new Thread() {
@@ -61,6 +58,10 @@ public class ClientTest {
         }
     }
 
+    @AfterClass
+    public static void stopSystem() {
+        JaCaMoLauncher.getRunner().finish();
+    }    
 
     @Test
     public void testPutMessageBeliefBase() {
