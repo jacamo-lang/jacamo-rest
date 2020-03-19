@@ -45,9 +45,8 @@ public class RestImplEnv extends AbstractBinder {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     /**
@@ -76,9 +75,8 @@ public class RestImplEnv extends AbstractBinder {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     @Path("/{wrksname}")
@@ -93,9 +91,8 @@ public class RestImplEnv extends AbstractBinder {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     
@@ -125,9 +122,8 @@ public class RestImplEnv extends AbstractBinder {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     /**
@@ -155,9 +151,8 @@ public class RestImplEnv extends AbstractBinder {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     /**
@@ -175,9 +170,8 @@ public class RestImplEnv extends AbstractBinder {
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     /**
@@ -195,8 +189,7 @@ public class RestImplEnv extends AbstractBinder {
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 }

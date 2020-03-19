@@ -348,7 +348,7 @@ public class RestImplAg extends AbstractBinder {
         try {
             Agent ag = getAgent(agName);
             if (ag != null) {
-                ag.parseAS(new StringReader(plans), "RrestAPI");
+                ag.parseAS(new StringReader(plans), "RestAPI");
 
                 System.out.println("agName: " + agName);
                 System.out.println("plans: " + plans);
