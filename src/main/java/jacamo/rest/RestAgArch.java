@@ -16,6 +16,8 @@ import org.apache.curator.x.async.AsyncCuratorFramework;
 import org.apache.curator.x.async.WatchMode;
 import org.apache.zookeeper.CreateMode;
 
+import com.google.gson.Gson;
+
 import jason.ReceiverNotFoundException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
@@ -126,7 +128,9 @@ public class RestAgArch extends AgArch {
                                   .path("mb")
                                   .request(MediaType.APPLICATION_XML)
                                   .accept(MediaType.TEXT_PLAIN)
-                                  .post(Entity.xml( new jacamo.rest.Message(m)), String.class);
+                                  .post(
+                                        //Entity.xml( new jacamo.rest.Message(m)), String.class);
+                                        Entity.json( new Gson().toJson(new jacamo.rest.Message(m))));
                     }
                 } else {
                     throw e;
@@ -199,6 +203,5 @@ public class RestAgArch extends AgArch {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    
+    }  
 }

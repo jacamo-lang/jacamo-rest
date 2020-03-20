@@ -340,7 +340,7 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/plans")
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.TEXT_PLAIN)
     public Response loadPlans(@PathParam("agentname") String agName,
             @DefaultValue("") @FormDataParam("plans") String plans,
             @FormDataParam("file") InputStream uploadedInputStream,
@@ -361,9 +361,34 @@ public class RestImplAg extends AbstractBinder {
             return Response.ok("ok, code uploaded for agent '" + agName + "'!").build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
+    }
 
-        return Response.status(500).build();
+    /**
+     * Upload new plans into an agent.
+     * 
+     * @param agName              name of the agent
+     * @param plans               plans to be uploaded, as an String
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     */
+    @Path("/{agentname}/plans")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response loadPlans(@PathParam("agentname") String agName, String plans) {
+        try {
+            Agent ag = getAgent(agName);
+            if (ag == null) {
+                return Response.status(500, "Receiver '" + agName + "' not found").build();
+            }
+            ag.parseAS(new StringReader(plans), "RestAPI");
+            return Response.ok("ok, code uploaded for agent '" + agName + "'!").build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
     }
 
     /**
@@ -557,8 +582,8 @@ public class RestImplAg extends AbstractBinder {
             return Response.status(500, "Error parsing '" + cmd + "."+e.getMessage()).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-        return Response.status(500).build();
     }
 
     /**

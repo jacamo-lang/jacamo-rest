@@ -102,7 +102,5 @@ public class RestImplWP extends AbstractBinder {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
         }
-
     }
-
 }

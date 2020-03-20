@@ -162,7 +162,11 @@ public class RestImplEnv extends AbstractBinder {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response execOperation(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("opname") String operationName, Object[] values) {
+    public Response execOperation(
+            @PathParam("wrksname") String wrksName, 
+            @PathParam("artname") String artName, 
+            @PathParam("opname") String operationName, 
+            Object[] values) {
         try {
             tEnv.execOp(wrksName, artName, operationName, values);
             return Response
@@ -181,7 +185,11 @@ public class RestImplEnv extends AbstractBinder {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response createArt(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("javaclass") String javaClass, Object[] values) {
+    public Response createArt(
+            @PathParam("wrksname") String wrksName, 
+            @PathParam("artname") String artName, 
+            @PathParam("javaclass") String javaClass, 
+            Object[] values) {
         try {
             tEnv.createArtefact(wrksName, artName, javaClass, values);
             return Response

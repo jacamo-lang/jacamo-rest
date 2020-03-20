@@ -45,14 +45,14 @@ public class ClientTest {
                 if (JCMRest.getRestHost() != null)
                     uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
                 else
-                    Thread.sleep(200);
+                    Thread.sleep(400);
             }
             // wait agents
             while (JaCaMoLauncher.getRunner().getNbAgents() == 0) {
                 System.out.println("waiting agents to start...");
-                Thread.sleep(200);
+                Thread.sleep(400);
             }
-            Thread.sleep(200);
+            Thread.sleep(600);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,7 +118,41 @@ public class ClientTest {
 
         System.out.println("\n\nResponse: " + r.toString() + "\n" + bb.substring(1, 31));
 
-        assertTrue(bb.toString().contains("vl(10)[source(jomi)]"));
+        assertTrue(bb.toString().contains("vl(10)[source(jomi)]"));    
+    }
     
+    @Test
+    public void testPutPlan() {
+        // 1. add plan
+        Client client = ClientBuilder.newClient();
+        Response r = client.target(uri.toString())
+                .path("agents/bob/plans")
+                .request()
+                .post(
+                        Entity.json(
+                                "+!gg(X) : X > 10  <- +bb1(X); .print(\"*****\",X). " +
+                                "+!gg(X) : X <= 10 <- +bb2(X); .print(\"!!!!!\",X).")
+                );
+        String bb = r.readEntity(String.class);
+        assertEquals(200, r.getStatus());
+        
+        // 2. run plan
+        r = client.target(uri.toString())
+                .path("agents/bob/mb")
+                .request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_PLAIN)
+                .post(Entity.json(new Gson().toJson(
+                        new Message("39", "achieve", "jomi", "bob", "gg(13)"))));
+        
+        // 3. test
+        r = client.target(uri.toString())
+                .path("agents/bob/mind/bb")
+                .request(MediaType.APPLICATION_JSON).get();
+
+        bb = r.readEntity(String.class);
+
+        //System.out.println("\n\nResponse: " + r.toString() + "\n" + bb);
+
+        assertTrue(bb.toString().contains("bb1(13)[source(self)]"));    
     }
 }

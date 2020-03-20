@@ -67,7 +67,6 @@ public class RunCmdTest {
         form.param("c", ".print(oi); X = 10;");
         Entity<Form> entity = Entity.form(form);
         
-        System.out.println("send");
         Client client = ClientBuilder.newClient();
         Response response = client.target(uri.toString())
                 .path("agents/bob/cmd")
