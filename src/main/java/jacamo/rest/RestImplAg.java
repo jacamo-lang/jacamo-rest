@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -135,15 +136,15 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response createNewAgent(@PathParam("agentname") String agName) {
         try {
-            String name = BaseCentralisedMAS.getRunner().getRuntimeServices().createAgent(agName, null, null, null,
+            String givenName = BaseCentralisedMAS.getRunner().getRuntimeServices().createAgent(agName, null, null, null,
                     null, null, null);
-            BaseCentralisedMAS.getRunner().getRuntimeServices().startAgent(name);
+            BaseCentralisedMAS.getRunner().getRuntimeServices().startAgent(givenName);
             // set some source for the agent
-            Agent ag = getAgent(name);
+            Agent ag = getAgent(givenName);
 
             try {
 
-                File f = new File("src/agt/" + agName + ".asl");
+                File f = new File("src/agt/" + givenName + ".asl");
                 if (!f.exists()) {
                     f.createNewFile();
                     FileOutputStream outputFile = new FileOutputStream(f, false);
@@ -164,11 +165,11 @@ public class RestImplAg extends AbstractBinder {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            ag.load(new FileInputStream("src/agt/" + agName + ".asl"), agName + ".asl");
+            ag.load(new FileInputStream("src/agt/" + givenName + ".asl"), givenName + ".asl");
             // ag.setASLSrc("no-inicial.asl");
-            createAgLog(agName, ag);
+            createAgLog(givenName, ag);
 
-            return Response.ok("Agent '" + name + "' has been created!").build();
+            return Response.created(new URI("/agents/" + givenName)).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
