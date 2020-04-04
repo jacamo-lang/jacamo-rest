@@ -78,21 +78,6 @@ public class ClientTest {
     }
 
     @Test
-    public void testPutMessageInMailBox() {
-        Client client = ClientBuilder.newClient();
-
-        Message m = new Message("33", "signal", "jomi", "bob", "oi");
-        Response r = client.target(uri.toString()).path("agents/bob/mb")
-                .request(MediaType.APPLICATION_XML)
-                .accept(MediaType.TEXT_PLAIN)
-                .post(Entity.xml(m));
-
-        System.out.println("Message sent result: " + r);
-
-        assertEquals(200, r.getStatus());
-    }
-
-    @Test
     public void testPutMessageInMailBoxJson() {
         Client client = ClientBuilder.newClient();
 
@@ -102,7 +87,7 @@ public class ClientTest {
         //System.out.println("sending "+Entity.json(gson.toJson(m)));
         // {"performative":"tell","sender":"jomi","receiver":"bob","content":"vl(10)","msgId":"34"}
         
-        Response r = client.target(uri.toString()).path("agents/bob/mb")
+        Response r = client.target(uri.toString()).path("agents/bob/inbox")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.TEXT_PLAIN)
                 .post(Entity.json(gson.toJson(m)));
@@ -138,7 +123,7 @@ public class ClientTest {
         
         // 2. run plan
         r = client.target(uri.toString())
-                .path("agents/bob/mb")
+                .path("agents/bob/inbox")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.TEXT_PLAIN)
                 .post(Entity.json(new Gson().toJson(

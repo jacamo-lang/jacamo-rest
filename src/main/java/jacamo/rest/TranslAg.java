@@ -121,26 +121,26 @@ public class TranslAg {
      * @throws TokenMgrError
      * @throws Exception
      */
-	public Map<String, String> executeCommand(String cmd, String agName) throws TokenMgrError, Exception {
-		Agent ag = getAgent(agName);
-		if (ag == null) {
-			throw new Exception("Receiver '" + agName + "' not found");
-		}
-		createAgLog(agName, ag);
+    public Map<String, String> executeCommand(String cmd, String agName) throws TokenMgrError, Exception {
+        Agent ag = getAgent(agName);
+        if (ag == null) {
+            throw new Exception("Receiver '" + agName + "' not found");
+        }
+        createAgLog(agName, ag);
 
-		cmd = cmd.trim();
-		if (cmd.endsWith("."))
-			cmd = cmd.substring(0, cmd.length() - 1);
+        cmd = cmd.trim();
+        if (cmd.endsWith("."))
+            cmd = cmd.substring(0, cmd.length() - 1);
 
-		Unifier u = execCmd(ag, ASSyntax.parsePlanBody(cmd));
-		addAgLog(agName, "Command " + cmd + ": " + u);
+        Unifier u = execCmd(ag, ASSyntax.parsePlanBody(cmd));
+        addAgLog(agName, "Command " + cmd + ": " + u);
 
-		Map<String, String> um = new HashMap<>();
-		for (VarTerm v : u) {
-			um.put(v.toString(), u.get(v).toString());
-		}
-		return um;
-	}
+        Map<String, String> um = new HashMap<>();
+        for (VarTerm v : u) {
+            um.put(v.toString(), u.get(v).toString());
+        }
+        return um;
+    }
     
     /**
      * Creates a log area for an agent
@@ -184,7 +184,7 @@ public class TranslAg {
      * @param agName
      * @return
      */
-    public boolean killAgent(String agName) {
+    public boolean deleteAgent(String agName) {
         return BaseCentralisedMAS.getRunner().getRuntimeServices().killAgent(agName, "web", 0);
     }
     
@@ -219,13 +219,13 @@ public class TranslAg {
      * @param plans
      * @throws Exception
      */
-	public void addAgentPlan(String agName, String plans) throws Exception {
-		Agent ag = getAgent(agName);
-		if (ag == null) {
-		    throw new Exception("Receiver '" + agName + "' not found");
-		}
-		ag.parseAS(new StringReader(plans), "RestAPI");
-	}
+    public void addAgentPlan(String agName, String plans) throws Exception {
+        Agent ag = getAgent(agName);
+        if (ag == null) {
+            throw new Exception("Receiver '" + agName + "' not found");
+        }
+        ag.parseAS(new StringReader(plans), "RestAPI");
+    }
     
     /**
      * Get agent information (namespaces, roles, missions and workspaces)
@@ -414,14 +414,14 @@ public class TranslAg {
      * @param agName
      * @throws Exception
      */
-	public String getAgentLog(String agName) throws Exception {
-		StringBuilder o = agLog.get(agName);
-		if (o != null) {
-			return o.toString();
-		} else {
-			return "";
-		}
-	}
+    public String getAgentLog(String agName) throws Exception {
+        StringBuilder o = agLog.get(agName);
+        if (o != null) {
+            return o.toString();
+        } else {
+            return "";
+        }
+    }
     
     /**
      * Return agent object by agent's name
@@ -461,11 +461,12 @@ public class TranslAg {
      * @param agName
      * @throws Exception
      */
-	public void addMessageToAgentMailbox(Message m, String agName) throws Exception {
-		CentralisedAgArch a = BaseCentralisedMAS.getRunner().getAg(agName);
-		if (a != null) {
-		    a.receiveMsg(m.getAsJasonMsg());
-		    throw new Exception("Internal Server Error! Receiver '" + agName + "' not found");
-		}
-	}
+    public void addMessageToAgentMailbox(Message m, String agName) throws Exception {
+        CentralisedAgArch a = BaseCentralisedMAS.getRunner().getAg(agName);
+        if (a != null) {
+            a.receiveMsg(m.getAsJasonMsg());
+        } else {
+            throw new Exception("Internal Server Error! Receiver '" + agName + "' not found");
+        }
+    }
 }
