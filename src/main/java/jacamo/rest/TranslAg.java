@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +21,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -149,6 +153,59 @@ public class TranslAg {
         o.append("[" + dt + "] " + msg);
     }
     
+    /**
+     * kill an agent
+     * @param agName
+     * @return
+     */
+	public boolean killAgent(String agName) {
+		return BaseCentralisedMAS.getRunner().getRuntimeServices().killAgent(agName, "web", 0);
+	}
+    
+	/**
+	 * Return status of the agent
+	 * @param agName
+	 * @return
+	 */
+	public Map<String, Object> getAgentStatus(String agName) {
+		return getAgent(agName).getTS().getUserAgArch().getStatus();
+	}
+	
+	/**
+	 * get Agent Belief Base
+	 * 
+	 * @param agName
+	 * @return
+	 */
+	public List<String> getAgentsBB(String agName) {
+		Agent ag = getAgent(agName);
+		List<String> bbs = new ArrayList<>();
+		for (Literal l : ag.getBB()) {
+		    bbs.add(l.toString());
+		}
+		return bbs;
+	}
+	
+	/**
+	 * Add a plan to the agent's plan library
+	 * 
+	 * @param agName
+	 * @param plans
+	 * @param uploadedInputStream
+	 * @param fileDetail
+	 * @throws ParseException
+	 * @throws JasonException
+	 */
+	public void addAgentPlan(String agName, String plans, InputStream uploadedInputStream,
+			FormDataContentDisposition fileDetail) throws ParseException, JasonException {
+		Agent ag = getAgent(agName);
+		if (ag != null) {
+		    ag.parseAS(new StringReader(plans), "RestAPI");
+
+		    ag.load(uploadedInputStream, "restAPI://" + fileDetail.getFileName());
+		}
+	}
+	
     /**
      * Get agent information (namespaces, roles, missions and workspaces)
      * 

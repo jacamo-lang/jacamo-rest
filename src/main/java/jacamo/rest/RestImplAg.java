@@ -31,6 +31,7 @@ import org.w3c.dom.Document;
 
 import com.google.gson.Gson;
 
+import jason.JasonException;
 import jason.ReceiverNotFoundException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
@@ -109,9 +110,7 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response killAgent(@PathParam("agentname") String agName) throws ReceiverNotFoundException {
         try {
-            boolean r = BaseCentralisedMAS.getRunner().getRuntimeServices().killAgent(agName, "web", 0);
-
-            return Response.ok("Result of kill: " + r).build();
+            return Response.ok("Result of kill: " + tAg.killAgent(agName)).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -132,8 +131,7 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgentStatusJSON(@PathParam("agentname") String agName) {
         try {
-            Map<String, Object> props = tAg.getAgent(agName).getTS().getUserAgArch().getStatus();
-            return Response.ok(gson.toJson(props)).build();
+            return Response.ok(gson.toJson(tAg.getAgentStatus(agName))).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,30 +162,6 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Return XML of agent's mind content including belief base, intentions and
-     * plans. See Jason's agInspection.xsl file for processing this data.
-     * 
-     * @param agName name of the agent
-     * @return A XML Document
-     * @deprecated Agent's mind in JSON format is provided in /{agentname}
-     */
-    @Path("/{agentname}/mind")
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public Document getAgentMindXml(@PathParam("agentname") String agName) {
-        try {
-            Agent ag = tAg.getAgent(agName);
-            if (ag != null)
-                return ag.getAgState();
-            else
-                return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
      * Return agent's Belief base in JSON format.
      * 
      * @param agName
@@ -199,52 +173,13 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgentBBJSON(@PathParam("agentname") String agName) {
         try {
-            Agent ag = tAg.getAgent(agName);
-            List<String> bbs = new ArrayList<>();
-            for (Literal l : ag.getBB()) {
-                bbs.add(l.toString());
-            }
+            List<String> bbs = tAg.getAgentsBB(agName);
 
             return Response.ok(gson.toJson(bbs)).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return Response.status(500).build();
-    }
-
-    //TODO: This method will turn deprecated after GET/{agent} returning plans
-    /**
-     * Return agent's plans in TEXT PLAIN format
-     * 
-     * @param agName
-     * @param label
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     */
-    @Path("/{agentname}/plans")
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response getAgentPlansTxt(@PathParam("agentname") String agName,
-            @DefaultValue("all") @QueryParam("label") String label) {
-        StringWriter so = new StringWriter();
-        try {
-            Agent ag = tAg.getAgent(agName);
-            if (ag != null) {
-                PlanLibrary pl = ag.getPL();
-                if (label.equals("all"))
-                    so.append(pl.getAsTxt(false));
-                else
-                    so.append(pl.get(label).toASString());
-            }
-
-            return Response.ok(so.toString()).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return Response
-                .status(500, "Internal Server Error! Agent '" + agName + "' does not exist or cannot be observed.")
-                .build();
     }
 
     /**
@@ -266,17 +201,7 @@ public class RestImplAg extends AbstractBinder {
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetail) {
         try {
-            Agent ag = tAg.getAgent(agName);
-            if (ag != null) {
-                ag.parseAS(new StringReader(plans), "RestAPI");
-
-                System.out.println("agName: " + agName);
-                System.out.println("plans: " + plans);
-                System.out.println("restAPI://" + fileDetail.getFileName());
-                System.out.println("uis: " + uploadedInputStream);
-
-                ag.load(uploadedInputStream, "restAPI://" + fileDetail.getFileName());
-            }
+            tAg.addAgentPlan(agName, plans, uploadedInputStream, fileDetail);
 
             return Response.ok("ok, code uploaded for agent '" + agName + "'!").build();
         } catch (Exception e) {
