@@ -178,34 +178,6 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Upload new plans to an agent. Plan maintained only in memory.
-     * 
-     * @param agName              name of the agent
-     * @param plans               plans to be uploaded
-     * @param uploadedInputStream <need revision>
-     * @param fileDetail          <need revision>
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     */
-    @Path("/{agentname}/plans")
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response loadPlans(@PathParam("agentname") String agName,
-            @DefaultValue("") @FormDataParam("plans") String plans,
-            @FormDataParam("file") InputStream uploadedInputStream,
-            @FormDataParam("file") FormDataContentDisposition fileDetail) {
-        try {
-            tAg.addAgentPlan(agName, plans, uploadedInputStream, fileDetail);
-
-            return Response.ok("ok, code uploaded for agent '" + agName + "'!").build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(500, e.getMessage()).build();
-        }
-    }
-
-    /**
      * Upload new plans into an agent.
      * 
      * @param agName              name of the agent
@@ -219,21 +191,13 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response loadPlans(@PathParam("agentname") String agName, String plans) {
         try {
-            addAgentPlan(agName, plans);
+            tAg.addAgentPlan(agName, plans);
             return Response.ok("ok, code uploaded for agent '" + agName + "'!").build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
         }
     }
-
-	public void addAgentPlan(String agName, String plans) throws Exception {
-		Agent ag = tAg.getAgent(agName);
-		if (ag == null) {
-		    throw new Exception("Receiver '" + agName + "' not found");
-		}
-		ag.parseAS(new StringReader(plans), "RestAPI");
-	}
 
     /**
      * Send a command to an agent. Produces a TEXT PLAIN output containing a status

@@ -24,9 +24,6 @@ import java.util.logging.StreamHandler;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-
 import cartago.ArtifactId;
 import cartago.ArtifactInfo;
 import cartago.CartagoException;
@@ -46,15 +43,12 @@ import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
-import jason.asSyntax.PlanLibrary;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
-import jason.asSyntax.Trigger.TEType;
 import jason.asSyntax.parser.ParseException;
 import jason.asSyntax.parser.TokenMgrError;
 import jason.infra.centralised.BaseCentralisedMAS;
 import jason.infra.centralised.CentralisedAgArch;
-import jason.stdlib.print;
 import ora4mas.nopl.GroupBoard;
 import ora4mas.nopl.SchemeBoard;
 import ora4mas.nopl.oe.Group;
@@ -223,20 +217,15 @@ public class TranslAg {
      * 
      * @param agName
      * @param plans
-     * @param uploadedInputStream
-     * @param fileDetail
-     * @throws ParseException
-     * @throws JasonException
+     * @throws Exception
      */
-    public void addAgentPlan(String agName, String plans, InputStream uploadedInputStream,
-            FormDataContentDisposition fileDetail) throws ParseException, JasonException {
-        Agent ag = getAgent(agName);
-        if (ag != null) {
-            ag.parseAS(new StringReader(plans), "RestAPI");
-
-            ag.load(uploadedInputStream, "restAPI://" + fileDetail.getFileName());
-        }
-    }
+	public void addAgentPlan(String agName, String plans) throws Exception {
+		Agent ag = getAgent(agName);
+		if (ag == null) {
+		    throw new Exception("Receiver '" + agName + "' not found");
+		}
+		ag.parseAS(new StringReader(plans), "RestAPI");
+	}
     
     /**
      * Get agent information (namespaces, roles, missions and workspaces)
@@ -434,15 +423,6 @@ public class TranslAg {
 		}
 	}
     
-	/**
-	 * Clear agent's log
-	 * 
-	 * @param agName
-	 */
-	public void clearAgentLog(String agName) {
-		agLog.put(agName, new StringBuilder());
-	}
-
     /**
      * Return agent object by agent's name
      * 
