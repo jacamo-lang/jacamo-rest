@@ -274,8 +274,8 @@ public class RestImplAg extends AbstractBinder {
             return Response.ok(tAg.getAgentLog(agName)).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-        return Response.status(500).build();
     }
 
     /**
@@ -296,8 +296,8 @@ public class RestImplAg extends AbstractBinder {
             return Response.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-        return Response.status(500).build();
     }
 
     @Path("/{agentname}/mb")
@@ -306,17 +306,11 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response addAgMsgJson(Message m, @PathParam("agentname") String agName) {
         try {
-            CentralisedAgArch a = BaseCentralisedMAS.getRunner().getAg(agName);
-            if (a != null) {
-                a.receiveMsg(m.getAsJasonMsg());
-                return Response.ok().build();
-            } else {
-                return Response.status(500, "Internal Server Error! Receiver '" + agName + "' not found").build();
-            }
+            tAg.addMessageToAgentMailbox(m, agName); 
+            return Response.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 }

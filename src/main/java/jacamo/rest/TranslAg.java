@@ -474,4 +474,18 @@ public class TranslAg {
         return null;
     }
     
+    /**
+     * add a message to the agent's mailbox
+     * 
+     * @param m
+     * @param agName
+     * @throws Exception
+     */
+	public void addMessageToAgentMailbox(Message m, String agName) throws Exception {
+		CentralisedAgArch a = BaseCentralisedMAS.getRunner().getAg(agName);
+		if (a != null) {
+		    a.receiveMsg(m.getAsJasonMsg());
+		    throw new Exception("Internal Server Error! Receiver '" + agName + "' not found");
+		}
+	}
 }
