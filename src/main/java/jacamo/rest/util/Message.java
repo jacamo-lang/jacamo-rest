@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.util;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

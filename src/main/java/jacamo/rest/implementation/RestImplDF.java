@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.implementation;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +20,7 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
 
+import jacamo.rest.JCMRest;
 import jason.infra.centralised.BaseCentralisedMAS;
 
 @Singleton

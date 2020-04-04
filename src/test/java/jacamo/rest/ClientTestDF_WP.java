@@ -21,6 +21,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import jacamo.infra.JaCaMoLauncher;
+import jacamo.rest.JCMRest;
 import jason.JasonException;
 
 public class ClientTestDF_WP {
@@ -67,7 +68,7 @@ public class ClientTestDF_WP {
     }    
 
 
-    @Test
+    @Test(timeout=2000)
     @SuppressWarnings("rawtypes")
     public void testRegisterDF() {
         Client client = ClientBuilder.newClient();
@@ -109,7 +110,7 @@ public class ClientTestDF_WP {
         assertTrue(vl.contains("help(drunks)"));
     }
 
-    @Test
+    @Test(timeout=2000)
     @SuppressWarnings("rawtypes")
     public void testRegisterWP() {
         Client client = ClientBuilder.newClient();

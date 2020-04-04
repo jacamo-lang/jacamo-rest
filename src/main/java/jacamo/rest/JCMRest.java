@@ -25,6 +25,8 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 
 import jacamo.platform.DefaultPlatformImpl;
+import jacamo.rest.config.RestAgArch;
+import jacamo.rest.config.RestAppConfig;
 import jason.infra.centralised.BaseCentralisedMAS;
 
 
@@ -236,7 +238,7 @@ public class JCMRest extends DefaultPlatformImpl {
         }
     }
 
-    static CuratorFramework getZKClient() {
+    public static CuratorFramework getZKClient() {
         if (zkClient == null) {
             zkClient = CuratorFrameworkFactory.newClient(getZKHost(), new ExponentialBackoffRetry(1000, 3));
             zkClient.start();

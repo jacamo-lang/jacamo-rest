@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jacamo.infra.JaCaMoLauncher;
+import jacamo.rest.JCMRest;
 import jason.JasonException;
 
 public class RunCmdTest {
@@ -69,7 +70,7 @@ public class RunCmdTest {
         
         Client client = ClientBuilder.newClient();
         Response response = client.target(uri.toString())
-                .path("agents/bob/cmd")
+                .path("agents/bob/command")
                 .request()
                 .post(entity);
 

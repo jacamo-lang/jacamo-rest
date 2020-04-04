@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.config;
 
 import java.util.HashMap;
 
@@ -8,6 +8,13 @@ import org.glassfish.jersey.message.DeflateEncoder;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.EncodingFilter;
+
+import jacamo.rest.implementation.RestImpl;
+import jacamo.rest.implementation.RestImplAg;
+import jacamo.rest.implementation.RestImplDF;
+import jacamo.rest.implementation.RestImplEnv;
+import jacamo.rest.implementation.RestImplOrg;
+import jacamo.rest.implementation.RestImplWP;
 
 @ApplicationPath("/")
 public class RestAppConfig extends ResourceConfig {

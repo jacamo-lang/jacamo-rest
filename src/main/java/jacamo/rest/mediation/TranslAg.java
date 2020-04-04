@@ -1,11 +1,10 @@
-package jacamo.rest;
+package jacamo.rest.mediation;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,14 +21,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-
 import cartago.ArtifactId;
 import cartago.ArtifactInfo;
 import cartago.CartagoException;
 import cartago.CartagoService;
 import cartago.WorkspaceId;
 import jaca.CAgentArch;
+import jacamo.rest.util.Message;
 import jason.JasonException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;

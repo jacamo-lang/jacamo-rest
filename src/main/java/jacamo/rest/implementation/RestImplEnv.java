@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.implementation;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -14,6 +14,8 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
+
+import jacamo.rest.mediation.TranslEnv;
 
 @Singleton
 @Path("/workspaces")

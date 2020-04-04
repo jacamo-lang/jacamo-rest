@@ -19,6 +19,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import jacamo.infra.JaCaMoLauncher;
+import jacamo.rest.JCMRest;
 import jason.JasonException;
 
 public class ClientTestEnv {
@@ -65,7 +66,7 @@ public class ClientTestEnv {
     }    
 
 
-    @Test
+    @Test(timeout=2000)
     public void testObsPropAndOperations1() {
 
         assertEquals( 10, getCount("testwks","a"));
@@ -105,7 +106,7 @@ public class ClientTestEnv {
         return ((Double)vl[0]).intValue();
     }
     
-    @Test
+    @Test(timeout=2000)
     @SuppressWarnings("rawtypes")
     public void testCreateArt1() {
         Client client = ClientBuilder.newClient();

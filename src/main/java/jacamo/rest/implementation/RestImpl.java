@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.implementation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +17,9 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import com.google.gson.Gson;
 
 import cartago.CartagoException;
+import jacamo.rest.mediation.TranslAg;
+import jacamo.rest.mediation.TranslEnv;
+import jacamo.rest.mediation.TranslOrg;
 
 @Singleton
 @Path("/")

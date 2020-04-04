@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.implementation;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -15,6 +15,7 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
 
+import jacamo.rest.mediation.TranslOrg;
 import moise.os.ss.Role;
 import ora4mas.nopl.GroupBoard;
 import ora4mas.nopl.OrgArt;

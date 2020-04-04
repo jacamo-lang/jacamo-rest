@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.config;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,6 +18,7 @@ import org.apache.zookeeper.CreateMode;
 
 import com.google.gson.Gson;
 
+import jacamo.rest.JCMRest;
 import jason.ReceiverNotFoundException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
@@ -130,7 +131,7 @@ public class RestAgArch extends AgArch {
                                   .accept(MediaType.TEXT_PLAIN)
                                   .post(
                                         //Entity.xml( new jacamo.rest.Message(m)), String.class);
-                                        Entity.json( new Gson().toJson(new jacamo.rest.Message(m))));
+                                        Entity.json( new Gson().toJson(new jacamo.rest.util.Message(m))));
                     }
                 } else {
                     throw e;

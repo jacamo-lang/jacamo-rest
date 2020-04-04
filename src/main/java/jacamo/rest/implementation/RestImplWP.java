@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.implementation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +16,8 @@ import org.apache.zookeeper.CreateMode;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
+
+import jacamo.rest.JCMRest;
 
 /** 
  * Rest interface for White Pages

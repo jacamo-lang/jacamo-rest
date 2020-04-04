@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.implementation;
 
 import java.net.URI;
 
@@ -19,6 +19,9 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
+
+import jacamo.rest.util.Message;
+import jacamo.rest.mediation.TranslAg;
 
 /**
  * Agent's REST compile class

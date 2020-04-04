@@ -19,6 +19,8 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import jacamo.infra.JaCaMoLauncher;
+import jacamo.rest.JCMRest;
+import jacamo.rest.util.Message;
 import jason.JasonException;
 
 public class ClientTest {
@@ -63,7 +65,7 @@ public class ClientTest {
         JaCaMoLauncher.getRunner().finish();
     }    
 
-    @Test
+    @Test(timeout=2000)
     public void testPutMessageBeliefBase() {
         Client client = ClientBuilder.newClient();
         Response response = client.target(uri.toString()).path("agents/bob/mind/bb")
@@ -77,7 +79,7 @@ public class ClientTest {
 
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testPutMessageInMailBoxJson() {
         Client client = ClientBuilder.newClient();
 
@@ -106,7 +108,7 @@ public class ClientTest {
         assertTrue(bb.toString().contains("vl(10)[source(jomi)]"));    
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testPutPlan() {
         // 1. add plan
         Client client = ClientBuilder.newClient();
