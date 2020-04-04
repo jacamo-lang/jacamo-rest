@@ -48,8 +48,10 @@ import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
 import jason.asSyntax.PlanLibrary;
 import jason.asSyntax.Trigger;
+import jason.asSyntax.VarTerm;
 import jason.asSyntax.Trigger.TEType;
 import jason.asSyntax.parser.ParseException;
+import jason.asSyntax.parser.TokenMgrError;
 import jason.infra.centralised.BaseCentralisedMAS;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.stdlib.print;
@@ -115,6 +117,36 @@ public class TranslAg {
         createAgLog(givenName, ag);
         return givenName;
     }
+    
+    /**
+     * ask to agent to run a command
+     *  
+     * @param cmd
+     * @param agName
+     * @return
+     * @throws TokenMgrError
+     * @throws Exception
+     */
+	public Map<String, String> executeCommand(String cmd, String agName) throws TokenMgrError, Exception {
+		Agent ag = getAgent(agName);
+		if (ag == null) {
+			throw new Exception("Receiver '" + agName + "' not found");
+		}
+		createAgLog(agName, ag);
+
+		cmd = cmd.trim();
+		if (cmd.endsWith("."))
+			cmd = cmd.substring(0, cmd.length() - 1);
+
+		Unifier u = execCmd(ag, ASSyntax.parsePlanBody(cmd));
+		addAgLog(agName, "Command " + cmd + ": " + u);
+
+		Map<String, String> um = new HashMap<>();
+		for (VarTerm v : u) {
+			um.put(v.toString(), u.get(v).toString());
+		}
+		return um;
+	}
     
     /**
      * Creates a log area for an agent
@@ -387,6 +419,30 @@ public class TranslAg {
         return null;
     }
     
+    /**
+     * get agent log
+     * 
+     * @param agName
+     * @throws Exception
+     */
+	public String getAgentLog(String agName) throws Exception {
+		StringBuilder o = agLog.get(agName);
+		if (o != null) {
+			return o.toString();
+		} else {
+			return "";
+		}
+	}
+    
+	/**
+	 * Clear agent's log
+	 * 
+	 * @param agName
+	 */
+	public void clearAgentLog(String agName) {
+		agLog.put(agName, new StringBuilder());
+	}
+
     /**
      * Return agent object by agent's name
      * 

@@ -42,6 +42,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.PlanLibrary;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
+import jason.asSyntax.parser.TokenMgrError;
 import jason.infra.centralised.BaseCentralisedMAS;
 import jason.infra.centralised.CentralisedAgArch;
 
@@ -72,7 +73,7 @@ public class RestImplAg extends AbstractBinder {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgentsJSON() {
-        return Response.ok().entity(gson.toJson(tAg.getAgents())).header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok().entity(gson.toJson(tAg.getAgents())).header("Access-Control-Allow-Origin", "*").build();
     }
 
     /**
@@ -92,9 +93,8 @@ public class RestImplAg extends AbstractBinder {
             return Response.created(new URI(uriInfo.getBaseUri() + "agents/" + tAg.createAgent(agName))).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     /**
@@ -113,9 +113,8 @@ public class RestImplAg extends AbstractBinder {
             return Response.ok("Result of kill: " + tAg.killAgent(agName)).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     /**
@@ -134,9 +133,8 @@ public class RestImplAg extends AbstractBinder {
             return Response.ok(gson.toJson(tAg.getAgentStatus(agName))).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     /**
@@ -156,9 +154,8 @@ public class RestImplAg extends AbstractBinder {
             return Response.ok(gson.toJson(tAg.getAgentDetails(agName))).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 
     /**
@@ -176,8 +173,8 @@ public class RestImplAg extends AbstractBinder {
             return Response.ok(gson.toJson(tAg.getAgentsBB(agName))).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-        return Response.status(500).build();
     }
 
     /**
@@ -222,17 +219,21 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response loadPlans(@PathParam("agentname") String agName, String plans) {
         try {
-            Agent ag = tAg.getAgent(agName);
-            if (ag == null) {
-                return Response.status(500, "Receiver '" + agName + "' not found").build();
-            }
-            ag.parseAS(new StringReader(plans), "RestAPI");
+            addAgentPlan(agName, plans);
             return Response.ok("ok, code uploaded for agent '" + agName + "'!").build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
         }
     }
+
+	public void addAgentPlan(String agName, String plans) throws Exception {
+		Agent ag = tAg.getAgent(agName);
+		if (ag == null) {
+		    throw new Exception("Receiver '" + agName + "' not found");
+		}
+		ag.parseAS(new StringReader(plans), "RestAPI");
+	}
 
     /**
      * Send a command to an agent. Produces a TEXT PLAIN output containing a status
@@ -248,26 +249,10 @@ public class RestImplAg extends AbstractBinder {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response runCmdPost(@FormParam("c") String cmd, @PathParam("agentname") String agName) {
-        Agent ag = tAg.getAgent(agName);
-        if (ag == null) {
-            return Response.status(500, "Receiver '" + agName + "' not found").build();
-        }
         try {
-            tAg.createAgLog(agName, ag);
-            
-            cmd = cmd.trim();
-            if (cmd.endsWith(".")) cmd = cmd.substring(0, cmd.length() - 1);
-
-            Unifier u = tAg.execCmd(ag, ASSyntax.parsePlanBody(cmd));
-            tAg.addAgLog(agName, "Command " + cmd + ": " + u);
-
-            Map<String,String> um = new HashMap<String, String>();
-            for (VarTerm v: u) {
-                um.put(v.toString(), u.get(v).toString());
-            }
-            return Response.ok(gson.toJson(um)).build();
+            return Response.ok(gson.toJson(tAg.executeCommand(cmd, agName))).build();
         } catch (ParseException e) {
-            return Response.status(500, "Error parsing '" + cmd + "."+e.getMessage()).build();
+			return Response.status(500, "Error parsing '" + cmd + "." + e.getMessage()).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -286,11 +271,7 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response getLogOutput(@PathParam("agentname") String agName) {
         try {
-            StringBuilder o = tAg.agLog.get(agName);
-            if (o != null) {
-                return Response.ok(o.toString()).build();
-            }
-            return Response.ok().build();
+            return Response.ok(tAg.getAgentLog(agName)).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -310,7 +291,7 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response delLogOutput(@PathParam("agentname") String agName) {
         try {
-            tAg.agLog.put(agName, new StringBuilder());
+            tAg.clearAgentLog(agName);
 
             return Response.ok().build();
         } catch (Exception e) {
