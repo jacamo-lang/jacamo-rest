@@ -21,8 +21,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -85,11 +87,9 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}")
     @POST
     @Produces(MediaType.TEXT_PLAIN)
-    public Response createNewAgent(@PathParam("agentname") String agName) {
+    public Response createNewAgent(@PathParam("agentname") String agName, @Context UriInfo uriInfo) {
         try {
-            String givenName = tAg.createAgent(agName);
-
-            return Response.created(new URI("/agents/" + givenName)).build();
+            return Response.created(new URI(uriInfo.getBaseUri() + "agents/" + tAg.createAgent(agName))).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -173,9 +173,7 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgentBBJSON(@PathParam("agentname") String agName) {
         try {
-            List<String> bbs = tAg.getAgentsBB(agName);
-
-            return Response.ok(gson.toJson(bbs)).build();
+            return Response.ok(gson.toJson(tAg.getAgentsBB(agName))).build();
         } catch (Exception e) {
             e.printStackTrace();
         }
