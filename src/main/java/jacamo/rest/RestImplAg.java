@@ -300,34 +300,6 @@ public class RestImplAg extends AbstractBinder {
         return Response.status(500).build();
     }
 
-    /**
-     * Send a message to an agent. Consumes an XML containing the message.
-     * 
-     * @param m      Message
-     * @param agName Agent name
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     */
-    @Path("/{agentname}/mb")
-    @POST
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response addAgMsg(Message m, @PathParam("agentname") String agName) {
-        try {
-            CentralisedAgArch a = BaseCentralisedMAS.getRunner().getAg(agName);
-            if (a != null) {
-                a.receiveMsg(m.getAsJasonMsg());
-                return Response.ok().build();
-            } else {
-                return Response.status(500, "Internal Server Error! Receiver '" + agName + "' not found").build();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return Response.status(500).build();
-    }
-
     @Path("/{agentname}/mb")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
