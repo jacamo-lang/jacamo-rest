@@ -158,54 +158,54 @@ public class TranslAg {
      * @param agName
      * @return
      */
-	public boolean killAgent(String agName) {
-		return BaseCentralisedMAS.getRunner().getRuntimeServices().killAgent(agName, "web", 0);
-	}
+    public boolean killAgent(String agName) {
+        return BaseCentralisedMAS.getRunner().getRuntimeServices().killAgent(agName, "web", 0);
+    }
     
-	/**
-	 * Return status of the agent
-	 * @param agName
-	 * @return
-	 */
-	public Map<String, Object> getAgentStatus(String agName) {
-		return getAgent(agName).getTS().getUserAgArch().getStatus();
-	}
-	
-	/**
-	 * get Agent Belief Base
-	 * 
-	 * @param agName
-	 * @return
-	 */
-	public List<String> getAgentsBB(String agName) {
-		Agent ag = getAgent(agName);
-		List<String> bbs = new ArrayList<>();
-		for (Literal l : ag.getBB()) {
-		    bbs.add(l.toString());
-		}
-		return bbs;
-	}
-	
-	/**
-	 * Add a plan to the agent's plan library
-	 * 
-	 * @param agName
-	 * @param plans
-	 * @param uploadedInputStream
-	 * @param fileDetail
-	 * @throws ParseException
-	 * @throws JasonException
-	 */
-	public void addAgentPlan(String agName, String plans, InputStream uploadedInputStream,
-			FormDataContentDisposition fileDetail) throws ParseException, JasonException {
-		Agent ag = getAgent(agName);
-		if (ag != null) {
-		    ag.parseAS(new StringReader(plans), "RestAPI");
+    /**
+     * Return status of the agent
+     * @param agName
+     * @return
+     */
+    public Map<String, Object> getAgentStatus(String agName) {
+        return getAgent(agName).getTS().getUserAgArch().getStatus();
+    }
+    
+    /**
+     * get Agent Belief Base
+     * 
+     * @param agName
+     * @return
+     */
+    public List<String> getAgentsBB(String agName) {
+        Agent ag = getAgent(agName);
+        List<String> bbs = new ArrayList<>();
+        for (Literal l : ag.getBB()) {
+            bbs.add(l.toString());
+        }
+        return bbs;
+    }
+    
+    /**
+     * Add a plan to the agent's plan library
+     * 
+     * @param agName
+     * @param plans
+     * @param uploadedInputStream
+     * @param fileDetail
+     * @throws ParseException
+     * @throws JasonException
+     */
+    public void addAgentPlan(String agName, String plans, InputStream uploadedInputStream,
+            FormDataContentDisposition fileDetail) throws ParseException, JasonException {
+        Agent ag = getAgent(agName);
+        if (ag != null) {
+            ag.parseAS(new StringReader(plans), "RestAPI");
 
-		    ag.load(uploadedInputStream, "restAPI://" + fileDetail.getFileName());
-		}
-	}
-	
+            ag.load(uploadedInputStream, "restAPI://" + fileDetail.getFileName());
+        }
+    }
+    
     /**
      * Get agent information (namespaces, roles, missions and workspaces)
      * 
@@ -418,125 +418,4 @@ public class TranslAg {
         return null;
     }
     
-    public void getPlansSuggestions(String agName, Map<String, String> commands) {
-        try {
-            // get agent's plans
-            Agent ag = getAgent(agName);
-            if (ag != null) {
-                PlanLibrary pl = ag.getPL();
-                for (Plan plan : pl.getPlans()) {
-                    
-                    // do not add plans that comes from jar files (usually system's plans)
-                    if (plan.getSource().startsWith("jar:file") || plan.getSource().equals("kqmlPlans.asl"))
-                        continue;
-
-                    // add namespace when it is not default
-                    String ns = "";
-                    if (!plan.getNS().equals(Literal.DefaultNS)) {
-                        ns = plan.getNS().toString() + "::";
-                    }
-
-                    String terms = "";
-                    if (plan.getTrigger().getLiteral().getArity() > 0) {
-                        for (int i = 0; i < plan.getTrigger().getLiteral().getArity(); i++) {
-                            if (i == 0)
-                                terms = "(";
-                            terms += plan.getTrigger().getLiteral().getTerm(i).toString();
-                            if (i < plan.getTrigger().getLiteral().getArity() - 1)
-                                terms += ", ";
-                            else
-                                terms += ")";
-                        }
-                    }
-
-                    // when it is a goal or test goal, do not add operator
-                    if ((plan.getTrigger().getType() == TEType.achieve)
-                            || (plan.getTrigger().getType() == TEType.test)) {
-
-
-                        commands.put(ns + plan.getTrigger().getType().toString()
-                        + plan.getTrigger().getLiteral().getFunctor() + terms, "");
-
-                    }
-                    // when it is belief, do not add type which is anyway empty
-                    else if (plan.getTrigger().getType() == TEType.belief) {
-                        commands.put(ns + plan.getTrigger().getOperator().toString()
-                                + plan.getTrigger().getLiteral().getFunctor() + terms, "");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void getEASuggestions(String agName, Map<String, String> commands) throws CartagoException {
-        try {
-            Agent ag = getAgent(agName);
-            // get external actions (from focused artifacts)
-            CAgentArch cartagoAgArch = getCartagoArch(ag);
-            for (WorkspaceId wid : cartagoAgArch.getSession().getJoinedWorkspaces()) {
-                String wksName = wid.getName();
-                for (ArtifactId aid : CartagoService.getController(wksName).getCurrentArtifacts()) {
-
-                    // operations
-                    ArtifactInfo info = CartagoService.getController(wksName).getArtifactInfo(aid.getName());
-
-                    info.getObservers().forEach(y -> {
-                        if (y.getAgentId().getAgentName().equals(agName)) {
-                            info.getOperations().forEach(z -> {
-                                String params = "";
-                                for (int i = 0; i < z.getOp().getNumParameters(); i++) {
-                                    if (i == 0) params = "(";
-                                    params += "arg" + i;
-                                    if (i == z.getOp().getNumParameters() - 1)
-                                        params += ")";
-                                    else
-                                        params += ", ";
-                                }
-
-                                commands.put(z.getOp().getName() + params, "");
-                            });
-                        }
-                    });
-
-                }
-            }
-        } catch (CartagoException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    /**
-     * Get list of internal actions for an agent
-     * 
-     * @return List of internal actions
-     */
-    public void getIASuggestions(Map<String,String> cmds) {
-        try {
-            ClassPath classPath = ClassPath.from(print.class.getClassLoader());
-            Set<ClassInfo> allClasses = classPath.getTopLevelClassesRecursive("jason.stdlib");
-
-            allClasses.forEach(a -> {
-                try {
-                    Class<?> c = a.load();
-                    if (c.isAnnotationPresent(jason.stdlib.Manual.class)) {
-                        // add full predicate provided by @Manual
-                        jason.stdlib.Manual annotation = (jason.stdlib.Manual) c
-                                .getAnnotation(jason.stdlib.Manual.class);
-                        cmds.put(annotation.literal(), annotation.hint().replaceAll("\"", "`").replaceAll("'", "`"));
-					} else {
-						// add just the functor of the internal action
-						cmds.put("." + a.getSimpleName(), "");
-					}
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

@@ -237,38 +237,6 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Return a TEXT PLAIN of available internal action, external actions and
-     * commands for the given agent Example:
-     * "['.desire','.drop_desire','.drop_all_desires']"
-     * 
-     * @param agName Name of the agent
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     */
-    @Path("/{agentname}/code")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getCodeCompletionSuggestions(@PathParam("agentname") String agName) {
-        Map<String,String> commands = new HashMap<>();
-        try {
-            // get internal actions
-            tAg.getPlansSuggestions(agName, commands);
-            // get internal actions
-            tAg.getIASuggestions(commands);
-            // get external actions
-            tAg.getEASuggestions(agName, commands);
-
-            Gson json = new Gson();
-            Map<String,String> sortedCmds = new TreeMap<>(commands);
-            return Response.ok(json.toJson(sortedCmds)).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return Response.status(500, "Server Internal Error! Could not get code completion suggestions.").build();
-    }
-
-    /**
      * Send a command to an agent. Produces a TEXT PLAIN output containing a status
      * message
      * 
