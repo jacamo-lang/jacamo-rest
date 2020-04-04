@@ -1,50 +1,24 @@
 package jacamo.rest;
 
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.internal.inject.AbstractBinder;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.w3c.dom.Document;
 
 import com.google.gson.Gson;
-
-import jason.JasonException;
-import jason.ReceiverNotFoundException;
-import jason.asSemantics.Agent;
-import jason.asSemantics.Unifier;
-import jason.asSyntax.ASSyntax;
-import jason.asSyntax.Literal;
-import jason.asSyntax.PlanLibrary;
-import jason.asSyntax.VarTerm;
-import jason.asSyntax.parser.ParseException;
-import jason.asSyntax.parser.TokenMgrError;
-import jason.infra.centralised.BaseCentralisedMAS;
-import jason.infra.centralised.CentralisedAgArch;
 
 /**
  * Agent's REST compile class
@@ -103,12 +77,11 @@ public class RestImplAg extends AbstractBinder {
      * @param agName agent's name to be killed
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     * @throws ReceiverNotFoundException
      */
     @Path("/{agentname}")
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
-    public Response killAgent(@PathParam("agentname") String agName) throws ReceiverNotFoundException {
+    public Response killAgent(@PathParam("agentname") String agName) {
         try {
             return Response.ok("Result of kill: " + tAg.killAgent(agName)).build();
         } catch (Exception e) {
@@ -215,8 +188,6 @@ public class RestImplAg extends AbstractBinder {
     public Response runCmdPost(@FormParam("c") String cmd, @PathParam("agentname") String agName) {
         try {
             return Response.ok(gson.toJson(tAg.executeCommand(cmd, agName))).build();
-        } catch (ParseException e) {
-			return Response.status(500, "Error parsing '" + cmd + "." + e.getMessage()).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
