@@ -503,47 +503,47 @@ public class TranslAg {
      * @return
      * @throws Exception
      */
-	public Map<String, Object> getJsonifiedDF() throws Exception {
-		// Using format Map<String, Set> as a common representation of ZK and
-		// BaseCentralisedMAS
-		Map<String, Set<String>> commonDF = getCommonDF();
+    public Map<String, Object> getJsonifiedDF() throws Exception {
+        // Using format Map<String, Set> as a common representation of ZK and
+        // BaseCentralisedMAS
+        Map<String, Set<String>> commonDF = getCommonDF();
 
-		// Json of the DF
-		Map<String,Object> jsonifiedDF = new HashMap<>();
-		for (String s : commonDF.keySet()) {
-		    Map<String, Object> agent = new HashMap<>();
-		    agent.put("agent", s);
-		    Set<String> services = new HashSet<>();
-		    services.addAll(commonDF.get(s));
-		    agent.put("services", services);
-		    jsonifiedDF.put(s,agent);
-		}
-		return jsonifiedDF;
-	}
-	
-	/**
-	 * Add a service to a given agent
-	 * 
-	 * @param agName
-	 * @param values
-	 * @throws Exception
-	 */
-	public void addServiceToAgent(String agName, Map<String, Object> values) throws Exception {
-		String service = values.get("service").toString();
-		if (service == null) {
-		    throw new Exception("A service name have to be informed");
-		}
-		if (JCMRest.getZKHost() == null) {
-		    BaseCentralisedMAS.getRunner().dfRegister(agName, service);
-		} else {            
-		    String type = values.getOrDefault("type", "no-type").toString();
-		    String node = JCMRest.JaCaMoZKDFNodeId+"/"+service+"/"+agName;
-		    if (JCMRest.getZKClient().checkExists().forPath(node) == null) {
-		        JCMRest.getZKClient().create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(node, type.getBytes());
-		    } else {
-		        JCMRest.getZKClient().setData().forPath(node, type.getBytes());
-		    }
-		}
-	}
+        // Json of the DF
+        Map<String,Object> jsonifiedDF = new HashMap<>();
+        for (String s : commonDF.keySet()) {
+            Map<String, Object> agent = new HashMap<>();
+            agent.put("agent", s);
+            Set<String> services = new HashSet<>();
+            services.addAll(commonDF.get(s));
+            agent.put("services", services);
+            jsonifiedDF.put(s,agent);
+        }
+        return jsonifiedDF;
+    }
+    
+    /**
+     * Add a service to a given agent
+     * 
+     * @param agName
+     * @param values
+     * @throws Exception
+     */
+    public void addServiceToAgent(String agName, Map<String, Object> values) throws Exception {
+        String service = values.get("service").toString();
+        if (service == null) {
+            throw new Exception("A service name have to be informed");
+        }
+        if (JCMRest.getZKHost() == null) {
+            BaseCentralisedMAS.getRunner().dfRegister(agName, service);
+        } else {            
+            String type = values.getOrDefault("type", "no-type").toString();
+            String node = JCMRest.JaCaMoZKDFNodeId+"/"+service+"/"+agName;
+            if (JCMRest.getZKClient().checkExists().forPath(node) == null) {
+                JCMRest.getZKClient().create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(node, type.getBytes());
+            } else {
+                JCMRest.getZKClient().setData().forPath(node, type.getBytes());
+            }
+        }
+    }
 
 }

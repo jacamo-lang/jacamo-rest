@@ -237,15 +237,15 @@ public class TranslOrg {
      * @param role
      * @throws MoiseConsistencyException
      */
-	public void createRole(String oeName, String role) throws MoiseConsistencyException {
-		for (GroupBoard gb : GroupBoard.getGroupBoards()) {
-		    if (gb.getOEId().equals(oeName)) {
-		        Role newRole = new Role(role, gb.getSpec().getSS());
-		        newRole.addSuperRole("soc");
-		        gb.getSpec().getSS().addRoleDef(newRole, true);
-		        gb.getSpec().addRole(role);
-		    }
-		}
-	}
+    public void createRole(String oeName, String role) throws MoiseConsistencyException {
+        for (GroupBoard gb : GroupBoard.getGroupBoards()) {
+            if (gb.getOEId().equals(oeName)) {
+                Role newRole = new Role(role, gb.getSpec().getSS());
+                newRole.addSuperRole("soc");
+                gb.getSpec().getSS().addRoleDef(newRole, true);
+                gb.getSpec().addRole(role);
+            }
+        }
+    }
 
 }

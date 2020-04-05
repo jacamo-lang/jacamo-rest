@@ -23,7 +23,7 @@ import jacamo.rest.mediation.TranslAg;
 public class RestImplDF extends AbstractBinder {
 
     TranslAg tAg = new TranslAg();
-	
+    
     @Override
     protected void configure() {
         bind(new RestImplDF()).to(RestImplDF.class);
