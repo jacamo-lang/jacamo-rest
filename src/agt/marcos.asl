@@ -14,19 +14,22 @@ price(banana,X) :- X = math.random * 100 + 20.
       !create_group;
    .
 
-+oi[source(A)] 
++oi[source(A)]
+    <- .print("I received oi from ",A)
+    .
++hello[source(A)]
     <- .print("I received hello from ",A)
     .
 
-+tstWithOneTerm(X)[source(A)] 
++tstWithOneTerm(X)[source(A)]
     <- .print("I received ", X, " from ",A)
     .
 
-+tstWithTwoTerms(X,Y)[source(A)] 
++tstWithTwoTerms(X,Y)[source(A)]
     <- .print("I received ", X, " and ", Y, " from ",A)
     .
 
-+!create_group 
++!create_group
     <- createWorkspace(wkstest);
        joinWorkspace(wkstest,Ofa);
        .print("DEBUG: Creating group...");
@@ -48,7 +51,7 @@ price(banana,X) :- X = math.random * 100 + 20.
    <- !!g4(Vl*2);
       .suspend;
    .
-   
+
 +!g4(T)
    <- .wait(T);
       .resume(longTermSomething(_));
@@ -57,7 +60,7 @@ price(banana,X) :- X = math.random * 100 + 20.
 +!setPrice
     <- -+price(banana,2.60);
     .
-    
+
 +!updatePrice
     : price(banana,P) & P < 10
     <- .print("increase price by 1, from: ",P," to ",P+1);
@@ -65,8 +68,8 @@ price(banana,X) :- X = math.random * 100 + 20.
        .wait(2000);
        -+someCondition;
        !updatePrice;
-    .  
-    
+    .
+
 +!updatePrice
     : someCondition
     <- ?price(banana,P);
@@ -77,26 +80,25 @@ price(banana,X) :- X = math.random * 100 + 20.
             !updatePrice;
        }
     .
-       
+
 -!updatePrice
     <- .print("-! performed");
        .print("testing +? from ?someCondition");
        ?someCondition;
     .
-   
+
  +?someCondition
     <- .print("+? performed");
     .
-    
+
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }
 
 // uncomment the include below to have an agent compliant with its organisation
 { include("$moiseJar/asl/org-obedient.asl") }
-            
-            
+
+
 +!testNewPlan(X)    : X > 10 <- .print(X*4).
 
-            
+
 +!goal2 <- .print("Ok do goal 2").
-            
