@@ -479,6 +479,8 @@ public class TranslAg {
      * @throws Exception
      */
     public Map<String, Set<String>> getCommonDF() throws Exception {
+        return BaseCentralisedMAS.getRunner().getRuntimeServices().getDF();
+        /*// JH: runtimeservices now supports getDF
         // Using format Map<String, Set> as a common representation of ZK and
         // BaseCentralisedMAS
         Map<String, Set<String>> commonDF;
@@ -494,7 +496,7 @@ public class TranslAg {
             }
         }
         return commonDF;
-
+        */
     }
 
     /**

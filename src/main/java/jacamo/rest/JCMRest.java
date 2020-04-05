@@ -6,6 +6,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -28,6 +32,7 @@ import jacamo.platform.DefaultPlatformImpl;
 import jacamo.rest.config.RestAgArch;
 import jacamo.rest.config.RestAppConfig;
 import jason.infra.centralised.BaseCentralisedMAS;
+import jason.runtime.DelegatedRuntimeServices;
 
 
 public class JCMRest extends DefaultPlatformImpl {
@@ -60,6 +65,32 @@ public class JCMRest extends DefaultPlatformImpl {
     
     @Override
     public void init(String[] args) throws Exception {
+        
+        // change the runtimeservices
+        BaseCentralisedMAS.getRunner().setRuntimeServives(
+                new DelegatedRuntimeServices(BaseCentralisedMAS.getRunner().getRuntimeServices()) {
+                    @Override
+                    public Map<String, Set<String>> getDF() {
+                        if (JCMRest.getZKHost() == null) {
+                            return super.getDF();
+                        } else {
+                            try {
+                                Map<String, Set<String>> commonDF = new HashMap<String, Set<String>>();
+    
+                                for (String s : JCMRest.getZKClient().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId)) {
+                                    for (String a : JCMRest.getZKClient().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId + "/" + s)) {
+                                        commonDF.computeIfAbsent(a, k -> new HashSet<>()).add(s);
+                                    }
+                                }
+                                return commonDF;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                return null;
+                            }
+                        }
+                    }                   
+                }
+        );
         
         // adds RestAgArch as default ag arch when using this platform
         BaseCentralisedMAS.getRunner().getRuntimeServices().registerDefaultAgArch(RestAgArch.class.getName());
