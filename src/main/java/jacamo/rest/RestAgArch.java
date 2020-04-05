@@ -118,16 +118,6 @@ public class RestAgArch extends AgArch {
     }
     
     @Override
-    public void broadcast(Message m) throws Exception {
-        for (String agName: getFirstAgArch().getRuntimeServices().getAgentsNames()) {
-            if (!agName.equals(this.getAgName())) {
-                m.setReceiver(agName);
-                sendMsg(m);
-            }
-        }
-    }
-    
-    @Override
     public void sendMsg(Message m) throws Exception {
         try {
             super.sendMsg(m);
