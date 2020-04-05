@@ -50,7 +50,11 @@ public class RestImplAg extends AbstractBinder {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgents() {
-        return Response.ok().entity(gson.toJson(tAg.getAgents())).header("Access-Control-Allow-Origin", "*").build();
+        return Response
+        		.ok()
+        		.entity(gson.toJson(tAg.getAgents()))
+        		.header("Access-Control-Allow-Origin", "*")
+        		.build();
     }
 
     /**
@@ -67,7 +71,9 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response postAgent(@PathParam("agentname") String agName, @Context UriInfo uriInfo) {
         try {
-            return Response.created(new URI(uriInfo.getBaseUri() + "agents/" + tAg.createAgent(agName))).build();
+            return Response
+            		.created(new URI(uriInfo.getBaseUri() + "agents/" + tAg.createAgent(agName)))
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -86,7 +92,9 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response deleteAgent(@PathParam("agentname") String agName) {
         try {
-            return Response.ok("Result of kill: " + tAg.deleteAgent(agName)).build();
+            return Response
+            		.ok("Result of kill: " + tAg.deleteAgent(agName))
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -106,7 +114,9 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgentStatus(@PathParam("agentname") String agName) {
         try {
-            return Response.ok(gson.toJson(tAg.getAgentStatus(agName))).build();
+            return Response
+            		.ok(gson.toJson(tAg.getAgentStatus(agName)))
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -127,7 +137,9 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgent(@PathParam("agentname") String agName) {
         try {
-            return Response.ok(gson.toJson(tAg.getAgentDetails(agName))).build();
+            return Response
+            		.ok(gson.toJson(tAg.getAgentDetails(agName)))
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -146,7 +158,9 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAgentBeliefbase(@PathParam("agentname") String agName) {
         try {
-            return Response.ok(gson.toJson(tAg.getAgentsBB(agName))).build();
+            return Response
+            		.ok(gson.toJson(tAg.getAgentsBB(agName)))
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -168,7 +182,9 @@ public class RestImplAg extends AbstractBinder {
     public Response postAgentPlans(@PathParam("agentname") String agName, String plans) {
         try {
             tAg.addAgentPlan(agName, plans);
-            return Response.ok("ok, code uploaded for agent '" + agName + "'!").build();
+            return Response
+            		.ok("ok, code uploaded for agent '" + agName + "'!")
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -190,7 +206,9 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.APPLICATION_JSON)
     public Response postAgentCommand(@FormParam("c") String cmd, @PathParam("agentname") String agName) {
         try {
-            return Response.ok(gson.toJson(tAg.executeCommand(cmd, agName))).build();
+            return Response
+            		.ok(gson.toJson(tAg.executeCommand(cmd, agName)))
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -209,7 +227,9 @@ public class RestImplAg extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response getAgentLog(@PathParam("agentname") String agName) {
         try {
-            return Response.ok(tAg.getAgentLog(agName)).build();
+            return Response
+            		.ok(tAg.getAgentLog(agName))
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -223,7 +243,9 @@ public class RestImplAg extends AbstractBinder {
     public Response postAgentMessage(Message m, @PathParam("agentname") String agName) {
         try {
             tAg.addMessageToAgentMailbox(m, agName); 
-            return Response.ok().build();
+            return Response
+            		.ok()
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
