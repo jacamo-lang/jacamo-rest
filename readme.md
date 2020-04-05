@@ -58,7 +58,7 @@ These commands build a docker image and launch marcos and bob projects. Usually 
 
 * GET JSON `/overview`:
     returns an overview of the system including agents, artefacts and organisations
-    
+
 * GET JSON `/agents`:
     returns the list of running agents
 
@@ -79,5 +79,19 @@ These commands build a docker image and launch marcos and bob projects. Usually 
 
 * GET JSON `/oe`
     returns the list of organisations of the system
-    
+
 * Full documentation: [jacamo-rest 0.3](https://app.swaggerhub.com/apis/sma-das/jacamo-rest/0.3)
+
+# Project structure
+
+* HTTP requests are delivered and leaves **jacamo-rest** implementation as shown below.
+* Additionally, Apache Zookeeper is used as distributed directory for agents registration.
+
+![overall](jacamo-rest-overallarch.png)
+
+* **JCMRest** class starts JaCaMo platform inserting **RestAgArch** class, its agent architecture.
+* **JCMRest** class configures and starts the web server, in which **RestAppConfig** class registers endpoints.
+* Package **implementation** constains REST implementation, the facade of this API.
+* Package **mediation** constains intermediary classes that links the facade and JaCaMo, the resolvers of this API.
+
+![internal](jacamo-rest-internal.png)
