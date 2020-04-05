@@ -19,7 +19,6 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import jacamo.infra.JaCaMoLauncher;
-import jacamo.rest.JCMRest;
 import jacamo.rest.util.Message;
 import jason.JasonException;
 

@@ -16,7 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import jacamo.infra.JaCaMoLauncher;
-import jacamo.rest.JCMRest;
 import jason.JasonException;
 
 public class RunCmdTest {
