@@ -1,7 +1,9 @@
-package jacamo.rest.config;
+package jacamo.rest;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.client.Client;
@@ -18,7 +20,6 @@ import org.apache.zookeeper.CreateMode;
 
 import com.google.gson.Gson;
 
-import jacamo.rest.JCMRest;
 import jason.ReceiverNotFoundException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
@@ -72,7 +73,7 @@ public class RestAgArch extends AgArch {
 
     RuntimeServices singRTS = null;
 
-    // place DF services based on ZK
+    // place WP/DF services based on ZK
     @Override
     public RuntimeServices getRuntimeServices() {
         if (singRTS == null) {
@@ -93,6 +94,20 @@ public class RestAgArch extends AgArch {
                     @Override
                     public void dfSubscribe(String agName, String service, String type) {
                         RestAgArch.this.dfSubscribe(service, type);
+                    }
+                    @Override
+                    public Collection<String> getAgentsNames() {
+                        // use ZK WP
+                        try {
+                            List<String> all = new ArrayList<>();
+                            for (String ag : zkClient.getChildren().forPath(JCMRest.JaCaMoZKAgNodeId)) {
+                                all.add(ag);
+                            }
+                            return all;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return null;
+                        }
                     }
                 };
             } else {
@@ -120,7 +135,7 @@ public class RestAgArch extends AgArch {
                         adr = new String(badr);
                 }
                 
-                // try by rest to send the message by REST API
+                // try to send the message by REST API
                 if (adr != null) {
                     // do POST
                     if (adr.startsWith("http")) {
