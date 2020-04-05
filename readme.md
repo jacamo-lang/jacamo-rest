@@ -84,7 +84,7 @@ All endpoints accepts OPTIONS returning allowed verbs
 
 ## Agents
 
-* ``GET; POST /agents``: Retrieves agents collection - works as whitepages - (with links); append van agent.
+* ``GET; POST /agents``: Retrieves agents collection - works as white pages - (with links); append an agent.
 * ``GET; PUT; DELETE ../{agentuid}``: Returns agent data (mind, bb and intentions (obs 1); update; remove.
 * ``GET; POST ../{agentuid}/plans`` Retrieves plans of the specified agent; append a plan.
 * ``GET; PUT; DELETE ../{agentuid}/plans/{planuid}``: Returns an agent plan; update; remove.
@@ -99,7 +99,7 @@ All endpoints accepts OPTIONS returning allowed verbs
 
 * ``GET; POST /workspaces``: Retrieves workspaces collection (with links); append a workspace.
 * ``GET; PUT; DELETE ../{workspaceuid}`` Returns workspace data (with links to artifacts); update; remove.
-* ``GET; POST ../{workspaceuid}/artifacts`` Retrieves artifacts collection; append a artifact.
+* ``GET; POST ../{workspaceuid}/artifacts`` Retrieves artifacts collection; append an artifact.
 * ``GET; PUT; DELETE ../{workspaceuid}/artifacts/{artifactuid}`` Returns artifact data; update; remove.
 * ``GET ../{workspaceuid}/artifacts/{artifactuid}/properties`` Returns observable properties.
 * ``GET ../{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations.
@@ -116,7 +116,7 @@ All endpoints accepts OPTIONS returning allowed verbs
 * ``GET; PUT; DELETE ../{organisationuid}/schemes/{schemeuid}`` Returns scheme data; update; remove.
 
 ## Services
-* ``GET /services``: Retrieves services collection and agents that provide them - works as yellowpages
+* ``GET /services``: Retrieves services collection and agents that provide them - works as yellow pages
 * ``GET ../{serviceid}`` Retrieves agents that provides the specific service.
 
 # REST API version 0.6 - proposal
@@ -125,7 +125,7 @@ Keeping all 0.5 endpoints
 
 ## Workspaces
 
-* ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties`` Returns observable properties; create a property (inserting java code).
+* ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties`` Returns observable properties; create a property.
 * ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties/{obspropsuid}`` Returns obs props data; update; remove.
 * ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations; create an operation (inserting java code).
 * ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations/{operationuid}`` Returns operation code; update; remove.
