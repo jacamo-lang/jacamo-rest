@@ -143,7 +143,7 @@ public class RestAgArch extends AgArch {
                     if (adr.startsWith("http")) {
                         restClient
                                   .target(adr)
-                                  .path("mb")
+                                  .path("inbox")
                                   .request(MediaType.APPLICATION_XML)
                                   .accept(MediaType.TEXT_PLAIN)
                                   .post(

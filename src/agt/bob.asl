@@ -9,13 +9,15 @@
       .print("Banana sellers ", L);
       for (.member(A,L)) {
           .send(A,askOne,price(banana,_),price(_,P),2000);
-          .print("Price of ",A," is ",P);
-          //.printf("%20s = %5.2f",A,P);
+          //.print("Price of ",A," is ",P);
+          .printf("%20s = %5.2f",A,P);
       }
    .
 
 +provider(marcos,"iamhere")
    <- .send(marcos, tell, oi);
+      .broadcast(tell,hello);
+      //.send([marcos,alice],tell,hello);
       !buy;
    .
 
