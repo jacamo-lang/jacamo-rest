@@ -147,27 +147,6 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Return agent's Belief base in JSON format.
-     * 
-     * @param agName
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     */
-    @Path("/{agentname}/mind/bb")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAgentBeliefbase(@PathParam("agentname") String agName) {
-        try {
-            return Response
-                    .ok(gson.toJson(tAg.getAgentsBB(agName)))
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(500, e.getMessage()).build();
-        }
-    }
-
-    /**
      * Upload new plans into an agent.
      * 
      * @param agName              name of the agent
