@@ -56,30 +56,6 @@ These commands build a docker image and launch marcos and bob projects. Usually 
 
 # REST API
 
-* GET JSON `/overview`:
-    returns an overview of the system including agents, artefacts and organisations
-
-* GET JSON `/agents`:
-    returns the list of running agents
-
-* POST `/agents/{agentname}`
-    creates a new agent.
-
-* DELETE `/agents/{agentname}`
-    Kills the agent.
-
-* GET JSON `/agents/{agentname}/status`
-    returns the agent's status (if idle, number of intentions, ....)
-
-* GET JSON `/agents/{agentname}/mind/bb`
-    returns the agent's beliefs as a list of strings
-
-* GET JSON `/workspaces`
-    returns the list of workspaces of the system
-
-* GET JSON `/oe`
-    returns the list of organisations of the system
-
 * Full documentation: [jacamo-rest 0.3](https://app.swaggerhub.com/apis/sma-das/jacamo-rest/0.3)
 
 # Project structure
@@ -95,3 +71,89 @@ These commands build a docker image and launch marcos and bob projects. Usually 
 * Package **mediation** constains intermediary classes that links the facade and JaCaMo, the resolvers of this API.
 
 ![internal](jacamo-rest-internal.png)
+
+# New REST API (draft)
+
+# REST API version 0.5 - proposal
+
+All endpoints accepts OPTIONS returning allowed verbs
+
+## Root
+
+* ``GET /``: Returns MAS overview and all links
+
+## Agents
+
+* ``GET; POST /agents``: Retrieves agents collection - works as wp - (with links); append van agent.
+* ``GET; PUT; DELETE ../{agentuid}``: Returns agent data (mind, bb and intentions (obs 1); update; remove.
+* ``GET; POST ../{agentuid}/plans`` Retrieves plans of the specified agent; append a plan.
+* ``GET; PUT; DELETE ../{agentuid}/plans/{planuid}``: Returns an agent plan; update; remove.
+* ``GET ../{agentuid}/log`` Returns log of the specified agent.
+* ``POST ../{agentuid}/command`` Posts a new command.
+* ``POST ../{agentname}/mailbox`` Posts a new message.
+* ``GET ../{agentuid}/services`` Returns services provided by the specified agent.
+
+(obs 1) /code is only provided in jacamo-web
+
+## Workspaces
+
+* ``GET; POST /workspaces``: Retrieves workspaces collection (with links); append a workspace.
+* ``GET; PUT; DELETE ../{workspaceuid}`` Returns workspace data (with links to artifacts); update; remove.
+* ``GET; POST ../{workspaceuid}/artifacts`` Retrieves artifacts collection; append a artifact.
+* ``GET; PUT; DELETE ../{workspaceuid}/artifacts/{artifactuid}`` Returns artifact data; update; remove.
+* ``GET ../{workspaceuid}/artifacts/{artifactuid}/obsprops`` Returns observable properties.
+
+## Organisations
+
+* ``GET; POST /organisations``: Retrieves organisations collection; append an organisation.
+* ``GET; PUT; DELETE ../{organisationuid}`` Returns organisation data (with links to artifacts); update; remove.
+* ``GET; POST ../{organisationuid}/roles`` Retrieves roles collection; append a role.
+* ``GET; PUT; DELETE ../{organisationuid}/roles/{roleuid}`` Returns role data; update; remove.
+* ``GET; POST ../{organisationuid}/groups`` Retrieves groups collection; append a group.
+* ``GET; PUT; DELETE ../{organisationuid}/groups/{groupuid}`` Returns group data; update; remove.
+* ``GET; POST ../{organisationuid}/schemes`` Retrieves schemes collection; append a scheme.
+* ``GET; PUT; DELETE ../{organisationuid}/schemes/{schemeuid}`` Returns scheme data; update; remove.
+
+## Services
+* ``GET /services``: Retrieves agents' services collection - works as yp
+* ``GET; POST ../{agentuid}`` Retrieves services of the specified agent; append a service.
+
+# REST API version 0.6 - proposal
+
+Keeping all 0.5 endpoints
+
+## Workspaces
+
+* ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/obsprops`` Returns observable properties.
+* ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/obsprops/{obspropsuid}`` Returns obs props data; update; remove.
+* ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations.
+* ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations/{operationuid}`` Returns operation code; update; remove.
+
+# REST API version 0.4
+
+## Agents
+* ``GET /agents``: Retorna a lista de agentes que estão rodando no sistema, por exemplo: ["ag1","ag2"].
+* ``GET /agents/\{agName\}``: Retorna a base de crenças, planos e intenções do agente.
+* ``POST /agents/\{agName\}``: Adiciona um agente ao sistema.
+* ``DELETE /agents/\{agName\}``: Para as atividades de um agente e remove este do sistema.
+* ``POST /agents/\{agName\}/mb``: Envia uma mensagem ao agente.
+* ``GET /agents/\{agName\}/bb``: Retorna a base de crenças do agente.
+* ``GET /agents/\{agName\}/plans``: Retorna a biblioteca de planos do agente.
+* ``POST /agents/\{agName\}/plans``: Insere um plano a biblioteca de planos do agente.
+* ``GET /agents/\{agName\}/log``: Obtém a lista de mensagens de log gerada pelo agente.
+* ``DELETE /agents/\{agName\}/log``: Apaga o log corrente do agente.
+* ``POST /agents/\{agName\}/cmd``: Envia um comando ao agente.
+
+## Environment
+* ``GET /workspaces``: Retorna a lista de workspaces do ambiente.
+* ``GET /workspaces/\{wrksname\}``: Retorna a lista de artefatos de um workspace.
+* ``GET /workspaces/\{wrksname\}/\{artname\}``: Retorna informações internas de um determinado artefato.
+
+## Organisations
+* ``GET /oe``: Retorna a lista de organizações instanciadas no sistema.
+* ``GET /oe/{oename}/os``: Retorna a especificação de uma dada organização.
+* ``POST /oe/{oename}/group/{groupname}/role/{rolename}``: Adiciona uma função organizacional a um grupo.
+
+## Others
+* ``GET /overview``: Retorna informações consolidadas do sistema apresentando também relações entre agentes, ambiente e organizações.
+* ``GET /services``: Retorna a especificação de uma dada organização.
