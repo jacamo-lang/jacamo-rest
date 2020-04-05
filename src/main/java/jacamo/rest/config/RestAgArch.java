@@ -1,7 +1,11 @@
 package jacamo.rest.config;
 
+import jacamo.rest.JCMRest;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.client.Client;
@@ -18,7 +22,6 @@ import org.apache.zookeeper.CreateMode;
 
 import com.google.gson.Gson;
 
-import jacamo.rest.JCMRest;
 import jason.ReceiverNotFoundException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
@@ -33,12 +36,12 @@ import jason.runtime.DelegatedRuntimeServices;
 import jason.runtime.RuntimeServices;
 
 public class RestAgArch extends AgArch {
-    
+
     CuratorFramework      zkClient = null;
     AsyncCuratorFramework zkAsync = null;
-    
+
     Client                restClient = null;
-    
+
     @Override
     public void init() throws Exception {
         //System.out.println("my ag arch init "+getAgName());
@@ -47,17 +50,17 @@ public class RestAgArch extends AgArch {
         if (JCMRest.getZKHost() != null) {
             zkClient = CuratorFrameworkFactory.newClient(JCMRest.getZKHost(), new ExponentialBackoffRetry(1000, 3));
             zkClient.start();
-            
+
             // register the agent in ZK
             if (zkClient.checkExists().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+getAgName()) != null) {
-                System.err.println("Agent "+getAgName()+" is already registered in zookeeper!");                
+                System.err.println("Agent "+getAgName()+" is already registered in zookeeper!");
             } else {
                 zkClient.create().withMode(CreateMode.EPHEMERAL).forPath(JCMRest.JaCaMoZKAgNodeId+"/"+getAgName(), (JCMRest.getRestHost()+"agents/"+getAgName()).getBytes());
                 zkAsync  = AsyncCuratorFramework.wrap(zkClient);
             }
         }
     }
-    
+
     @Override
     public void stop() {
         if (zkClient != null) {
@@ -72,7 +75,7 @@ public class RestAgArch extends AgArch {
 
     RuntimeServices singRTS = null;
 
-    // place DF services based on ZK
+    // place WP/DF services based on ZK
     @Override
     public RuntimeServices getRuntimeServices() {
         if (singRTS == null) {
@@ -81,18 +84,32 @@ public class RestAgArch extends AgArch {
                     @Override
                     public void dfRegister(String agName, String service, String type) {
                         RestAgArch.this.dfRegister(service, type);
-                    }               
+                    }
                     @Override
                     public void dfDeRegister(String agName, String service, String type) {
                         RestAgArch.this.dfDeRegister(service, type);
-                    }               
+                    }
                     @Override
                     public Collection<String> dfSearch(String service, String type) {
                         return RestAgArch.this.dfSearch(service, type);
-                    }                               
+                    }
                     @Override
                     public void dfSubscribe(String agName, String service, String type) {
                         RestAgArch.this.dfSubscribe(service, type);
+                    }
+                    @Override
+                    public Collection<String> getAgentsNames() {
+                        // use ZK WP
+                        try {
+                            List<String> all = new ArrayList<>();
+                            for (String ag : zkClient.getChildren().forPath(JCMRest.JaCaMoZKAgNodeId)) {
+                                all.add(ag);
+                            }
+                            return all;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return null;
+                        }
                     }
                 };
             } else {
@@ -101,7 +118,7 @@ public class RestAgArch extends AgArch {
         }
         return singRTS;
     }
-    
+
     @Override
     public void sendMsg(Message m) throws Exception {
         try {
@@ -110,7 +127,7 @@ public class RestAgArch extends AgArch {
         } catch (ReceiverNotFoundException e) {
             try {
                 String adr = null;
-    
+
                 if (m.getReceiver().startsWith("http")) {
                     adr = m.getReceiver();
                 } else {
@@ -119,14 +136,14 @@ public class RestAgArch extends AgArch {
                     if (badr != null)
                         adr = new String(badr);
                 }
-                
-                // try by rest to send the message by REST API
+
+                // try to send the message by REST API
                 if (adr != null) {
                     // do POST
                     if (adr.startsWith("http")) {
                         restClient
                                   .target(adr)
-                                  .path("mb")
+                                  .path("inbox")
                                   .request(MediaType.APPLICATION_XML)
                                   .accept(MediaType.TEXT_PLAIN)
                                   .post(
@@ -139,9 +156,9 @@ public class RestAgArch extends AgArch {
             } catch (Exception ex) {
                 throw e;
             }
-        }        
+        }
     }
-    
+
     public void dfRegister(String service, String type) {
         if (type == null) type = "no-type";
         try {
@@ -155,7 +172,7 @@ public class RestAgArch extends AgArch {
             e.printStackTrace();
         }
     }
-    
+
     public void dfDeRegister(String service, String type) {
         try {
             zkClient.delete().forPath(JCMRest.JaCaMoZKDFNodeId+"/"+service+"/"+getAgName());
@@ -163,11 +180,11 @@ public class RestAgArch extends AgArch {
             e.printStackTrace();
         }
     }
-    
+
     public Collection<String> dfSearch(String service, String type) {
         Set<String> ags = new HashSet<>();
         try {
-            if (zkClient.checkExists().forPath(JCMRest.JaCaMoZKDFNodeId+"/"+service) != null) { 
+            if (zkClient.checkExists().forPath(JCMRest.JaCaMoZKDFNodeId+"/"+service) != null) {
                 for (String r : zkClient.getChildren().forPath(JCMRest.JaCaMoZKDFNodeId+"/"+service)) {
                     ags.add(r);
                 }
@@ -177,19 +194,19 @@ public class RestAgArch extends AgArch {
         }
         return ags;
     }
-    
+
     public void dfSubscribe(String service, String type) {
         try {
             zkAsync.with(WatchMode.successOnly).watched().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId+"/"+service).event().thenAccept(event -> {
                 try {
-                    //System.out.println("something changed...."+event.getType()+"/"+event.getState());                 
+                    //System.out.println("something changed...."+event.getType()+"/"+event.getState());
                     // stupid implementation: send them all again and
                     dfSubscribe(service, type); // keep watching
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
-            
+
             // update providers
             Term s = new Atom("df");
             Literal l = ASSyntax.createLiteral("provider", new UnnamedVar(), new StringTermImpl(service));
@@ -200,9 +217,9 @@ public class RestAgArch extends AgArch {
                 l.addSource(s);
                 getTS().getAg().addBel(l);
             }
-                        
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }  
+    }
 }
