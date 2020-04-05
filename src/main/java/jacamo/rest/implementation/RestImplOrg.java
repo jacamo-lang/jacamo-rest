@@ -16,10 +16,6 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import com.google.gson.Gson;
 
 import jacamo.rest.mediation.TranslOrg;
-import moise.common.MoiseConsistencyException;
-import moise.os.ss.Role;
-import ora4mas.nopl.GroupBoard;
-import ora4mas.nopl.OrgArt;
 
 @Singleton
 @Path("/oe")
@@ -111,65 +107,6 @@ public class RestImplOrg extends AbstractBinder {
 
             return Response
             		.ok("Role created!")
-            		.build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Response.status(500).build();
-    }
-
-    /**
-     * Get group specifications in plain text format.
-     * 
-     * @param oeName name of the organization
-     * @param groupName name of the group
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     */
-    @Path("/{oename}/group/{groupname}/{groupname}.npl")
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response getGroupNpl(@PathParam("oename") String oeName, @PathParam("groupname") String groupName) {
-        try {
-            StringBuilder out = new StringBuilder();
-            for (GroupBoard gb : GroupBoard.getGroupBoards()) {
-                if (gb.getOEId().equals(oeName) && gb.getArtId().equals(groupName)) {
-                    out.append(((OrgArt) gb).getNPLSrc());
-                }
-            }
-            
-            return Response
-            		.ok(out.toString())
-            		.build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        return Response.status(500).build();
-    }
-
-    /**
-     * Get group instance information in plain text format
-     * 
-     * @param oeName name of the organization
-     * @param groupName name of the group
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     */
-    @Path("/{oename}/group/{groupname}/debug")
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response getGroupDebug(@PathParam("oename") String oeName, @PathParam("groupname") String groupName) {
-        try {
-            StringBuilder out = new StringBuilder();
-            for (GroupBoard gb : GroupBoard.getGroupBoards()) {
-                if (gb.getOEId().equals(oeName) && gb.getArtId().equals(groupName)) {
-                    out.append(((OrgArt) gb).getDebugText());
-                }
-            }
-            
-            return Response
-            		.ok(out.toString())
             		.build();
         } catch (Exception e) {
             e.printStackTrace();
