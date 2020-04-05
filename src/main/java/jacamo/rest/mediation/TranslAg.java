@@ -311,6 +311,8 @@ public class TranslAg {
                 e.printStackTrace();
             }
         });
+        
+        List<String> beliefs = getAgentsBB(agName);
 
         Map<String, Object> agent = new HashMap<>();
         agent.put("agent", agName);
@@ -318,6 +320,7 @@ public class TranslAg {
         agent.put("roles", roles);
         agent.put("missions", missions);
         agent.put("workspaces", workspaces);
+        agent.put("beliefs", beliefs);
 
         return agent;
     }
