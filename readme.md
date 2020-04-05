@@ -91,7 +91,7 @@ All endpoints accepts OPTIONS returning allowed verbs
 * ``GET ../{agentuid}/log`` Returns log of the specified agent.
 * ``POST ../{agentuid}/command`` Posts a new command.
 * ``POST ../{agentname}/inbox`` Posts a new message.
-* ``GET ../{agentuid}/services`` Returns services provided by the specified agent.
+* ``GET; POST ../{agentuid}/services`` Returns services provided by the specified agent; add a service to the agent.
 
 (obs 1) /code is only provided in jacamo-web
 
@@ -116,8 +116,8 @@ All endpoints accepts OPTIONS returning allowed verbs
 * ``GET; PUT; DELETE ../{organisationuid}/schemes/{schemeuid}`` Returns scheme data; update; remove.
 
 ## Services
-* ``GET /services``: Retrieves agents' services collection - works as yellowpages
-* ``GET; POST ../{agentuid}`` Retrieves services of the specified agent; append a service.
+* ``GET /services``: Retrieves services collection and agents that provide them - works as yellowpages
+* ``GET ../{serviceid}`` Retrieves agents that provides the specific service.
 
 # REST API version 0.6 - proposal
 
