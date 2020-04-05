@@ -84,13 +84,13 @@ All endpoints accepts OPTIONS returning allowed verbs
 
 ## Agents
 
-* ``GET; POST /agents``: Retrieves agents collection - works as wp - (with links); append van agent.
+* ``GET; POST /agents``: Retrieves agents collection - works as whitepages - (with links); append van agent.
 * ``GET; PUT; DELETE ../{agentuid}``: Returns agent data (mind, bb and intentions (obs 1); update; remove.
 * ``GET; POST ../{agentuid}/plans`` Retrieves plans of the specified agent; append a plan.
 * ``GET; PUT; DELETE ../{agentuid}/plans/{planuid}``: Returns an agent plan; update; remove.
 * ``GET ../{agentuid}/log`` Returns log of the specified agent.
 * ``POST ../{agentuid}/command`` Posts a new command.
-* ``POST ../{agentname}/mailbox`` Posts a new message.
+* ``POST ../{agentname}/inbox`` Posts a new message.
 * ``GET ../{agentuid}/services`` Returns services provided by the specified agent.
 
 (obs 1) /code is only provided in jacamo-web
@@ -101,7 +101,8 @@ All endpoints accepts OPTIONS returning allowed verbs
 * ``GET; PUT; DELETE ../{workspaceuid}`` Returns workspace data (with links to artifacts); update; remove.
 * ``GET; POST ../{workspaceuid}/artifacts`` Retrieves artifacts collection; append a artifact.
 * ``GET; PUT; DELETE ../{workspaceuid}/artifacts/{artifactuid}`` Returns artifact data; update; remove.
-* ``GET ../{workspaceuid}/artifacts/{artifactuid}/obsprops`` Returns observable properties.
+* ``GET ../{workspaceuid}/artifacts/{artifactuid}/properties`` Returns observable properties.
+* ``GET ../{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations.
 
 ## Organisations
 
@@ -115,7 +116,7 @@ All endpoints accepts OPTIONS returning allowed verbs
 * ``GET; PUT; DELETE ../{organisationuid}/schemes/{schemeuid}`` Returns scheme data; update; remove.
 
 ## Services
-* ``GET /services``: Retrieves agents' services collection - works as yp
+* ``GET /services``: Retrieves agents' services collection - works as yellowpages
 * ``GET; POST ../{agentuid}`` Retrieves services of the specified agent; append a service.
 
 # REST API version 0.6 - proposal
@@ -124,9 +125,9 @@ Keeping all 0.5 endpoints
 
 ## Workspaces
 
-* ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/obsprops`` Returns observable properties.
-* ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/obsprops/{obspropsuid}`` Returns obs props data; update; remove.
-* ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations.
+* ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties`` Returns observable properties; create a property (inserting java code).
+* ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties/{obspropsuid}`` Returns obs props data; update; remove.
+* ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations; create an operation (inserting java code).
 * ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations/{operationuid}`` Returns operation code; update; remove.
 
 # REST API version 0.4
