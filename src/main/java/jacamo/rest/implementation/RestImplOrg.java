@@ -16,6 +16,7 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import com.google.gson.Gson;
 
 import jacamo.rest.mediation.TranslOrg;
+import moise.common.MoiseConsistencyException;
 import moise.os.ss.Role;
 import ora4mas.nopl.GroupBoard;
 import ora4mas.nopl.OrgArt;
@@ -44,7 +45,10 @@ public class RestImplOrg extends AbstractBinder {
 
         Gson gson = new Gson();
         try {
-            return Response.ok(gson.toJson(tOrg.getOrganisations())).header("Access-Control-Allow-Origin", "*").build();
+            return Response
+            		.ok(gson.toJson(tOrg.getOrganisations()))
+            		.header("Access-Control-Allow-Origin", "*")
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,7 +80,10 @@ public class RestImplOrg extends AbstractBinder {
     public Response getSpecificationJSON(@PathParam("oename") String oeName) {
         try {
             Gson gson = new Gson();
-            return Response.ok(gson.toJson(tOrg.getSpecification(oeName))).header("Access-Control-Allow-Origin", "*").build();
+            return Response
+            		.ok(gson.toJson(tOrg.getSpecification(oeName)))
+            		.header("Access-Control-Allow-Origin", "*")
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,16 +107,11 @@ public class RestImplOrg extends AbstractBinder {
     public Response createNewRole(@PathParam("oename") String oeName, @PathParam("groupname") String groupName,
             @FormParam("role") String role) {
         try {
-            for (GroupBoard gb : GroupBoard.getGroupBoards()) {
-                if (gb.getOEId().equals(oeName)) {
-                    Role newRole = new Role(role, gb.getSpec().getSS());
-                    newRole.addSuperRole("soc");
-                    gb.getSpec().getSS().addRoleDef(newRole, true);
-                    gb.getSpec().addRole(role);
-                }
-            }
+            tOrg.createRole(oeName, role);
 
-            return Response.ok("Role created!").build();
+            return Response
+            		.ok("Role created!")
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -136,7 +138,9 @@ public class RestImplOrg extends AbstractBinder {
                 }
             }
             
-            return Response.ok(out.toString()).build();
+            return Response
+            		.ok(out.toString())
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,7 +168,9 @@ public class RestImplOrg extends AbstractBinder {
                 }
             }
             
-            return Response.ok(out.toString()).build();
+            return Response
+            		.ok(out.toString())
+            		.build();
         } catch (Exception e) {
             e.printStackTrace();
         }
