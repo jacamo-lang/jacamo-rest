@@ -14,9 +14,8 @@ price(banana,X) :- X = math.random * 100 + 20.
       !create_group;
    .
 
-+oi[source(A)] 
-    <- .print("I received hello from ",A)
-    .
++oi[source(A)] <- .print("I received oi from ",A).
++hello[source(A)] <- .print("I received hello from ",A).
 
 +tstWithOneTerm(X)[source(A)] 
     <- .print("I received ", X, " from ",A)

@@ -26,6 +26,7 @@ price(banana,10).
       .df_deregister(vender(abacaxi));
    .
 
++hello[source(A)] <- .print("I received hello from ",A).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

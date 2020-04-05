@@ -15,10 +15,13 @@
    
 +provider(marcos,"iamhere") 
    <- .send(marcos, tell, oi);
+      .broadcast(tell,hello);
       !buy;
    .
 
 +provider(A,S) <- .print(A, " is provider of ",S).
+
++hello[source(A)] <- .print("I received hello from ",A).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }
