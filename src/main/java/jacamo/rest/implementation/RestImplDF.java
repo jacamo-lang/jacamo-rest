@@ -1,9 +1,6 @@
 package jacamo.rest.implementation;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -15,18 +12,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.zookeeper.CreateMode;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
 
-import jacamo.rest.JCMRest;
-import jason.infra.centralised.BaseCentralisedMAS;
+import jacamo.rest.mediation.TranslAg;
 
 @Singleton
 @Path("/services")
 public class RestImplDF extends AbstractBinder {
 
+    TranslAg tAg = new TranslAg();
+	
     @Override
     protected void configure() {
         bind(new RestImplDF()).to(RestImplDF.class);
@@ -50,54 +47,19 @@ public class RestImplDF extends AbstractBinder {
         try {
             Gson gson = new Gson();
 
-            // Using format Map<String, Set> as a common representation of ZK and
-            // BaseCentralisedMAS
-            Map<String, Set<String>> commonDF = getCommonDF();
-
-            // Json of the DF
-            Map<String,Object> jsonifiedDF = new HashMap<>();
-            for (String s : commonDF.keySet()) {
-                Map<String, Object> agent = new HashMap<>();
-                agent.put("agent", s);
-                Set<String> services = new HashSet<>();
-                services.addAll(commonDF.get(s));
-                agent.put("services", services);
-                jsonifiedDF.put(s,agent);
-            }
-
             return Response
                     .ok()
-                    .entity(gson.toJson(jsonifiedDF))
+                    .entity(gson.toJson(tAg.getJsonifiedDF()))
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
         }
-
-    }
-    
-    protected Map<String, Set<String>> getCommonDF() throws Exception {
-        // Using format Map<String, Set> as a common representation of ZK and
-        // BaseCentralisedMAS
-        Map<String, Set<String>> commonDF;
-        if (JCMRest.getZKHost() == null) {
-            commonDF = BaseCentralisedMAS.getRunner().getDF();
-        } else {
-            commonDF = new HashMap<String, Set<String>>();
-
-            for (String s : JCMRest.getZKClient().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId)) {
-                for (String a : JCMRest.getZKClient().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId + "/" + s)) {
-                    commonDF.computeIfAbsent(a, k -> new HashSet<>()).add(s);
-                }
-            }
-        }
-        return commonDF;
-
     }
 
     /**
-     * Get some agent's services
+     * Get services provided by a given agent
      * 
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
@@ -111,7 +73,7 @@ public class RestImplDF extends AbstractBinder {
         try {
             return Response
                     .ok()
-                    .entity(new Gson().toJson( getCommonDF().get(agName) ))
+                    .entity(new Gson().toJson( tAg.getCommonDF().get(agName) ))
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
 
@@ -133,23 +95,7 @@ public class RestImplDF extends AbstractBinder {
     @Produces(MediaType.TEXT_PLAIN)
     public Response addService(@PathParam("agname") String agName, Map<String, Object> values) {
         try {
-            String service = values.get("service").toString();
-            if (service == null) {
-                return Response
-                        .status(500, "a service name have to be informed")
-                        .build();
-            }
-            if (JCMRest.getZKHost() == null) {
-                BaseCentralisedMAS.getRunner().dfRegister(agName, service);
-            } else {            
-                String type = values.getOrDefault("type", "no-type").toString();
-                String node = JCMRest.JaCaMoZKDFNodeId+"/"+service+"/"+agName;
-                if (JCMRest.getZKClient().checkExists().forPath(node) == null) {
-                    JCMRest.getZKClient().create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(node, type.getBytes());
-                } else {
-                    JCMRest.getZKClient().setData().forPath(node, type.getBytes());
-                }
-            }
+            tAg.addServiceToAgent(agName, values);
                         
             return Response
                     .ok()

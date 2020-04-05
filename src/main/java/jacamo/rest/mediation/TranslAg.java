@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,12 +22,15 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
+import org.apache.zookeeper.CreateMode;
+
 import cartago.ArtifactId;
 import cartago.ArtifactInfo;
 import cartago.CartagoException;
 import cartago.CartagoService;
 import cartago.WorkspaceId;
 import jaca.CAgentArch;
+import jacamo.rest.JCMRest;
 import jacamo.rest.util.Message;
 import jason.JasonException;
 import jason.architecture.AgArch;
@@ -467,4 +471,79 @@ public class TranslAg {
             throw new Exception("Internal Server Error! Receiver '" + agName + "' not found");
         }
     }
+    
+    /**
+     * Returns agents by services
+     * 
+     * @return
+     * @throws Exception
+     */
+    public Map<String, Set<String>> getCommonDF() throws Exception {
+        // Using format Map<String, Set> as a common representation of ZK and
+        // BaseCentralisedMAS
+        Map<String, Set<String>> commonDF;
+        if (JCMRest.getZKHost() == null) {
+            commonDF = BaseCentralisedMAS.getRunner().getDF();
+        } else {
+            commonDF = new HashMap<String, Set<String>>();
+
+            for (String s : JCMRest.getZKClient().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId)) {
+                for (String a : JCMRest.getZKClient().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId + "/" + s)) {
+                    commonDF.computeIfAbsent(a, k -> new HashSet<>()).add(s);
+                }
+            }
+        }
+        return commonDF;
+
+    }
+
+    /**
+     * Return content of getCommonDF but ready to send to the client (in Json format)
+     * 
+     * @return
+     * @throws Exception
+     */
+	public Map<String, Object> getJsonifiedDF() throws Exception {
+		// Using format Map<String, Set> as a common representation of ZK and
+		// BaseCentralisedMAS
+		Map<String, Set<String>> commonDF = getCommonDF();
+
+		// Json of the DF
+		Map<String,Object> jsonifiedDF = new HashMap<>();
+		for (String s : commonDF.keySet()) {
+		    Map<String, Object> agent = new HashMap<>();
+		    agent.put("agent", s);
+		    Set<String> services = new HashSet<>();
+		    services.addAll(commonDF.get(s));
+		    agent.put("services", services);
+		    jsonifiedDF.put(s,agent);
+		}
+		return jsonifiedDF;
+	}
+	
+	/**
+	 * Add a service to a given agent
+	 * 
+	 * @param agName
+	 * @param values
+	 * @throws Exception
+	 */
+	public void addServiceToAgent(String agName, Map<String, Object> values) throws Exception {
+		String service = values.get("service").toString();
+		if (service == null) {
+		    throw new Exception("A service name have to be informed");
+		}
+		if (JCMRest.getZKHost() == null) {
+		    BaseCentralisedMAS.getRunner().dfRegister(agName, service);
+		} else {            
+		    String type = values.getOrDefault("type", "no-type").toString();
+		    String node = JCMRest.JaCaMoZKDFNodeId+"/"+service+"/"+agName;
+		    if (JCMRest.getZKClient().checkExists().forPath(node) == null) {
+		        JCMRest.getZKClient().create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(node, type.getBytes());
+		    } else {
+		        JCMRest.getZKClient().setData().forPath(node, type.getBytes());
+		    }
+		}
+	}
+
 }
