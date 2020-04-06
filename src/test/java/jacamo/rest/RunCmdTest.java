@@ -24,6 +24,11 @@ public class RunCmdTest {
     @BeforeClass
     public static void launchSystem() {
         try {
+            // Wait JaCaMo be finished by other tests
+            while (JaCaMoLauncher.getRunner() != null) {
+                Thread.sleep(400);
+            }
+
             // Launch jacamo and jacamo-rest running marcos.jcm
             new Thread() {
                 public void run() {
@@ -79,5 +84,4 @@ public class RunCmdTest {
 
         assertEquals("{\"X\":\"10\"}", bb.toString());
     }
-
 }

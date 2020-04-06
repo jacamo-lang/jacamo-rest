@@ -28,7 +28,12 @@ public class ClientTest {
     @BeforeClass
     public static void launchSystem() {
         try {
-            // Launch jacamo and jacamo-rest running marcos.jcm
+            // Wait JaCaMo be finished by other tests
+            while (JaCaMoLauncher.getRunner() != null) {
+                Thread.sleep(400);
+            }
+
+            // Launch jacamo and jacamo-rest running test0.jcm
             new Thread() {
                 public void run() {
                     String[] arg = { "src/test/test0.jcm" };

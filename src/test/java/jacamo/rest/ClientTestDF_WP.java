@@ -29,6 +29,11 @@ public class ClientTestDF_WP {
     @BeforeClass
     public static void launchSystem() {
         try {
+            // Wait JaCaMo be finished by other tests
+            while (JaCaMoLauncher.getRunner() != null) {
+                Thread.sleep(400);
+            }
+            
             // Launch jacamo and jacamo-rest running marcos.jcm
             new Thread() {
                 public void run() {
@@ -150,5 +155,4 @@ public class ClientTestDF_WP {
     
         assertTrue( vl.get("jomi").equals("http://myhouse"));       
     }
-
 }

@@ -27,6 +27,11 @@ public class ClientTestEnv {
     @BeforeClass
     public static void launchSystem() {
         try {
+            // Wait JaCaMo be finished by other tests
+            while (JaCaMoLauncher.getRunner() != null) {
+                Thread.sleep(400);
+            }
+
             // Launch jacamo and jacamo-rest running marcos.jcm
             new Thread() {
                 public void run() {
@@ -63,7 +68,6 @@ public class ClientTestEnv {
     public static void stopSystem() {
         JaCaMoLauncher.getRunner().finish();
     }    
-
 
     @Test(timeout=2000)
     public void testObsPropAndOperations1() {
@@ -137,4 +141,5 @@ public class ClientTestEnv {
         //System.out.println("\n\nResponse: " + response.toString() + "\n" + art);
         assertEquals("tools.Counter", art.get("type"));
     }
+    
 }
