@@ -70,6 +70,35 @@ public class ClientTest {
     }    
 
     @Test(timeout=2000)
+    public void testGetMethods() {
+        System.out.println("\n\ntestGetMethods");
+        Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
+        
+        // Testing ok from agents/
+        response = client.target(uri.toString()).path("agents/")
+                .request(MediaType.APPLICATION_JSON).get();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/): " + rStr);
+        assertTrue(rStr.contains("bob"));
+        
+        // Testing ok agents/bob
+        response = client.target(uri.toString()).path("agents/bob")
+                .request(MediaType.APPLICATION_JSON).get();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob): " + rStr);
+        assertTrue(rStr.contains("price(banana,45)[source(self)]"));
+
+        // Testing 500 agents/bob2 - (bob2 does not exist)
+        response = client.target(uri.toString()).path("agents/bob2")
+                .request(MediaType.APPLICATION_JSON).get();
+        assertEquals(500, response.getStatus());
+
+    }
+
+    
+    @Test(timeout=2000)
     public void testPutMessageBeliefBase() {
         Client client = ClientBuilder.newClient();
         Response response = client.target(uri.toString()).path("agents/bob")
