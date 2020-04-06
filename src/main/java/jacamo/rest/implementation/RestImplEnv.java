@@ -51,7 +51,7 @@ public class RestImplEnv extends AbstractBinder {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getWorkspacesJSON() {
+    public Response getWorkspaces() {
         try {
             return Response
                     .ok()
@@ -85,7 +85,7 @@ public class RestImplEnv extends AbstractBinder {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getWorkspaceJSON(@PathParam("wrksname") String wrksName) {
+    public Response getWorkspace(@PathParam("wrksname") String wrksName) {
         try {
             return Response
                     .ok()
@@ -112,7 +112,7 @@ public class RestImplEnv extends AbstractBinder {
             @ApiResponse(code = 201, message = "generated uri"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response createWorkspace(@PathParam("wrksname") String wrksName, @Context UriInfo uriInfo) {
+    public Response postWorkspace(@PathParam("wrksname") String wrksName, @Context UriInfo uriInfo) {
         try {
             tEnv.createWorkspace(wrksName);
             return Response
@@ -136,7 +136,7 @@ public class RestImplEnv extends AbstractBinder {
      *         {"artifact":"a","operations":["observeProperty","inc"],"linkedArtifacts":["b"],
      *         "type":"tools.Counter","properties":[{"count":10}],"observers":["marcos"]}
      */
-    @Path("/{wrksname}/{artname}")
+    @Path("/{wrksname}/artifacts/{artname}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get artifact information (properties, operations, observers and linked artifacts).")
@@ -144,7 +144,7 @@ public class RestImplEnv extends AbstractBinder {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getArtifactJSON(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName) {
+    public Response getArtifact(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName) {
         try {
             return Response
                     .ok()
@@ -170,7 +170,7 @@ public class RestImplEnv extends AbstractBinder {
      *         Sample:
      *         [10]
      */
-    @Path("/{wrksname}/{artname}/obsprops/{obspropid}")
+    @Path("/{wrksname}/artifacts/{artname}/properties/{propertyid}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get value of an observable property.")
@@ -178,7 +178,11 @@ public class RestImplEnv extends AbstractBinder {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getObsPropJSON(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName, @PathParam("obspropid") String obsPropId) {
+    public Response getArtifactProperties(
+            @PathParam("wrksname") String wrksName, 
+            @PathParam("artname") String artName, 
+            @PathParam("propertyid") 
+            String obsPropId) {
         try {
             return Response
                     .ok()
@@ -196,15 +200,15 @@ public class RestImplEnv extends AbstractBinder {
     /**
      * Executes an operation in an artifact.
      */
-    @Path("/{wrksname}/{artname}/operations/{opname}")
-    @PUT
+    @Path("/{wrksname}/artifacts/{artname}/operations/{opname}")
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Executes an operation in an artifact.")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response execOperation(
+    public Response postArtifactOperation(
             @PathParam("wrksname") String wrksName, 
             @PathParam("artname") String artName, 
             @PathParam("opname") String operationName, 
@@ -223,7 +227,7 @@ public class RestImplEnv extends AbstractBinder {
     /**
      * Creates a new artifact from a given template.
      */
-    @Path("/{wrksname}/{artname}/{javaclass}")
+    @Path("/{wrksname}/artifacts/{artname}/{javaclass}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Creates a new artifact from a given template.")
@@ -231,7 +235,7 @@ public class RestImplEnv extends AbstractBinder {
             @ApiResponse(code = 201, message = "generated uri"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response createArt(
+    public Response postArtifact(
             @PathParam("wrksname") String wrksName, 
             @PathParam("artname") String artName, 
             @PathParam("javaclass") String javaClass, 
