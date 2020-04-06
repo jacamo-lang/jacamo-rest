@@ -200,7 +200,7 @@ public class RestImplEnv extends AbstractBinder {
     /**
      * Executes an operation in an artifact.
      */
-    @Path("/{wrksname}/artifacts/{artname}/operations/{opname}")
+    @Path("/{wrksname}/artifacts/{artname}/operations/{opname}/execute")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Executes an operation in an artifact.")

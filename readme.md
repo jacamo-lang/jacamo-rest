@@ -97,11 +97,10 @@ All endpoints accepts OPTIONS returning allowed verbs
 ## Workspaces
 
 * ``GET; POST /workspaces``: Retrieves workspaces collection (with links); append a workspace.
-* ``GET; PUT; DELETE ../{workspaceuid}`` Returns workspace data (with links to artifacts); update; remove.
 * ``GET; POST ../{workspaceuid}/artifacts`` Retrieves artifacts collection; append an artifact.
-* ``GET; PUT; DELETE ../{workspaceuid}/artifacts/{artifactuid}`` Returns artifact data; update; remove.
-* ``GET ../{workspaceuid}/artifacts/{artifactuid}/properties`` Returns observable properties.
-* ``GET ../{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations.
+* ``GET ../{workspaceuid}/artifacts/{artifactuid}`` Returns artifact data.
+* ``GET /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties/{obspropsuid}`` Returns obs props data.
+* ``POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations/{operationid}/execute``  Execute operation.
 
 ## Organisations
 
@@ -129,9 +128,13 @@ Keeping all 0.5 endpoints
 
 ## Workspaces
 
+* ``GET; PUT; DELETE ../{workspaceuid}`` Returns workspace data (with links to artifacts); update; remove.
+* ``PUT; DELETE ../{workspaceuid}/artifacts/{artifactuid}`` Add update; remove.
 * ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties`` Returns observable properties; create a property.
-* ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties/{obspropsuid}`` Returns obs props data; update; remove.
+* ``GET ../{workspaceuid}/artifacts/{artifactuid}/properties`` Returns observable properties.
+* ``PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/properties/{obspropsuid}`` Add update; remove.
 * ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations; create an operation (inserting java code).
+* ``GET ../{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations.
 * ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations/{operationuid}`` Returns operation code; update; remove.
 
 # REST API version 0.4
