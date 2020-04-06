@@ -1,6 +1,7 @@
 package jacamo.rest.implementation;
 
 import java.net.URI;
+import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -314,51 +315,54 @@ public class RestImplAg extends AbstractBinder {
     }
     
     /**
-     * TODO: Get agent services.
+     * Get services provided by a given agent.
      * 
-     * @param agName agent name
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         ["vender(banana)","iamhere"]
      */
-    @Path("/{agentname}/services")
+    @Path("/{agname}/services")
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @ApiOperation(value = "TODO: Get agent services.")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get services provided by a given agent.")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getAgentServices(@PathParam("agentname") String agName) {
+    public Response getServices(@PathParam("agname") String agName) {
         try {
-        	//TODO: To develop.
             return Response
                     .ok()
+                    .entity(new Gson().toJson( tAg.getCommonDF().get(agName) ))
+                    .header("Access-Control-Allow-Origin", "*")
                     .build();
+
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
         }
     }
-
+    
     /**
-     * TODO: Append a service to the agent.
+     * Append a service to the agent.
      * 
-     * @param m message
      * @param agName agent name
+     * @param values a map of services
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      */
     @Path("/{agentname}/services/{serviceid}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "TODO: Append a service to the agent.")
+    @ApiOperation(value = "Append a service to the agent.")
     @ApiResponses(value = { 
             @ApiResponse(code = 201, message = "generated uri"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response postAgentService(@PathParam("agentname") String agName, @PathParam("serviceid") String serviceid) {
+    public Response postAgentService(@PathParam("agentname") String agName, Map<String, Object> values) {
         try {
-            //TODO: To develop. 
+            tAg.addServiceToAgent(agName, values);
+            
             return Response
                     .created(new URI("to define"))
                     .build();

@@ -1,13 +1,8 @@
 package jacamo.rest.implementation;
 
-import java.util.Map;
-
 import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -54,7 +49,7 @@ public class RestImplDF extends AbstractBinder {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getDFJSON() {
+    public Response getServices() {
         try {
             Gson gson = new Gson();
 
@@ -63,63 +58,6 @@ public class RestImplDF extends AbstractBinder {
                     .entity(gson.toJson(tAg.getJsonifiedDF()))
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(500, e.getMessage()).build();
-        }
-    }
-
-    /**
-     * Get services provided by a given agent.
-     * 
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     *         ["vender(banana)","iamhere"]
-     */
-    @Path("/{agname}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get services provided by a given agent.")
-    @ApiResponses(value = { 
-            @ApiResponse(code = 200, message = "success"),
-            @ApiResponse(code = 500, message = "internal error")
-    })
-    public Response getServices(@PathParam("agname") String agName) {
-        try {
-            return Response
-                    .ok()
-                    .entity(new Gson().toJson( tAg.getCommonDF().get(agName) ))
-                    .header("Access-Control-Allow-Origin", "*")
-                    .build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(500, e.getMessage()).build();
-        }
-    }
-
-    /**
-     * Add some service to an agent.
-     * 
-     * JSON is a Map like {"service":"help(drunks)" }
-     * 
-     */
-    @Path("/{agname}")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Add some service to an agent.")
-    @ApiResponses(value = { 
-            @ApiResponse(code = 200, message = "success"),
-            @ApiResponse(code = 500, message = "internal error")
-    })
-    public Response addService(@PathParam("agname") String agName, Map<String, Object> values) {
-        try {
-            tAg.addServiceToAgent(agName, values);
-                        
-            return Response
-                    .ok()
-                    .build();
-            
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
