@@ -311,6 +311,8 @@ public class TranslAg {
                 e.printStackTrace();
             }
         });
+        
+        List<String> beliefs = getAgentsBB(agName);
 
         Map<String, Object> agent = new HashMap<>();
         agent.put("agent", agName);
@@ -318,6 +320,7 @@ public class TranslAg {
         agent.put("roles", roles);
         agent.put("missions", missions);
         agent.put("workspaces", workspaces);
+        agent.put("beliefs", beliefs);
 
         return agent;
     }
@@ -479,24 +482,7 @@ public class TranslAg {
      * @throws Exception
      */
     public Map<String, Set<String>> getCommonDF() throws Exception {
-        return BaseCentralisedMAS.getRunner().getRuntimeServices().getDF();
-        /*// JH: runtimeservices now supports getDF
-        // Using format Map<String, Set> as a common representation of ZK and
-        // BaseCentralisedMAS
-        Map<String, Set<String>> commonDF;
-        if (JCMRest.getZKHost() == null) {
-            commonDF = BaseCentralisedMAS.getRunner().getDF();
-        } else {
-            commonDF = new HashMap<String, Set<String>>();
-
-            for (String s : JCMRest.getZKClient().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId)) {
-                for (String a : JCMRest.getZKClient().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId + "/" + s)) {
-                    commonDF.computeIfAbsent(a, k -> new HashSet<>()).add(s);
-                }
-            }
-        }
-        return commonDF;
-        */
+        return ((BaseCentralisedMAS) BaseCentralisedMAS.getRunner().getRuntimeServices()).getDF();
     }
 
     /**

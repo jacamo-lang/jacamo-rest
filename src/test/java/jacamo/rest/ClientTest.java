@@ -67,7 +67,7 @@ public class ClientTest {
     @Test(timeout=2000)
     public void testPutMessageBeliefBase() {
         Client client = ClientBuilder.newClient();
-        Response response = client.target(uri.toString()).path("agents/bob/mind/bb")
+        Response response = client.target(uri.toString()).path("agents/bob")
                 .request(MediaType.APPLICATION_JSON).get();
 
         String bb = response.readEntity(String.class);
@@ -97,7 +97,7 @@ public class ClientTest {
 
         assertEquals(200, r.getStatus());
 
-        r = client.target(uri.toString()).path("agents/bob/mind/bb")
+        r = client.target(uri.toString()).path("agents/bob")
                 .request(MediaType.APPLICATION_JSON).get();
 
         String bb = r.readEntity(String.class);
@@ -132,9 +132,9 @@ public class ClientTest {
         
         // 3. test
         r = client.target(uri.toString())
-                .path("agents/bob/mind/bb")
+                .path("agents/bob")
                 .request(MediaType.APPLICATION_JSON).get();
-
+        
         bb = r.readEntity(String.class);
 
         //System.out.println("\n\nResponse: " + r.toString() + "\n" + bb);
