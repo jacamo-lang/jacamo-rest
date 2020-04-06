@@ -47,6 +47,11 @@ $ docker run -ti --rm --net jcm_net  --name host2 -v "$(pwd)":/app jomifred/jaca
 ```
 These commands build a docker image and launch marcos and bob projects. Usually super user privileges are necessary.
 
+
+# Testing this project
+To test this project, run ``./gradlew test``.
+You find the test specifications in [./src/test/java/jacomo/rest](./src/test/java/jacomo/rest).
+
 # More about jacamo-rest
 
 * Each agent has a REST API to receive message and be inspected

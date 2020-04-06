@@ -31,3 +31,7 @@ hs_err_pid*
 /build/
 /bin/
 .DS_Store
+out/
+
+# IntelliJ project files
+.idea/
