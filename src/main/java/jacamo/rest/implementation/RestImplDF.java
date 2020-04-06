@@ -16,10 +16,15 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import jacamo.rest.mediation.TranslAg;
 
 @Singleton
 @Path("/services")
+@Api(value = "/services")
 public class RestImplDF extends AbstractBinder {
 
     TranslAg tAg = new TranslAg();
@@ -30,7 +35,8 @@ public class RestImplDF extends AbstractBinder {
     }
 
     /**
-     * Get MAS Directory Facilitator containing agents and services they provide
+     * Get MAS Directory Facilitator (agents and services).
+     * 
      * Following the format suggested in the second example of
      * https://opensource.adobe.com/Spry/samples/data_region/JSONDataSetSample.html
      * We are providing lists of maps
@@ -43,6 +49,11 @@ public class RestImplDF extends AbstractBinder {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get MAS Directory Facilitator (agents and services).")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getDFJSON() {
         try {
             Gson gson = new Gson();
@@ -59,16 +70,20 @@ public class RestImplDF extends AbstractBinder {
     }
 
     /**
-     * Get services provided by a given agent
+     * Get services provided by a given agent.
      * 
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         ["vender(banana)","iamhere"]
      */
-
     @Path("/{agname}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get services provided by a given agent.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getServices(@PathParam("agname") String agName) {
         try {
             return Response
@@ -84,7 +99,7 @@ public class RestImplDF extends AbstractBinder {
     }
 
     /**
-     * Add some service for an agent
+     * Add some service to an agent.
      * 
      * JSON is a Map like {"service":"help(drunks)" }
      * 
@@ -92,7 +107,11 @@ public class RestImplDF extends AbstractBinder {
     @Path("/{agname}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "Add some service to an agent.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response addService(@PathParam("agname") String agName, Map<String, Object> values) {
         try {
             tAg.addServiceToAgent(agName, values);
