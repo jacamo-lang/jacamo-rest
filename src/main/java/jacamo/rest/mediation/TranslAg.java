@@ -70,7 +70,7 @@ public class TranslAg {
     }
 
     /**
-     * Create agent and corresponfing asl file with the agName if possible, or agName_1, agName_2,...
+     * Create agent and corresponding asl file with the agName if possible, or agName_1, agName_2,...
      * 
      * @param agName
      * @return
@@ -535,6 +535,7 @@ public class TranslAg {
         if (service == null) {
             throw new Exception("A service name have to be informed");
         }
+        // TODO: use runtimeservices (in JCMRest, dfRegister must be overwritten as below)
         if (JCMRest.getZKHost() == null) {
             BaseCentralisedMAS.getRunner().dfRegister(agName, service);
         } else {            

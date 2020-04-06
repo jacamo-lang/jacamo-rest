@@ -31,8 +31,8 @@ import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import jacamo.platform.DefaultPlatformImpl;
 import jacamo.rest.config.RestAgArch;
 import jacamo.rest.config.RestAppConfig;
-import jason.infra.centralised.BaseCentralisedMAS;
 import jason.runtime.DelegatedRuntimeServices;
+import jason.runtime.RuntimeServicesFactory;
 
 
 public class JCMRest extends DefaultPlatformImpl {
@@ -67,11 +67,11 @@ public class JCMRest extends DefaultPlatformImpl {
     public void init(String[] args) throws Exception {
         
         // change the runtimeservices
-        BaseCentralisedMAS.getRunner().setRuntimeServives(
-                new DelegatedRuntimeServices(BaseCentralisedMAS.getRunner().getRuntimeServices()) {
+        RuntimeServicesFactory.set(
+                new DelegatedRuntimeServices(RuntimeServicesFactory.get()) {
                     @Override
                     public Map<String, Set<String>> getDF() {
-                        if (JCMRest.getZKHost() == null) {
+                        if (getZKHost() == null) {
                             return super.getDF();
                         } else {
                             try {
@@ -93,7 +93,7 @@ public class JCMRest extends DefaultPlatformImpl {
         );
         
         // adds RestAgArch as default ag arch when using this platform
-        BaseCentralisedMAS.getRunner().getRuntimeServices().registerDefaultAgArch(RestAgArch.class.getName());
+        RuntimeServicesFactory.get().registerDefaultAgArch(RestAgArch.class.getName());
         
         int restPort = 3280;
         int zkPort   = 2181;
@@ -229,7 +229,7 @@ public class JCMRest extends DefaultPlatformImpl {
         int tickTime = 2000;
 
         try {
-            cleanZK();
+            cleanZKFiles();
             
             zkHost = InetAddress.getLocalHost().getHostAddress()+":"+port;
 
@@ -258,7 +258,7 @@ public class JCMRest extends DefaultPlatformImpl {
         }
     }
     
-    void cleanZK() {
+    void cleanZKFiles() {
         for (File f: FileUtils.getTempDirectory().listFiles()) {
             if (f.getName().startsWith(zkTmpFileName)) {
                 try {
