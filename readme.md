@@ -104,18 +104,12 @@ All endpoints accepts OPTIONS returning allowed verbs
 
 ## Organisations
 
-* ``GET; POST /organisations``: Retrieves organisations collection; append an organisation.
-* ``GET; PUT; DELETE ../{organisationuid}`` Returns organisation data (with links to artifacts); update; remove.
-* ``GET; POST ../{organisationuid}/roles`` Retrieves roles collection; append a role.
-* ``GET; PUT; DELETE ../{organisationuid}/roles/{roleuid}`` Returns role data; update; remove.
-* ``GET; POST ../{organisationuid}/groups`` Retrieves groups collection; append a group.
-* ``GET; PUT; DELETE ../{organisationuid}/groups/{groupuid}`` Returns group data; update; remove.
-* ``GET; POST ../{organisationuid}/schemes`` Retrieves schemes collection; append a scheme.
-* ``GET; PUT; DELETE ../{organisationuid}/schemes/{schemeuid}`` Returns scheme data; update; remove.
+* ``GET /organisations``: Retrieves organisations collection.
+* ``GET ../{organisationuid}`` Returns organisation data (with links to artifacts).
+* ``POST ../{organisationuid}/roles`` append a role.
 
 ## Services
 * ``GET /services``: Retrieves services collection and agents that provide them - works as yellow pages
-* ``GET ../{serviceid}`` Retrieves agents that provides the specific service.
 
 # REST API version 0.6 - proposal
 
@@ -136,6 +130,20 @@ Keeping all 0.5 endpoints
 * ``GET; POST /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations; create an operation (inserting java code).
 * ``GET ../{workspaceuid}/artifacts/{artifactuid}/operations`` Returns operations.
 * ``GET; PUT; DELETE /workspaces/{workspaceuid}/artifacts/{artifactuid}/operations/{operationuid}`` Returns operation code; update; remove.
+
+## Organisations
+
+* ``POST /organisations``: add append an organisation.
+* ``PUT; DELETE ../{organisationuid}``add update; remove.
+* ``GET; POST ../{organisationuid}/roles`` Retrieves roles collection; append a role.
+* ``GET; PUT; DELETE ../{organisationuid}/roles/{roleuid}`` Returns role data; update; remove.
+* ``GET; POST ../{organisationuid}/groups`` Retrieves groups collection; append a group.
+* ``GET; PUT; DELETE ../{organisationuid}/groups/{groupuid}`` Returns group data; update; remove.
+* ``GET; POST ../{organisationuid}/schemes`` Retrieves schemes collection; append a scheme.
+* ``GET; PUT; DELETE ../{organisationuid}/schemes/{schemeuid}`` Returns scheme data; update; remove.
+
+## services
+* ``GET ../{serviceid}`` Retrieves agents that provides the specific service.
 
 # REST API version 0.4
 

@@ -110,7 +110,7 @@ public class RestImplOrg extends AbstractBinder {
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      */
-    @Path("/{oename}/group/{groupname}")
+    @Path("/{oename}/groups/{groupname}/roles/{roleid}")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @ApiOperation(value = "Add a new role into an organisation/group.")
@@ -119,9 +119,9 @@ public class RestImplOrg extends AbstractBinder {
             @ApiResponse(code = 500, message = "internal error")
     })
     public Response createNewRole(@PathParam("oename") String oeName, @PathParam("groupname") String groupName,
-            @FormParam("role") String role) {
+    		@PathParam("roleid") String roleid) {
         try {
-            tOrg.createRole(oeName, role);
+            tOrg.createRole(oeName, roleid);
 
             return Response
                     .ok()
