@@ -15,10 +15,15 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import jacamo.rest.mediation.TranslOrg;
 
 @Singleton
-@Path("/oe")
+@Path("/organisations")
+@Api(value = "/organisations")
 public class RestImplOrg extends AbstractBinder {
 
     TranslOrg tOrg = new TranslOrg();
@@ -29,7 +34,7 @@ public class RestImplOrg extends AbstractBinder {
     }
 
     /**
-     * Get list of running organisations in JSON format.
+     * Get list of running organisations.
      * 
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
@@ -37,6 +42,11 @@ public class RestImplOrg extends AbstractBinder {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get list of running organisations.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getOrganisationsJSON() {
 
         Gson gson = new Gson();
@@ -53,8 +63,7 @@ public class RestImplOrg extends AbstractBinder {
     }
 
     /**
-     * Get details of one organisation in JSON format, including groups, schemes and
-     * norms.
+     * Get organisation's information (groups, schemes and norms).
      * 
      * @param oeName name of the organisation
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
@@ -70,9 +79,14 @@ public class RestImplOrg extends AbstractBinder {
 	 *         mission1 )"],"isWellFormed":true, "goals":["goal2 \u003c-
 	 *         goal1","goal3 \u003c- goal1","goal4 \u003c- goal1"]}]}
      */
-    @Path("/{oename}/os")
+    @Path("/{oename}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get organisation's information (groups, schemes and norms).")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getSpecificationJSON(@PathParam("oename") String oeName) {
         try {
             Gson gson = new Gson();
@@ -88,7 +102,7 @@ public class RestImplOrg extends AbstractBinder {
     }
 
     /**
-     * Add a new role into an organisation/group
+     * Add a new role into an organisation/group.
      * 
      * @param oeName name of the organisation
      * @param groupName name of the group
@@ -99,14 +113,18 @@ public class RestImplOrg extends AbstractBinder {
     @Path("/{oename}/group/{groupname}")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_HTML)
+    @ApiOperation(value = "Add a new role into an organisation/group.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response createNewRole(@PathParam("oename") String oeName, @PathParam("groupname") String groupName,
             @FormParam("role") String role) {
         try {
             tOrg.createRole(oeName, role);
 
             return Response
-                    .ok("Role created!")
+                    .ok()
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
