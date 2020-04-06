@@ -257,7 +257,7 @@ swagger {
         basePath = ''
         info {
             title = 'REST API for JaCaMo'
-            version = 'v0.5'
+            version = 'v0.5 - SNAPSHOT'
             description = 'More information: https://github.com/jacamo-lang/jacamo-rest'
         }
         outputPath = "${project.rootDir}/generated/document.html"

@@ -8,6 +8,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -121,6 +122,32 @@ public class RestImplAg extends AbstractBinder {
         }
     }
 
+    /**
+     * TODO: Update an agent (replace its code and reload).
+     * 
+     * @param agName agent's name
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     */
+    @Path("/{agentname}")
+    @PUT
+    @ApiOperation(value = "TODO: Update an agent (replace its code and reload).")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response updateAgent(@PathParam("agentname") String agName) {
+        try {
+        	//TODO: to be developed
+            return Response
+                    .ok()
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+    
     /**
      * Get agent's intentions status. Example:
      * {"idle":true,"nbIntentions":1,"intentions":[{"size":1,"finished":false,"id":161,"suspended":false}]}

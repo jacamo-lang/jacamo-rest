@@ -87,7 +87,6 @@ All endpoints accepts OPTIONS returning allowed verbs
 * ``GET; POST /agents``: Retrieves agents collection - works as white pages - (with links); append an agent.
 * ``GET; PUT; DELETE ../{agentuid}``: Returns agent data (mind, bb and intentions (obs 1); update; remove.
 * ``GET; POST ../{agentuid}/plans`` Retrieves plans of the specified agent; append a plan.
-* ``GET; PUT; DELETE ../{agentuid}/plans/{planuid}``: Returns an agent plan; update; remove.
 * ``GET ../{agentuid}/log`` Returns log of the specified agent.
 * ``POST ../{agentuid}/command`` Posts a new command.
 * ``POST ../{agentname}/inbox`` Posts a new message.
