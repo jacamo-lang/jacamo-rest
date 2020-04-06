@@ -162,65 +162,71 @@ public class ClientTest {
     }
     
     @Test(timeout=2000)
-    public void testPutMessageBeliefBase() {
+    public void testGetAgentBeliefs() {
+        System.out.println("\n\ntestGetAgentBeliefs");
         Client client = ClientBuilder.newClient();
-        Response response = client.target(uri.toString()).path("agents/bob")
+        Response response;
+        String rStr;
+
+        client = ClientBuilder.newClient();
+        response = client.target(uri.toString()).path("agents/bob")
                 .request(MediaType.APPLICATION_JSON).get();
-
-        String bb = response.readEntity(String.class);
-
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + bb);
-
-        assertTrue(bb.toString().contains("price(banana,45)[source(self)]"));
-
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob): " + rStr);
+        assertTrue(rStr.contains("price(banana,45)[source(self)]"));
     }
 
     @Test(timeout=2000)
-    public void testPutMessageInMailBoxJson() {
+    public void testPostAgentInbox() {
+        System.out.println("\n\ntestPostAgentInbox");
         Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
+
+        client = ClientBuilder.newClient();
 
         Message m = new Message("34", "tell", "jomi", "bob", "vl(10)");
         Gson gson = new Gson();
 
-        //System.out.println("sending "+Entity.json(gson.toJson(m)));
-        // {"performative":"tell","sender":"jomi","receiver":"bob","content":"vl(10)","msgId":"34"}
-        
-        Response r = client.target(uri.toString()).path("agents/bob/inbox")
+        response = client.target(uri.toString()).path("agents/bob/inbox")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.TEXT_PLAIN)
                 .post(Entity.json(gson.toJson(m)));
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob/inbox): " + rStr);
+        assertEquals(200, response.getStatus());
 
-        System.out.println("Message sent result: " + r);
-
-        assertEquals(200, r.getStatus());
-
-        r = client.target(uri.toString()).path("agents/bob")
+        response = client.target(uri.toString()).path("agents/bob")
                 .request(MediaType.APPLICATION_JSON).get();
-
-        String bb = r.readEntity(String.class);
-
-        System.out.println("\n\nResponse: " + r.toString() + "\n" + bb.substring(1, 31));
-
-        assertTrue(bb.toString().contains("vl(10)[source(jomi)]"));    
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob): " + rStr);
+        assertTrue(rStr.contains("vl(10)[source(jomi)]"));    
     }
     
     @Test(timeout=2000)
-    public void testPutPlan() {
-        // 1. add plan
+    public void testPostAgentPlan() {
+        System.out.println("\n\ntestPostAgentPlan");
         Client client = ClientBuilder.newClient();
-        Response r = client.target(uri.toString())
+        Response response;
+        String rStr;
+
+        // 1. add plan
+        client = ClientBuilder.newClient();
+        response = client.target(uri.toString())
                 .path("agents/bob/plans")
                 .request()
+                .accept(MediaType.TEXT_PLAIN)
                 .post(
                         Entity.json(
                                 "+!gg(X) : X > 10  <- +bb1(X); .print(\"*****\",X). " +
                                 "+!gg(X) : X <= 10 <- +bb2(X); .print(\"!!!!!\",X).")
                 );
-        String bb = r.readEntity(String.class);
-        assertEquals(200, r.getStatus());
+        rStr = response.readEntity(String.class);
+        System.out.println("Response (agents/bob/plans): " + rStr);
+        assertEquals(200, response.getStatus());
         
         // 2. run plan
-        r = client.target(uri.toString())
+        response = client.target(uri.toString())
                 .path("agents/bob/inbox")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.TEXT_PLAIN)
@@ -228,14 +234,12 @@ public class ClientTest {
                         new Message("39", "achieve", "jomi", "bob", "gg(13)"))));
         
         // 3. test
-        r = client.target(uri.toString())
+        response = client.target(uri.toString())
                 .path("agents/bob")
                 .request(MediaType.APPLICATION_JSON).get();
         
-        bb = r.readEntity(String.class);
-
-        //System.out.println("\n\nResponse: " + r.toString() + "\n" + bb);
-
-        assertTrue(bb.toString().contains("bb1(13)[source(self)]"));    
+        rStr = response.readEntity(String.class);
+        System.out.println("Response (agents/bob/plans): " + rStr);
+        assertTrue(rStr.contains("bb1(13)[source(self)]"));    
     }
 }

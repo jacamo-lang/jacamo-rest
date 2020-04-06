@@ -215,6 +215,14 @@ public class RestImplAg extends AbstractBinder {
         }
     }
 
+    /**
+     * Add a message on agent's inbox
+     * 
+     * @param m message
+     * @param agName agent name
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     */
     @Path("/{agentname}/inbox")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
