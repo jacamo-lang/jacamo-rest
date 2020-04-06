@@ -1,6 +1,7 @@
 package jacamo.rest.implementation;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -20,6 +21,10 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import jacamo.rest.util.Message;
 import jacamo.rest.mediation.TranslAg;
 
@@ -32,6 +37,7 @@ import jacamo.rest.mediation.TranslAg;
  */
 @Singleton
 @Path("/agents")
+@Api(value = "/agents")
 public class RestImplAg extends AbstractBinder {
 
     TranslAg tAg = new TranslAg();
@@ -43,12 +49,17 @@ public class RestImplAg extends AbstractBinder {
     }
     
     /**
-     * Produces JSON containing the list of existing agents Example: ["ag1","ag2"]
+     * List of agent names: ["ag1","ag2"]
      * 
      * @return HTTP 200 Response (ok status)
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "List of agent names")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getAgents() {
         return Response
                 .ok()
@@ -58,17 +69,22 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Create an Agent. Produces PLAIN TEXT with HTTP response for this operation If
+     * Create an Agent. Produces PLAIN TEXT with HTTP response for this operation. If
      * an ASL file with the given name exists, it will launch an agent with existing
      * code. Otherwise, creates an agent that will start say 'Hi'.
      * 
      * @param agName name of the agent to be created
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     * @return HTTP 201 Response (created) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      */
     @Path("/{agentname}")
     @POST
     @Produces(MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "Create an Agent.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 201, message = "generated uri"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response postAgent(@PathParam("agentname") String agName, @Context UriInfo uriInfo) {
         try {
             return Response
@@ -81,7 +97,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Kill an agent. Produces PLAIN TEXT with response for this operation.
+     * Kill an agent.
      * 
      * @param agName agent's name to be killed
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
@@ -89,6 +105,11 @@ public class RestImplAg extends AbstractBinder {
      */
     @Path("/{agentname}")
     @DELETE
+    @ApiOperation(value = "Kill an agent.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response deleteAgent(@PathParam("agentname") String agName) {
         try {
             tAg.deleteAgent(agName);
@@ -102,7 +123,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Produces Agent's intentions statuses in JSON format. Example:
+     * Agent's intentions status. Example:
      * {"idle":true,"nbIntentions":1,"intentions":[{"size":1,"finished":false,"id":161,"suspended":false}]}
      * 
      * @param agName agent's name
@@ -112,6 +133,11 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/status")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Agent's intentions status.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getAgentStatus(@PathParam("agentname") String agName) {
         try {
             return Response
@@ -124,8 +150,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Get agent information (namespaces, roles, missions and workspaces) in JSON
-     * format
+     * Agent information (namespaces, roles, missions and workspaces).
      * 
      * @param agName name of the agent
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
@@ -135,6 +160,11 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Agent information (namespaces, roles, missions and workspaces).")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getAgent(@PathParam("agentname") String agName) {
         try {
             return Response
@@ -147,7 +177,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Upload new plans into an agent.
+     * Append new plans into an agent.
      * 
      * @param agName              name of the agent
      * @param plans               plans to be uploaded, as an String
@@ -157,6 +187,11 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/plans")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Append new plans into an agent.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response postAgentPlans(@PathParam("agentname") String agName, String plans) {
         try {
             tAg.addAgentPlan(agName, plans);
@@ -170,8 +205,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Send a command to an agent. Produces a TEXT PLAIN output containing a status
-     * message
+     * Send a command to an agent returning a status message.
      * 
      * @param cmd    command expression
      * @param agName agent name
@@ -182,6 +216,11 @@ public class RestImplAg extends AbstractBinder {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Send a command to an agent returning a status message.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response postAgentCommand(@FormParam("c") String cmd, @PathParam("agentname") String agName) {
         try {
             return Response
@@ -194,7 +233,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Get agent full log in a TEXT PLAIN format
+     * Get agent full log as text.
      * 
      * @param agName agent name
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
@@ -203,6 +242,11 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/log")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "Get agent full log as text.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getAgentLog(@PathParam("agentname") String agName) {
         try {
             return Response
@@ -215,7 +259,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Add a message on agent's inbox
+     * Append a message on agent's inbox.
      * 
      * @param m message
      * @param agName agent name
@@ -225,6 +269,11 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/inbox")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Append a message on agent's inbox.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response postAgentMessage(Message m, @PathParam("agentname") String agName) {
         try {
             tAg.addMessageToAgentMailbox(m, agName); 

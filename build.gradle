@@ -5,13 +5,16 @@
    October 13, 2018 - 16:23:38
 */
 
+plugins {
+  id 'java'
+  id 'eclipse'
+  id 'maven-publish'
+  id "com.benjaminsproule.swagger" version "1.0.8"
+}
+
 defaultTasks 'run'
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-
-version '0.4-SNAPSHOT'
+version '0.5-SNAPSHOT'
 group   'org.jacamo'
 
 sourceCompatibility = 1.8
@@ -61,6 +64,8 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.8.5'
 	compile 'commons-io:commons-io:2.6'
 	
+	// https://mvnrepository.com/artifact/io.swagger/swagger-annotations
+	compile 'io.swagger:swagger-annotations:1.6.1'
 
 	// https://mvnrepository.com/artifact/junit/junit
 	testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -242,4 +247,21 @@ task publishMavenGitHub(dependsOn: [ 'build', 'publishToMavenLocal']) {
         workingDir rdir
     }
   }
+  
+swagger {
+    apiSource {
+        springmvc = false
+        locations = [ 'jacamo.rest' ]
+        schemes = [ 'http' ]
+        host = '127.0.0.1:8080'
+        basePath = ''
+        info {
+            title = 'REST API for JaCaMo'
+            version = 'v0.5'
+            description = 'More information: https://github.com/jacamo-lang/jacamo-rest'
+        }
+        outputPath = "${project.rootDir}/generated/document.html"
+        swaggerDirectory = "${project.rootDir}/generated/swagger-ui"
+    }
+}  
 }
