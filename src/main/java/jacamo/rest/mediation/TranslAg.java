@@ -417,11 +417,10 @@ public class TranslAg {
      * @throws Exception
      */
     public String getAgentLog(String agName) throws Exception {
-        StringBuilder o = agLog.get(agName);
-        if (o != null) {
-            return o.toString();
+        if (agLog.containsKey(agName)) {
+            return agLog.get(agName).toString();
         } else {
-            return "";
+            throw new Exception("Could not access agent's log.");
         }
     }
     

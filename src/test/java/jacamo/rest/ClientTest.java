@@ -8,6 +8,7 @@ import java.net.URI;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -70,8 +71,8 @@ public class ClientTest {
     }    
 
     @Test(timeout=2000)
-    public void testGetMethods() {
-        System.out.println("\n\ntestGetMethods");
+    public void testGetAgents() {
+        System.out.println("\n\ntestGetAgents");
         Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
@@ -82,7 +83,15 @@ public class ClientTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/): " + rStr);
         assertTrue(rStr.contains("bob"));
-        
+    }
+    
+    @Test(timeout=2000)
+    public void testGetAgent() {
+        System.out.println("\n\ntestGetAgent");
+        Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
+
         // Testing ok agents/bob
         response = client.target(uri.toString()).path("agents/bob")
                 .request(MediaType.APPLICATION_JSON).get();
@@ -93,10 +102,64 @@ public class ClientTest {
         // Testing 500 agents/bob2 - (bob2 does not exist)
         response = client.target(uri.toString()).path("agents/bob2")
                 .request(MediaType.APPLICATION_JSON).get();
+        System.out.println("Response (agents/bob2): should be 500");
+        assertEquals(500, response.getStatus());
+    }
+     
+    @Test(timeout=2000)
+    public void testGetAgentStatus() {
+        System.out.println("\n\ntestGetAgentStatus");
+        Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
+
+        
+        // Testing ok agents/bob/status
+        response = client.target(uri.toString()).path("agents/bob/status")
+                .request(MediaType.APPLICATION_JSON).get();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob/status): " + rStr);
+        assertTrue(rStr.contains("intentions"));
+
+        // Testing 500 agents/bob2/status - (bob2 does not exist)
+        response = client.target(uri.toString()).path("agents/bob2/status")
+                .request(MediaType.APPLICATION_JSON).get();
+        System.out.println("Response (agents/bob2/status): should be 500");
+        assertEquals(500, response.getStatus());
+    }
+    
+    @Test(timeout=2000)
+    public void testGetAgentLog() {
+        System.out.println("\n\ntestGetAgentLog");
+        Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
+
+        Form form = new Form();
+        form.param("c", "+raining");
+        Entity<Form> entity = Entity.form(form);
+        
+        //Send a command to write something on bob's log
+        client = ClientBuilder.newClient();
+        response = client.target(uri.toString())
+                .path("agents/bob/command")
+                .request()
+                .post(entity);
+
+        // Testing ok agents/bob/log
+        response = client.target(uri.toString()).path("agents/bob/log")
+                .request(MediaType.TEXT_PLAIN).get();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob/log): " + rStr);
+        assertTrue(rStr.contains("Command +raining"));
+
+        // Testing 500 agents/bob2/log - (bob2 does not exist)
+        response = client.target(uri.toString()).path("agents/bob2/log")
+                .request(MediaType.TEXT_PLAIN).get();
+        System.out.println("Response (agents/bob2/log): should be 500");
         assertEquals(500, response.getStatus());
 
     }
-
     
     @Test(timeout=2000)
     public void testPutMessageBeliefBase() {
