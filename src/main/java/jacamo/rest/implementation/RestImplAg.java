@@ -9,7 +9,6 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -239,12 +238,18 @@ public class RestImplAg extends AbstractBinder {
      * @param agName agent name
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/command'
+     *         			--header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'c=+raining'
      */
     @Path("/{agentname}/command")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Send a command to an agent returning a status message.")
+    @ApiOperation(
+    		value = "Send a command to an agent returning a status message.",
+			notes = "Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/command' "+
+					"--header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'c=+raining'"
+	)
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
@@ -266,11 +271,15 @@ public class RestImplAg extends AbstractBinder {
      * @param agName agent name
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         Example: [06-04-20 20:37:03] Command +raining: {}
      */
     @Path("/{agentname}/log")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @ApiOperation(value = "Get agent full log as text.")
+    @ApiOperation(
+    		value = "Get agent full log as text.",
+    		notes = "Example: [06-04-20 20:37:03] Command +raining: {}"
+    )
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
@@ -319,17 +328,20 @@ public class RestImplAg extends AbstractBinder {
      * 
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     *         ["vender(banana)","iamhere"]
+     *         Example: ["supply(banana)","consultant"]
      */
     @Path("/{agname}/services")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get services provided by a given agent.")
+    @ApiOperation(
+            value = "Get services provided by a given agent.",
+            notes = "Example: [\"supply(banana)\",\"consultant\"]"
+    )
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getServices(@PathParam("agname") String agName) {
+    public Response getServices(@PathParam("agentname") String agName) {
         try {
             return Response
                     .ok()
