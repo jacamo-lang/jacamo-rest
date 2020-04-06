@@ -182,9 +182,11 @@ public class TranslAg {
      * kill an agent
      * @param agName
      * @return
+     * @throws Exception 
      */
-    public boolean deleteAgent(String agName) {
-        return RuntimeServicesFactory.get().killAgent(agName, "web", 0);
+    public void deleteAgent(String agName) throws Exception {
+        if (!RuntimeServicesFactory.get().killAgent(agName, "web", 0))
+            throw new Exception("Unable to kill agent: " + agName);
     }
     
     /**
@@ -420,7 +422,7 @@ public class TranslAg {
         if (agLog.containsKey(agName)) {
             return agLog.get(agName).toString();
         } else {
-            throw new Exception("Could not access agent's log.");
+            throw new Exception("Unable to access " + agName + "'s log.");
         }
     }
     

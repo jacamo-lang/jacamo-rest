@@ -89,11 +89,11 @@ public class RestImplAg extends AbstractBinder {
      */
     @Path("/{agentname}")
     @DELETE
-    @Produces(MediaType.TEXT_PLAIN)
     public Response deleteAgent(@PathParam("agentname") String agName) {
         try {
+            tAg.deleteAgent(agName);
             return Response
-                    .ok("Result of kill: " + tAg.deleteAgent(agName))
+                    .ok()
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,12 +157,11 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/plans")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
     public Response postAgentPlans(@PathParam("agentname") String agName, String plans) {
         try {
             tAg.addAgentPlan(agName, plans);
             return Response
-                    .ok("ok, code uploaded for agent '" + agName + "'!")
+                    .ok()
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -226,7 +225,6 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/inbox")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
     public Response postAgentMessage(Message m, @PathParam("agentname") String agName) {
         try {
             tAg.addMessageToAgentMailbox(m, agName); 
