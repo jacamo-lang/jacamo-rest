@@ -1,7 +1,6 @@
 package jacamo.rest.implementation;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -49,13 +48,13 @@ public class RestImplAg extends AbstractBinder {
     }
     
     /**
-     * List of agent names: ["ag1","ag2"]
+     * Get list of agent names: ["ag1","ag2"]
      * 
      * @return HTTP 200 Response (ok status)
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "List of agent names")
+    @ApiOperation(value = "Get list of agent names")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
@@ -123,7 +122,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Agent's intentions status. Example:
+     * Get agent's intentions status. Example:
      * {"idle":true,"nbIntentions":1,"intentions":[{"size":1,"finished":false,"id":161,"suspended":false}]}
      * 
      * @param agName agent's name
@@ -133,7 +132,7 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}/status")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Agent's intentions status.")
+    @ApiOperation(value = "Get agent's intentions status.")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
@@ -150,7 +149,7 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Agent information (namespaces, roles, missions and workspaces).
+     * Get agent information (namespaces, roles, missions and workspaces).
      * 
      * @param agName name of the agent
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
@@ -160,7 +159,7 @@ public class RestImplAg extends AbstractBinder {
     @Path("/{agentname}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Agent information (namespaces, roles, missions and workspaces).")
+    @ApiOperation(value = "Get agent information (namespaces, roles, missions and workspaces).")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
