@@ -22,15 +22,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
-import org.apache.zookeeper.CreateMode;
-
 import cartago.ArtifactId;
 import cartago.ArtifactInfo;
 import cartago.CartagoException;
 import cartago.CartagoService;
 import cartago.WorkspaceId;
 import jaca.CAgentArch;
-import jacamo.rest.JCMRest;
 import jacamo.rest.util.Message;
 import jason.JasonException;
 import jason.architecture.AgArch;
@@ -51,6 +48,7 @@ import jason.asSyntax.parser.ParseException;
 import jason.asSyntax.parser.TokenMgrError;
 import jason.infra.centralised.BaseCentralisedMAS;
 import jason.infra.centralised.CentralisedAgArch;
+import jason.runtime.RuntimeServicesFactory;
 import ora4mas.nopl.GroupBoard;
 import ora4mas.nopl.SchemeBoard;
 import ora4mas.nopl.oe.Group;
@@ -79,9 +77,8 @@ public class TranslAg {
      * @throws FileNotFoundException
      */
     public String createAgent(String agName) throws Exception, JasonException, FileNotFoundException {
-        String givenName = BaseCentralisedMAS.getRunner().getRuntimeServices().createAgent(agName, null, null, null,
-                null, null, null);
-        BaseCentralisedMAS.getRunner().getRuntimeServices().startAgent(givenName);
+        String givenName = RuntimeServicesFactory.get().createAgent(agName, null, null, null, null, null, null);
+        RuntimeServicesFactory.get().startAgent(givenName);
         // set some source for the agent
         Agent ag = getAgent(givenName);
 
@@ -187,7 +184,7 @@ public class TranslAg {
      * @return
      */
     public boolean deleteAgent(String agName) {
-        return BaseCentralisedMAS.getRunner().getRuntimeServices().killAgent(agName, "web", 0);
+        return RuntimeServicesFactory.get().killAgent(agName, "web", 0);
     }
     
     /**
@@ -482,7 +479,7 @@ public class TranslAg {
      * @throws Exception
      */
     public Map<String, Set<String>> getCommonDF() throws Exception {
-        return ((BaseCentralisedMAS) BaseCentralisedMAS.getRunner().getRuntimeServices()).getDF();
+        return RuntimeServicesFactory.get().getDF();
     }
 
     /**
@@ -521,18 +518,8 @@ public class TranslAg {
         if (service == null) {
             throw new Exception("A service name have to be informed");
         }
-        // TODO: use runtimeservices (in JCMRest, dfRegister must be overwritten as below)
-        if (JCMRest.getZKHost() == null) {
-            BaseCentralisedMAS.getRunner().dfRegister(agName, service);
-        } else {            
-            String type = values.getOrDefault("type", "no-type").toString();
-            String node = JCMRest.JaCaMoZKDFNodeId+"/"+service+"/"+agName;
-            if (JCMRest.getZKClient().checkExists().forPath(node) == null) {
-                JCMRest.getZKClient().create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(node, type.getBytes());
-            } else {
-                JCMRest.getZKClient().setData().forPath(node, type.getBytes());
-            }
-        }
+        String type = values.getOrDefault("type", "no-type").toString();
+        RuntimeServicesFactory.get().dfRegister(agName, service, type);
     }
 
 }
