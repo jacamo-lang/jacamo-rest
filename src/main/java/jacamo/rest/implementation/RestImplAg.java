@@ -129,6 +129,7 @@ public class RestImplAg extends AbstractBinder {
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      */
+    /* API Version 0.6?
     @Path("/{agentname}")
     @PUT
     @ApiOperation(value = "TODO: Update an agent (replace its code and reload).")
@@ -138,7 +139,7 @@ public class RestImplAg extends AbstractBinder {
     })
     public Response updateAgent(@PathParam("agentname") String agName) {
         try {
-        	//TODO: to be developed
+            //TODO: to be developed
             return Response
                     .ok()
                     .build();
@@ -146,7 +147,7 @@ public class RestImplAg extends AbstractBinder {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
         }
-    }
+    }*/
     
     /**
      * Get agent's intentions status. Example:
@@ -305,6 +306,61 @@ public class RestImplAg extends AbstractBinder {
             tAg.addMessageToAgentMailbox(m, agName); 
             return Response
                     .ok()
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+    
+    /**
+     * TODO: Get agent services.
+     * 
+     * @param agName agent name
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     */
+    @Path("/{agentname}/services")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "TODO: Get agent services.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response getAgentServices(@PathParam("agentname") String agName) {
+        try {
+        	//TODO: To develop.
+            return Response
+                    .ok()
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+
+    /**
+     * TODO: Append a service to the agent.
+     * 
+     * @param m message
+     * @param agName agent name
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     */
+    @Path("/{agentname}/services/{serviceid}")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "TODO: Append a service to the agent.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 201, message = "generated uri"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response postAgentService(@PathParam("agentname") String agName, @PathParam("serviceid") String serviceid) {
+        try {
+            //TODO: To develop. 
+            return Response
+                    .created(new URI("to define"))
                     .build();
         } catch (Exception e) {
             e.printStackTrace();

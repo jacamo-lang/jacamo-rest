@@ -85,7 +85,7 @@ All endpoints accepts OPTIONS returning allowed verbs
 ## Agents
 
 * ``GET; POST /agents``: Retrieves agents collection - works as white pages - (with links); append an agent.
-* ``GET; PUT; DELETE ../{agentuid}``: Returns agent data (mind, bb and intentions (obs 1); update; remove.
+* ``GET; DELETE ../{agentuid}``: Returns agent data (mind, bb and intentions (obs 1); remove.
 * ``GET; POST ../{agentuid}/plans`` Retrieves plans of the specified agent; append a plan.
 * ``GET ../{agentuid}/log`` Returns log of the specified agent.
 * ``POST ../{agentuid}/command`` Posts a new command.
@@ -121,6 +121,11 @@ All endpoints accepts OPTIONS returning allowed verbs
 # REST API version 0.6 - proposal
 
 Keeping all 0.5 endpoints
+
+## Agents
+
+* ``PUT; ../{agentuid}``: Add update agent sending asl (move from jacamo-web)?
+* ``GET; PUT; DELETE ../{agentuid}/plans/{planuid}``: Returns an agent plan; update; remove.
 
 ## Workspaces
 
