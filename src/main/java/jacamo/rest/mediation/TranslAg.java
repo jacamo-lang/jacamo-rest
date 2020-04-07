@@ -6,11 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +44,7 @@ import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
+import jason.asSyntax.PlanLibrary;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
@@ -211,6 +214,29 @@ public class TranslAg {
             bbs.add(l.toString());
         }
         return bbs;
+    }
+    
+    /**
+     * List of plans
+     * 
+     * @param agName name of the agent
+     * @param label optional filter
+     * @return list of string
+     */
+    public List<String> getAgentPlans(String agName, String label) {
+        List<String>  so = new ArrayList<>();
+        Agent ag = getAgent(agName);
+        if (ag != null) {
+            PlanLibrary pl = ag.getPL();
+            if (label.equals("all")) {
+                Iterator<Plan> i = pl.getPlans().iterator();
+                while (i.hasNext()) 
+                    so.add(i.next().toString());
+            } else {
+                so.add(pl.get(label).toASString());
+            }
+        }
+        return so;
     }
     
     /**

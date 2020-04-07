@@ -1,17 +1,20 @@
 package jacamo.rest.implementation;
 
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -203,6 +206,38 @@ public class RestImplAg extends AbstractBinder {
         }
     }
 
+    /**
+     * Return agent's plans
+     * 
+     * @param agName name of the agent
+     * @param label optional filter
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         Example: ["@l__1[source(self)] +!start <- .print(hi).", 
+     *         "@l__2[source(self)] +sayHi[source(A)] <- .print(\"I received hi from \",A)."]
+     */
+    @Path("/{agentname}/plans")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+    		value = "Get agent plans.",
+    		notes = "Example: [\"@l__1[source(self)] +!start <- .print(hi).\", "+ 
+    						" \"@l__2[source(self)] +sayHi[source(A)] <- .print(\"I received hi from \",A).\"]"
+    )
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response getAgentPlansTxt(@PathParam("agentname") String agName,
+            @DefaultValue("all") @QueryParam("label") String label) {
+        try {
+            return Response.ok(gson.toJson(tAg.getAgentPlans(agName, label))).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+    
     /**
      * Append new plans into an agent.
      * 
