@@ -242,4 +242,42 @@ public class ClientTest {
         System.out.println("Response (agents/bob/plans): " + rStr);
         assertTrue(rStr.contains("bb1(13)[source(self)]"));    
     }
+    
+    @Test(timeout=2000)
+    public void testPostAgentService() {
+        System.out.println("\n\ntestPostAgentService");
+        Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
+
+        client = ClientBuilder.newClient();
+
+        // empty body
+        response = client.target(uri.toString()).path("agents/bob/services/consulting")
+                .request()
+                .post(null);
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob/services/consulting): " + rStr);
+        assertEquals(200, response.getStatus());
+
+        response = client.target(uri.toString()).path("services")
+                .request(MediaType.APPLICATION_JSON).get();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (services): " + rStr);
+        assertTrue(rStr.contains("consulting"));
+        
+        // with body
+        response = client.target(uri.toString()).path("agents/bob/services/gardening")
+                .request()
+                .post(Entity.json("{\"service\":\"gardening(vegetables)\",\"type\":\"hand services\"}"));
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob/services/gardening): " + rStr);
+        assertEquals(200, response.getStatus());
+
+        response = client.target(uri.toString()).path("services")
+                .request(MediaType.APPLICATION_JSON).get();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (services): " + rStr);
+        assertTrue(rStr.contains("gardening"));
+    }
 }

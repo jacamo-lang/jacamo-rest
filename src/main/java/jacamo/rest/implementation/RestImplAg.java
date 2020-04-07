@@ -372,10 +372,10 @@ public class RestImplAg extends AbstractBinder {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(
-    		value = "Append a service to the agent.",
+            value = "Append a service to the agent.",
             notes = "Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/services/gardening'" + 
-            				" --header 'Content-Type: application/json'" + 
-            				" --data-raw '{\"service\":\"gardening(vegetables)\",\"type\":\"garden services\"}"
+                            " --header 'Content-Type: application/json'" + 
+                            " --data-raw '{\"service\":\"gardening(vegetables)\",\"type\":\"garden services\"}"
     )
     @ApiResponses(value = { 
             @ApiResponse(code = 201, message = "generated uri"),
@@ -387,9 +387,6 @@ public class RestImplAg extends AbstractBinder {
             @Context UriInfo uriInfo, 
             Map<String, Object> values) {
         try {
-            System.out.println(agName);
-            System.out.println(service);
-            System.out.println(values);
             tAg.addServiceToAgent(agName, service, values);
             
             return Response
