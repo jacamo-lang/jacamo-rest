@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -218,14 +221,28 @@ public class ClientTest {
                 .accept(MediaType.TEXT_PLAIN)
                 .post(
                         Entity.json(
-                                "+!gg(X) : X > 10  <- +bb1(X); .print(\"*****\",X). " +
-                                "+!gg(X) : X <= 10 <- +bb2(X); .print(\"!!!!!\",X).")
+                                "+!gg(X) : (X > 10) <- +bb1(X); .print(\"*****\",X). " +
+                                "+!gg(X) : (X <= 10) <- +bb2(X); .print(\"!!!!!\",X).")
                 );
-        rStr = response.readEntity(String.class);
-        System.out.println("Response (agents/bob/plans): " + rStr);
+        System.out.println("Post a new plan to bob");
         assertEquals(200, response.getStatus());
         
         // 2. run plan
+        response = client.target(uri.toString()).path("agents/bob/plans")
+                .request(MediaType.APPLICATION_JSON).get();
+        Map<String,String> m = response.readEntity(Map.class); 
+        Iterator<String> i = m.values().iterator();
+        String p = "";
+        while (i.hasNext()) {
+            p = i.next();
+            if (p.contains(".print(\"*****\",X).")) {
+                System.out.println("A response (agents/bob/plans): " + p);
+                break;
+            }
+        }
+        assertTrue(p.contains("+bb1(X); .print(\"*****\",X)."));    
+
+        // 3. run plan
         response = client.target(uri.toString())
                 .path("agents/bob/inbox")
                 .request(MediaType.APPLICATION_JSON)
@@ -233,13 +250,13 @@ public class ClientTest {
                 .post(Entity.json(new Gson().toJson(
                         new Message("39", "achieve", "jomi", "bob", "gg(13)"))));
         
-        // 3. test
+        // 4. test
         response = client.target(uri.toString())
                 .path("agents/bob")
                 .request(MediaType.APPLICATION_JSON).get();
         
         rStr = response.readEntity(String.class);
-        System.out.println("Response (agents/bob/plans): " + rStr);
+        System.out.println("Response (agents/bob): " + rStr);
         assertTrue(rStr.contains("bb1(13)[source(self)]"));    
     }
     
