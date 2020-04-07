@@ -31,7 +31,7 @@ public class ClientTest {
 
     @BeforeClass
     public static void launchSystem() {
-        TestUtils.launchSystem();
+        uri = TestUtils.launchSystem();
     }
 
     @AfterClass

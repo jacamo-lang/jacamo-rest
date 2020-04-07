@@ -28,7 +28,7 @@ public class ClientTestDF_WP {
 
     @BeforeClass
     public static void launchSystem() {
-        TestUtils.launchSystem();
+        uri = TestUtils.launchSystem();
     }
 
     @AfterClass
