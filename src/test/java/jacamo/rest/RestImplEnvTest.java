@@ -1,10 +1,8 @@
 package jacamo.rest;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.client.Client;
@@ -23,7 +21,7 @@ import com.google.gson.Gson;
 import jacamo.infra.JaCaMoLauncher;
 import jason.JasonException;
 
-public class ClientTestDF_WP {
+public class RestImplEnvTest {
     static URI uri;
 
     @BeforeClass
@@ -33,7 +31,7 @@ public class ClientTestDF_WP {
             while (JaCaMoLauncher.getRunner() != null) {
                 Thread.sleep(400);
             }
-            
+
             // Launch jacamo and jacamo-rest running marcos.jcm
             new Thread() {
                 public void run() {
@@ -60,7 +58,7 @@ public class ClientTestDF_WP {
                 System.out.println("waiting agents to start...");
                 Thread.sleep(400);
             }
-            Thread.sleep(1000);
+            Thread.sleep(400);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,88 +69,77 @@ public class ClientTestDF_WP {
         JaCaMoLauncher.getRunner().finish();
     }    
 
-
     @Test(timeout=2000)
-    @SuppressWarnings("rawtypes")
-    public void testRegisterDF() {
+    public void testObsPropAndOperations1() {
+
+        assertEquals( 10, getCount("testwks","a"));
+
         Client client = ClientBuilder.newClient();
-        Response response = client
-            .target(uri.toString())
-            .path("services/marcos")
-            .request(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_PLAIN)
-            .get();
-        
-        List vl = new Gson().fromJson(response.readEntity(String.class), List.class);
-
-        //System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
-
-        assertTrue(vl.contains("vender(banana)"));
-        
-        Map<String,String> map = new HashMap<>();
-        map.put("service", "help(drunks)");
-        //map.put("type", "AA");
-        //System.out.println(new Gson().toJson( map ));
         client
             .target(uri.toString())
-            .path("services/marcos")
+            .path("workspaces/testwks/a/operations/inc")
             .request(MediaType.APPLICATION_JSON)
             .accept(MediaType.TEXT_PLAIN)
-            .post(Entity.json(new Gson().toJson( map )));
-
-        response = client
-                .target(uri.toString())
-                .path("services/marcos")
-                .request(MediaType.APPLICATION_JSON)
-                .accept(MediaType.TEXT_PLAIN)
-                .get();
-            
-        vl = new Gson().fromJson(response.readEntity(String.class), List.class);
-
-        //System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
+            .put(Entity.json(new Gson().toJson(new Object[] {})));
         
-        assertTrue(vl.contains("help(drunks)"));
+        assertEquals( 11, getCount("testwks","a"));
+
+        client
+            .target(uri.toString())
+            .path("workspaces/testwks/a/operations/reset")
+            .request(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_PLAIN)
+            .put(Entity.json(new Gson().toJson(new Object[] { 40 })));
+
+        assertEquals( 40, getCount("testwks","a"));
     }
 
-    @Test(timeout=2000)
-    @SuppressWarnings("rawtypes")
-    public void testRegisterWP() {
+    public int getCount(String w, String art) {
         Client client = ClientBuilder.newClient();
         Response response = client
-            .target(uri.toString())
-            .path("wp")
-            .request(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_PLAIN)
-            .get();
-        
-        Map vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
-        assertTrue( vl.get("marcos") != null);
-        
-        Map<String,String> map = new HashMap<>();
-        map.put("agentid", "jomi");
-        map.put("uri", "http://myhouse");
-        //System.out.println("=="+new Gson().toJson(map));
-       
-        // add new entry
-        client
-            .target(uri.toString())
-            .path("wp")
-            .request(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_PLAIN)
-            .post(Entity.json(new Gson().toJson( map )));
-
-        response = client
                 .target(uri.toString())
-                .path("wp")
+                .path("workspaces/"+w+"/"+art+"/obsprops/count")
                 .request(MediaType.APPLICATION_JSON)
-                .accept(MediaType.TEXT_PLAIN)
                 .get();
-            
-        vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
+
+        Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
+
+        //System.out.println("\n\nResponse: " + response.toString() + "\n" + vl[0]);
+        
+        return ((Double)vl[0]).intValue();
+    }
     
-        assertTrue( vl.get("jomi").equals("http://myhouse"));       
+    @Test(timeout=2000)
+    @SuppressWarnings("rawtypes")
+    public void testCreateArt1() {
+        Client client = ClientBuilder.newClient();
+
+        client
+            .target(uri.toString())
+            .path("workspaces/neww3")
+            .request(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_PLAIN)
+            .post(Entity.json(new Gson().toJson(new Object[] {  })));
+
+        client
+            .target(uri.toString())
+            .path("workspaces/neww3/newart/tools.Counter")
+            .request(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_PLAIN)
+            .post(Entity.json(new Gson().toJson(new Object[] { 22 })));
+        
+        assertEquals( 22, getCount("neww3","newart"));
+
+        Response response = client
+                .target(uri.toString())
+                .path("workspaces/neww3")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+
+        Map vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
+        Map art = (Map)((Map)vl.get("artifacts")).get("newart");
+        //System.out.println("\n\nResponse: " + response.toString() + "\n" + art);
+        assertEquals("tools.Counter", art.get("type"));
     }
+    
 }

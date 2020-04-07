@@ -26,7 +26,7 @@ import jacamo.infra.JaCaMoLauncher;
 import jacamo.rest.util.Message;
 import jason.JasonException;
 
-public class ClientTest {
+public class RestImplAgTest {
     static URI uri;
 
     @BeforeClass
@@ -296,5 +296,23 @@ public class ClientTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (services): " + rStr);
         assertTrue(rStr.contains("gardening"));
+    }
+    
+    @Test(timeout=2000)
+    public void testPostAgentCommand() {
+        System.out.println("\n\ntestPostAgentCommand");
+
+        Form form = new Form();
+        form.param("c", ".print(oi); X = 10;");
+        Entity<Form> entity = Entity.form(form);
+        
+        Client client = ClientBuilder.newClient();
+        Response response = client.target(uri.toString())
+                .path("agents/bob/command")
+                .request()
+                .post(entity);
+        String bb = response.readEntity(String.class);
+        System.out.println("Response: " + response.toString() + "\n" + bb);
+        assertEquals("{\"X\":\"10\"}", bb.toString());
     }
 }
