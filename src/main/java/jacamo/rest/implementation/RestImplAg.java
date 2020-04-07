@@ -239,17 +239,17 @@ public class RestImplAg extends AbstractBinder {
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/command'
-     *         			--header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'c=+raining'
+     *                  --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'c=+raining'
      */
     @Path("/{agentname}/command")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
-    		value = "Send a command to an agent returning a status message.",
-			notes = "Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/command' "+
-					"--header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'c=+raining'"
-	)
+            value = "Send a command to an agent returning a status message.",
+            notes = "Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/command' "+
+                    "--header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'c=+raining'"
+    )
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
@@ -277,8 +277,8 @@ public class RestImplAg extends AbstractBinder {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @ApiOperation(
-    		value = "Get agent full log as text.",
-    		notes = "Example: [06-04-20 20:37:03] Command +raining: {}"
+            value = "Get agent full log as text.",
+            notes = "Example: [06-04-20 20:37:03] Command +raining: {}"
     )
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
@@ -359,24 +359,41 @@ public class RestImplAg extends AbstractBinder {
      * Append a service to the agent.
      * 
      * @param agName agent name
-     * @param values a map of services
+     * @param serviceid service identification
+     * @param values a map of services (optional)
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         
+     *         Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/services/gardening' \
+     *         --header 'Content-Type: application/json' \
+     *         --data-raw '{"service":"gardening(vegetables)","type":"garden services"}'
      */
     @Path("/{agentname}/services/{serviceid}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Append a service to the agent.")
+    @ApiOperation(
+    		value = "Append a service to the agent.",
+            notes = "Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/services/gardening'" + 
+            				" --header 'Content-Type: application/json'" + 
+            				" --data-raw '{\"service\":\"gardening(vegetables)\",\"type\":\"garden services\"}"
+    )
     @ApiResponses(value = { 
             @ApiResponse(code = 201, message = "generated uri"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response postAgentService(@PathParam("agentname") String agName, Map<String, Object> values) {
+    public Response postAgentService(
+            @PathParam("agentname") String agName, 
+            @PathParam("serviceid") String service, 
+            @Context UriInfo uriInfo, 
+            Map<String, Object> values) {
         try {
-            tAg.addServiceToAgent(agName, values);
+            System.out.println(agName);
+            System.out.println(service);
+            System.out.println(values);
+            tAg.addServiceToAgent(agName, service, values);
             
             return Response
-                    .created(new URI("to define"))
+                    .ok()
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
