@@ -514,12 +514,13 @@ public class TranslAg {
      * @param values
      * @throws Exception
      */
-    public void addServiceToAgent(String agName, Map<String, Object> values) throws Exception {
-        String service = values.get("service").toString();
-        if (service == null) {
-            throw new Exception("A service name have to be informed");
+    public void addServiceToAgent(String agName, String service, Map<String, Object> values) throws Exception {
+        String type = "no-type";
+        // if a map was provided, use it instead of original given service
+        if (values != null) {
+            service = values.get("service").toString();
+            type = values.getOrDefault("type", "no-type").toString();
         }
-        String type = values.getOrDefault("type", "no-type").toString();
         RuntimeServicesFactory.get().dfRegister(agName, service, type);
     }
 
