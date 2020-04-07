@@ -31,41 +31,7 @@ public class ClientTest {
 
     @BeforeClass
     public static void launchSystem() {
-        try {
-            // Wait JaCaMo be finished by other tests
-            while (JaCaMoLauncher.getRunner() != null) {
-                Thread.sleep(400);
-            }
-
-            // Launch jacamo and jacamo-rest running test0.jcm
-            new Thread() {
-                public void run() {
-                    String[] arg = { "src/test/test0.jcm" };
-                    try {
-                        JaCaMoLauncher.main(arg);
-                    } catch (JasonException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
-            
-            // wait start of jacamo rest
-            while (uri == null) {
-                System.out.println("waiting jacamo to start ....");
-                if (JCMRest.getRestHost() != null)
-                    uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
-                else
-                    Thread.sleep(400);
-            }
-            // wait agents
-            while (JaCaMoLauncher.getRunner().getNbAgents() == 0) {
-                System.out.println("waiting agents to start...");
-                Thread.sleep(400);
-            }
-            Thread.sleep(600);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        TestUtils.launchSystem();
     }
 
     @AfterClass
@@ -133,7 +99,7 @@ public class ClientTest {
     
     @Test(timeout=2000)
     public void testGetAgentLog() {
-        System.out.println("\n\ntestGetAgentLog");
+        System.out.println("\n\ntestGetAjgentLog");
         Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
@@ -208,7 +174,7 @@ public class ClientTest {
     
     @Test(timeout=2000)
     public void testPostAgentPlan() {
-        System.out.println("\n\ntestPostAgentPlan");
+        System.out.println("\n\ntestPostAgentjjjPlan");
         Client client = ClientBuilder.newClient();
         Response response;
         String rStr;

@@ -28,42 +28,7 @@ public class ClientTestDF_WP {
 
     @BeforeClass
     public static void launchSystem() {
-        try {
-            // Wait JaCaMo be finished by other tests
-            while (JaCaMoLauncher.getRunner() != null) {
-                Thread.sleep(400);
-            }
-            
-            // Launch jacamo and jacamo-rest running marcos.jcm
-            new Thread() {
-                public void run() {
-                    String[] arg = { "src/test/test1.jcm" };
-                    try {
-                        JaCaMoLauncher.main(arg);
-                    } catch (JasonException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
-            
-            // wait start of jacamo rest
-            while (uri == null) {
-                System.out.println("waiting jacamo to start ....");
-                if (JCMRest.getRestHost() != null)
-                    uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
-                else
-                    Thread.sleep(400);
-            }
-            System.out.println("URI="+uri);
-            // wait agents
-            while (JaCaMoLauncher.getRunner().getNbAgents() == 0) {
-                System.out.println("waiting agents to start...");
-                Thread.sleep(400);
-            }
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        TestUtils.launchSystem();
     }
 
     @AfterClass
