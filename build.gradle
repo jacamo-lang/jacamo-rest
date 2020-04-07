@@ -34,9 +34,9 @@ dependencies {
 	compile group: 'org.jacamo' , name: 'jacamo'   , version: '0.9-SNAPSHOT'  , changing: true , transitive: true
 	compile 'org.jason-lang:jason:2.5-SNAPSHOT'
 
-	compile 'javax.xml.bind:jaxb-api:+'
-	compile 'com.sun.xml.bind:jaxb-core:+'
-	compile 'com.sun.xml.bind:jaxb-impl:+'
+	compile 'javax.xml.bind:jaxb-api:2.3.1'
+	compile 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+	compile 'com.sun.xml.bind:jaxb-impl:2.3.1'
 
 	compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.29.1'
 	compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.29.1'
@@ -63,7 +63,7 @@ dependencies {
 
 	compile 'com.google.code.gson:gson:2.8.5'
 	compile 'commons-io:commons-io:2.6'
-	
+
 	// https://mvnrepository.com/artifact/io.swagger/swagger-annotations
 	compile 'io.swagger:swagger-annotations:1.6.1'
 
@@ -247,7 +247,7 @@ task publishMavenGitHub(dependsOn: [ 'build', 'publishToMavenLocal']) {
         workingDir rdir
     }
   }
-  
+
 swagger {
     apiSource {
         springmvc = false
@@ -263,5 +263,5 @@ swagger {
         outputPath = "${project.rootDir}/generated/document.html"
         swaggerDirectory = "${project.rootDir}/generated/swagger-ui"
     }
-}  
+}
 }
