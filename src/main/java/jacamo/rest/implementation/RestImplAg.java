@@ -213,16 +213,16 @@ public class RestImplAg extends AbstractBinder {
      * @param label optional filter
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     *         Example: ["@l__1[source(self)] +!start <- .print(hi).", 
-     *         "@l__2[source(self)] +sayHi[source(A)] <- .print(\"I received hi from \",A)."]
+     *         Example: [\"@l__1[source(self)]\":\"@l__1[source(self)] +!start <- .print(hi).", 
+     *         "\"@l__2[source(self)]\": \"@l__2[source(self)] +sayHi[source(A)] <- .print(\"I received hi from \",A)."]
      */
     @Path("/{agentname}/plans")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
-    		value = "Get agent plans.",
-    		notes = "Example: [\"@l__1[source(self)] +!start <- .print(hi).\", "+ 
-    						" \"@l__2[source(self)] +sayHi[source(A)] <- .print(\"I received hi from \",A).\"]"
+            value = "Get agent plans.",
+            notes = "Example: [\"@l__1[source(self)]\":\"@l__1[source(self)] +!start <- .print(hi).\", "+ 
+                            "\"@l__2[source(self)]\": \"@l__2[source(self)] +sayHi[source(A)] <- .print(\"I received hi from \",A).\"]"
     )
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),

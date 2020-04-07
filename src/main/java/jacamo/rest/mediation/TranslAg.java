@@ -223,20 +223,22 @@ public class TranslAg {
      * @param label optional filter
      * @return list of string
      */
-    public List<String> getAgentPlans(String agName, String label) {
-        List<String>  so = new ArrayList<>();
+    public Map<String,String> getAgentPlans(String agName, String label) {
+        Map<String,String> plans = new HashMap<>();
         Agent ag = getAgent(agName);
         if (ag != null) {
             PlanLibrary pl = ag.getPL();
             if (label.equals("all")) {
                 Iterator<Plan> i = pl.getPlans().iterator();
-                while (i.hasNext()) 
-                    so.add(i.next().toString());
+                while (i.hasNext()) {
+                    Plan p = i.next();
+                    plans.put(p.getLabel().toString(), p.toASString());
+                }
             } else {
-                so.add(pl.get(label).toASString());
+                plans.put(label, pl.get(label).toASString());
             }
         }
-        return so;
+        return plans;
     }
     
     /**
