@@ -302,11 +302,19 @@ public class RestImplAg extends AbstractBinder {
      * @param agName agent name
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         Example: curl --location --request POST 'http://127.0.0.1:8080/agents/marcos/inbox'
+     *         --header 'Content-Type: application/json'
+     *         --data-raw '{"performative":"tell","sender":"jomi","receiver":"bob","content":"vl(10)","msgId":"34"}'
      */
     @Path("/{agentname}/inbox")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Append a message on agent's inbox.")
+    @ApiOperation(
+            value = "Append a message on agent's inbox.",
+            notes = "Example: curl --location --request POST 'http://127.0.0.1:8080/agents/marcos/inbox'" + 
+                            " --header 'Content-Type: application/json'" + 
+                            " --data-raw '{\"performative\":\"tell\",\"sender\":\"jomi\",\"receiver\":\"bob\",\"content\":\"vl(10)\",\"msgId\":\"34\"}'"
+            )
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
