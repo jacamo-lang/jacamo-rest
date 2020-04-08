@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -14,67 +13,35 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
 import org.junit.Test;
 
 import com.google.gson.Gson;
 
 import jacamo.infra.JaCaMoLauncher;
 import jacamo.rest.util.Message;
-import jason.JasonException;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RestImplAgTest {
     static URI uri;
 
     @BeforeClass
     public static void launchSystem() {
-        try {
-            // Wait JaCaMo be finished by other tests
-            while (JaCaMoLauncher.getRunner() != null) {
-                Thread.sleep(400);
-            }
-
-            // Launch jacamo and jacamo-rest running test0.jcm
-            new Thread() {
-                public void run() {
-                    String[] arg = { "src/test/test0.jcm" };
-                    try {
-                        JaCaMoLauncher.main(arg);
-                    } catch (JasonException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
-            
-            // wait start of jacamo rest
-            while (uri == null) {
-                System.out.println("waiting jacamo to start ....");
-                if (JCMRest.getRestHost() != null)
-                    uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
-                else
-                    Thread.sleep(400);
-            }
-            // wait agents
-            while (JaCaMoLauncher.getRunner().getNbAgents() == 0) {
-                System.out.println("waiting agents to start...");
-                Thread.sleep(400);
-            }
-            Thread.sleep(600);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        uri = TestUtils.launchSystem("src/test/test0.jcm");
     }
 
     @AfterClass
     public static void stopSystem() {
         JaCaMoLauncher.getRunner().finish();
-    }    
-
+    }   
+    
+    
     @Test(timeout=2000)
-    public void testGetAgents() {
+    public void test01GetAgents() {
         System.out.println("\n\ntestGetAgents");
         Client client = ClientBuilder.newClient();
         Response response;
@@ -89,7 +56,7 @@ public class RestImplAgTest {
     }
     
     @Test(timeout=2000)
-    public void testGetAgent() {
+    public void test02GetAgent() {
         System.out.println("\n\ntestGetAgent");
         Client client = ClientBuilder.newClient();
         Response response;
@@ -110,7 +77,7 @@ public class RestImplAgTest {
     }
      
     @Test(timeout=2000)
-    public void testGetAgentStatus() {
+    public void test03GetAgentStatus() {
         System.out.println("\n\ntestGetAgentStatus");
         Client client = ClientBuilder.newClient();
         Response response;
@@ -132,8 +99,8 @@ public class RestImplAgTest {
     }
     
     @Test(timeout=2000)
-    public void testGetAgentLog() {
-        System.out.println("\n\ntestGetAgentLog");
+    public void test04GetAgentLog() {
+        System.out.println("\n\ntestGetAjgentLog");
         Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
@@ -165,7 +132,7 @@ public class RestImplAgTest {
     }
     
     @Test(timeout=2000)
-    public void testGetAgentBeliefs() {
+    public void test05GetAgentBeliefs() {
         System.out.println("\n\ntestGetAgentBeliefs");
         Client client = ClientBuilder.newClient();
         Response response;
@@ -180,7 +147,7 @@ public class RestImplAgTest {
     }
 
     @Test(timeout=2000)
-    public void testPostAgentInbox() {
+    public void test06PostAgentInbox() {
         System.out.println("\n\ntestPostAgentInbox");
         Client client = ClientBuilder.newClient();
         Response response;
@@ -207,8 +174,8 @@ public class RestImplAgTest {
     }
     
     @Test(timeout=2000)
-    public void testPostAgentPlan() {
-        System.out.println("\n\ntestPostAgentPlan");
+    public void test07PostAgentPlan() {
+        System.out.println("\n\ntestPostAgentjjjPlan");
         Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
@@ -261,7 +228,7 @@ public class RestImplAgTest {
     }
     
     @Test(timeout=2000)
-    public void testPostAgentService() {
+    public void test08PostAgentService() {
         System.out.println("\n\ntestPostAgentService");
         Client client = ClientBuilder.newClient();
         Response response;
@@ -276,7 +243,16 @@ public class RestImplAgTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/bob/services/consulting): " + rStr);
         assertEquals(200, response.getStatus());
+    }
+    
+    @Test(timeout=2000)
+    public void test09GetAgentServices() {
+        System.out.println("\n\testGetAgentServices");
+        Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
 
+        client = ClientBuilder.newClient();
         response = client.target(uri.toString()).path("services")
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString(); 
@@ -299,7 +275,25 @@ public class RestImplAgTest {
     }
     
     @Test(timeout=2000)
-    public void testPostAgentCommand() {
+    public void test10DeleteAgent() {
+        System.out.println("\n\ntestPostAgentService");
+        Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
+
+        client = ClientBuilder.newClient();
+
+        // empty body
+        response = client.target(uri.toString()).path("agents/bob/")
+                .request()
+                .delete();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/bob/): " + rStr);
+        assertEquals(200, response.getStatus());
+    }
+ 
+    @Test(timeout=2000)
+    public void test11PostAgentCommand() {
         System.out.println("\n\ntestPostAgentCommand");
 
         Form form = new Form();
@@ -315,4 +309,5 @@ public class RestImplAgTest {
         System.out.println("Response: " + response.toString() + "\n" + bb);
         assertEquals("{\"X\":\"10\"}", bb.toString());
     }
+    
 }

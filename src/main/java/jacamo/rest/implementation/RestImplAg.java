@@ -1,6 +1,5 @@
 package jacamo.rest.implementation;
 
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.Map;
 
