@@ -80,7 +80,6 @@ public class RestImplDFTest {
             .target(uri.toString())
             .path("services/marcos")
             .request(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_PLAIN)
             .get();
         
         List vl = new Gson().fromJson(response.readEntity(String.class), List.class);
@@ -97,14 +96,12 @@ public class RestImplDFTest {
             .target(uri.toString())
             .path("services/marcos")
             .request(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_PLAIN)
             .post(Entity.json(new Gson().toJson( map )));
 
         response = client
                 .target(uri.toString())
                 .path("services/marcos")
                 .request(MediaType.APPLICATION_JSON)
-                .accept(MediaType.TEXT_PLAIN)
                 .get();
             
         vl = new Gson().fromJson(response.readEntity(String.class), List.class);
@@ -122,7 +119,6 @@ public class RestImplDFTest {
             .target(uri.toString())
             .path("wp")
             .request(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_PLAIN)
             .get();
         
         Map vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
