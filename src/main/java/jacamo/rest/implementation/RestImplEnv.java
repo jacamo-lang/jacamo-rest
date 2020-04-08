@@ -1,6 +1,11 @@
 package jacamo.rest.implementation;
 
+import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -10,6 +15,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -17,13 +24,16 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.ibm.icu.impl.UResource.Array;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import jacamo.rest.mediation.TranslEnv;
+import jacamo.rest.util.PostArtifact;
 
 @Singleton
 @Path("/workspaces")
@@ -223,26 +233,35 @@ public class RestImplEnv extends AbstractBinder {
             return Response.status(500, e.getMessage()).build();
         }
     }
-
+    
     /**
      * Creates a new artifact from a given template.
+     * 
+     * @return HTTP 200 Response (ok an array of values) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         Example of body: \"{\"template\":\"tools.Counter\",\"values\":[22]}\"
      */
-    @Path("/{wrksname}/artifacts/{artname}/{javaclass}")
+    @Path("/{wrksname}/artifacts/{artname}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Creates a new artifact from a given template.")
+    @ApiOperation(
+            value = "Creates a new artifact from a given template.",
+            notes = "Example of body: \"{\"template\":\"tools.Counter\",\"values\":[22]}\""
+            )
     @ApiResponses(value = { 
             @ApiResponse(code = 201, message = "generated uri"),
             @ApiResponse(code = 500, message = "internal error")
     })
     public Response postArtifact(
             @PathParam("wrksname") String wrksName, 
-            @PathParam("artname") String artName, 
-            @PathParam("javaclass") String javaClass, 
-            Object[] values, 
+            @PathParam("artname") String artName,
+            String content, 
             @Context UriInfo uriInfo) {
         try {
-            tEnv.createArtefact(wrksName, artName, javaClass, values);
+            ObjectMapper mapper = new ObjectMapper();
+            PostArtifact m = mapper.readValue(content, PostArtifact.class);
+            
+            tEnv.createArtefact(wrksName, artName, m.getTemplate(), m.getValues());
             return Response
                     .created(new URI(uriInfo.getBaseUri() + "workspaces/" + wrksName + "/" + artName))
                     .build();
