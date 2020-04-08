@@ -38,7 +38,6 @@ public final class TestUtils {
                 Thread.sleep(200);
             }
             Thread.sleep(600);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -56,5 +55,4 @@ public final class TestUtils {
             }
         }
     }   
-
 }

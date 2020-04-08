@@ -26,7 +26,7 @@ import com.google.gson.Gson;
 import jacamo.rest.util.Message;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ClientTest {
+public class ClientTestAgent {
     static URI uri;
 
     @BeforeClass
