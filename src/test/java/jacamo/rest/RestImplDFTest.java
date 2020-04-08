@@ -12,7 +12,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,7 +20,6 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import jacamo.infra.JaCaMoLauncher;
-import jason.JasonException;
 
 public class RestImplDFTest {
     static URI uri;
@@ -43,7 +41,7 @@ public class RestImplDFTest {
         Client client = ClientBuilder.newClient();
         Response response = client
             .target(uri.toString())
-            .path("services/marcos")
+            .path("agents/marcos/services")
             .request(MediaType.APPLICATION_JSON)
             .get();
         
@@ -59,13 +57,13 @@ public class RestImplDFTest {
         //System.out.println(new Gson().toJson( map ));
         client
             .target(uri.toString())
-            .path("services/marcos")
+            .path("agents/marcos/services")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson( map )));
 
         response = client
                 .target(uri.toString())
-                .path("services/marcos")
+                .path("agents/marcos/services")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
             
