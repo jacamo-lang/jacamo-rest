@@ -277,7 +277,31 @@ public class ClientTest {
     }
     
     @Test(timeout=2000)
-    public void test010DeleteAgent() {
+    public void test010CreateAgent() {
+        System.out.println("\n\ntest01XCreateAgent");
+        Client client = ClientBuilder.newClient();
+        Response response;
+        String rStr;
+
+        client = ClientBuilder.newClient();
+
+        response = client.target(uri.toString()).path("agents/myalice")
+                .request()
+                .post(Entity.json(""));
+
+        rStr = response.readEntity(String.class).toString(); 
+        assertEquals(201, response.getStatus());
+        
+        response = client.target(uri.toString()).path("agents/myalice/status")
+                .request(MediaType.APPLICATION_JSON).get();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/myalice/status): " + rStr);
+        assertEquals(200, response.getStatus());
+        assertTrue(rStr.contains("cycle"));   	
+    }
+    
+    @Test(timeout=2000)
+    public void test010bDeleteAgent() {
         System.out.println("\n\ntest010DeleteAgent");
         Client client = ClientBuilder.newClient();
         Response response;

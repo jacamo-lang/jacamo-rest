@@ -1,10 +1,6 @@
 package jacamo.rest.mediation;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +18,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
+
+import org.apache.tools.ant.filters.StringInputStream;
 
 import cartago.ArtifactId;
 import cartago.ArtifactInfo;
@@ -92,30 +90,17 @@ public class TranslAg {
         // set some source for the agent
         Agent ag = getAgent(givenName);
 
-        try {
-
-            File f = new File("src/agt/" + givenName + ".asl");
-            if (!f.exists()) {
-                f.createNewFile();
-                FileOutputStream outputFile = new FileOutputStream(f, false);
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("//Agent created automatically\n\n");
-                stringBuilder.append("!start.\n\n");
-                stringBuilder.append("+!start <- .print(\"Hi\").\n\n");
-                stringBuilder.append("{ include(\"$jacamoJar/templates/common-cartago.asl\") }\n");
-                stringBuilder.append("{ include(\"$jacamoJar/templates/common-moise.asl\") }\n");
-                stringBuilder.append(
-                        "// uncomment the include below to have an agent compliant with its organisation\n");
-                stringBuilder.append("//{ include(\"$moiseJar/asl/org-obedient.asl\") }");
-                byte[] bytes = stringBuilder.toString().getBytes();
-                outputFile.write(bytes);
-                outputFile.close();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ag.load(new FileInputStream("src/agt/" + givenName + ".asl"), givenName + ".asl");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("//Agent created automatically\n\n");
+        stringBuilder.append("!start.\n\n");
+        stringBuilder.append("+!start <- .print(\"Hi\").\n\n");
+        stringBuilder.append("{ include(\"$jacamoJar/templates/common-cartago.asl\") }\n");
+        stringBuilder.append("{ include(\"$jacamoJar/templates/common-moise.asl\") }\n");
+        stringBuilder.append(
+                "// uncomment the include below to have an agent compliant with its organisation\n");
+        stringBuilder.append("//{ include(\"$moiseJar/asl/org-obedient.asl\") }");
+        //TODO: consider to use Config.get().getTemplate("agent.asl");
+        ag.load(new StringInputStream( stringBuilder.toString()), "source-from-rest-api");
         // ag.setASLSrc("no-inicial.asl");
         createAgLog(givenName, ag);
         return givenName;
