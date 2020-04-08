@@ -41,8 +41,7 @@ public class RestImplDFTest {
         Client client = ClientBuilder.newClient();
         Response response = client
             .target(uri.toString())
-            .path("services")
-            //TODO: .path("services") is a workaround. Correct: .path("agents/marcos/services")
+            .path("agents/marcos/services")
             .request(MediaType.APPLICATION_JSON)
             .get();
         
@@ -64,8 +63,7 @@ public class RestImplDFTest {
 
         response = client
                 .target(uri.toString())
-                .path("services")
-                //TODO: .path("services") is a workaround. Correct: .path("agents/marcos/services")
+                .path("agents/marcos/services")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
             

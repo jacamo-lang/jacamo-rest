@@ -372,7 +372,7 @@ public class RestImplAg extends AbstractBinder {
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         Example: ["supply(banana)","consultant"]
      */
-    @Path("/{agname}/services")
+    @Path("/{agentname}/services")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(
