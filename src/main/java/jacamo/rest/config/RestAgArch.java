@@ -115,7 +115,7 @@ public class RestAgArch extends AgArch {
                         // try ZK agent data
                         byte[] badr = zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+m.getReceiver());
                         if (badr != null)
-                            adr = new String(badr)+"/inbox";
+                            adr = new String(badr);
                     }
                 }
 
@@ -135,6 +135,7 @@ public class RestAgArch extends AgArch {
                     throw e;
                 }
             } catch (Exception ex) {
+                ex.printStackTrace();
                 throw e;
             }
         }
