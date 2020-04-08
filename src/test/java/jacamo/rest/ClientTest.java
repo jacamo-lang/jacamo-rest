@@ -297,7 +297,7 @@ public class ClientTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/myalice/status): " + rStr);
         assertEquals(200, response.getStatus());
-        assertTrue(rStr.contains("cycle"));   	
+        assertTrue(rStr.contains("cycle"));     
     }
     
     @Test(timeout=2000)

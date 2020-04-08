@@ -302,7 +302,8 @@ public class JCMRest extends DefaultPlatformImpl {
                 e.printStackTrace();
                 md = new HashMap<>();
             }
-            md.put("uri", new String(zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+ag)));
+            if (!md.containsKey("uri"))
+                md.put("uri", new String(zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+ag)));
             data.put(ag, md);
         }
 
