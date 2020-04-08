@@ -51,7 +51,16 @@ public class RestImplAg extends AbstractBinder {
     }
     
     /**
-     * Get list of agent names: ["ag1","ag2"]
+     * Get list of agent   
+     * 
+     * Example:
+     * {"kk":{ "type":"Jason",
+     *         "inbox":"http://192.168.0.19:8080/agents/kk/inbox",
+     *         "url":"http://192.168.0.19:8080/agents/kk"},
+     *  "marcos":{"type":"Jason",
+     *         "inbox":"http://192.168.0.19:8080/agents/marcos/inbox",
+     *         "url":"http://192.168.0.19:8080/agents/marcos"}
+     * }
      * 
      * @return HTTP 200 Response (ok status)
      */

@@ -63,14 +63,7 @@ public class TranslAg {
     Executor executor = Executors.newFixedThreadPool(4);
 
     /**
-     * Get list of existing agents Example: 
-     * {"kk":{ "type":"Jason",
-     *         "inbox":"http://192.168.0.19:8080/agents/kk/inbox",
-     *         "url":"http://192.168.0.19:8080/agents/kk"},
-     *  "marcos":{"type":"Jason",
-     *         "inbox":"http://192.168.0.19:8080/agents/marcos/inbox",
-     *         "url":"http://192.168.0.19:8080/agents/marcos"}
-     * }
+     * Get existing agents  
      * 
      * @return Set of agents;
      */
