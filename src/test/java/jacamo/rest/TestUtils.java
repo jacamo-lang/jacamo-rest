@@ -12,11 +12,6 @@ public final class TestUtils {
     public static URI launchSystem(String jcm) {
         URI uri = null;
         try {
-            // Wait for JaCaMo be finished by other tests
-            while (JaCaMoLauncher.getRunner() != null) {
-                Thread.sleep(400);
-            }
-
             // Launch jacamo and jacamo-rest running test0.jcm
             new Thread() {
                 public void run() {
@@ -28,7 +23,7 @@ public final class TestUtils {
                     }
                 }
             }.start();
-            
+
             // wait for start of jacamo rest
             while (uri == null) {
                 System.out.println("waiting for jacamo to start ....");
@@ -43,10 +38,23 @@ public final class TestUtils {
                 Thread.sleep(200);
             }
             Thread.sleep(600);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return uri;
     }
     
+    public static void stopSystem() {
+        JaCaMoLauncher.getRunner().finish();
+        while (JaCaMoLauncher.getRunner() != null) {
+            System.out.println("waiting for jacamo to STOP ....");
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }   
+
 }
