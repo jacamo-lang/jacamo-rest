@@ -126,8 +126,8 @@ public class TranslAg {
      * Creates a new entry in the WP
      * @throws Exception 
      */
-    public void createWP(String agName, Map<String,String> metaData) throws Exception {     
-        RestAgArch.registerWP(JCMRest.getZKClient(), agName, metaData, false);      
+    public boolean createWP(String agName, Map<String,String> metaData) throws Exception {     
+        return RestAgArch.registerWP(JCMRest.getZKClient(), agName, metaData, false);      
     }
     
     /**
@@ -560,8 +560,8 @@ public class TranslAg {
         String type = "no-type";
         // if a map was provided, use it instead of original given service
         if (values != null) {
-            service = values.get("service").toString();
-            type = values.getOrDefault("type", "no-type").toString();
+            service = values.getOrDefault("service", service).toString();
+            type    = values.getOrDefault("type", "no-type").toString();
         }
         RuntimeServicesFactory.get().dfRegister(agName, service, type);
     }

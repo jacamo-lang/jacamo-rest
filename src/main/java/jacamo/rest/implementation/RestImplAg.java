@@ -104,10 +104,10 @@ public class RestImplAg extends AbstractBinder {
             @Context UriInfo uriInfo) {
         try {
             if (onlyWP) {
-                tAg.createWP(agName, metaData);
-                return Response
-                        .ok()
-                        .build();               
+                if (tAg.createWP(agName, metaData))
+                	return Response.ok().build();
+                else
+                	return Response.status(500, "Agent "+agName+" already exists!").build();
             } else {
                 return Response
                         .created(new URI(uriInfo.getBaseUri() + "agents/" + tAg.createAgent(agName)))
