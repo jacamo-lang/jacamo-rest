@@ -27,8 +27,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import jacamo.rest.util.Message;
 import jacamo.rest.mediation.TranslAg;
+import jacamo.rest.util.Message;
 
 /**
  * Agent's REST compile class
@@ -81,17 +81,29 @@ public class RestImplAg extends AbstractBinder {
      */
     @Path("/{agentname}")
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     @ApiOperation(value = "Create an Agent.")
     @ApiResponses(value = { 
             @ApiResponse(code = 201, message = "generated uri"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response postAgent(@PathParam("agentname") String agName, @Context UriInfo uriInfo) {
+    public Response postAgent(
+            @PathParam("agentname") String agName, 
+            @DefaultValue("false") @QueryParam("only_wp") boolean onlyWP, 
+            Map<String,String> metaData,
+            @Context UriInfo uriInfo) {
         try {
-            return Response
-                    .created(new URI(uriInfo.getBaseUri() + "agents/" + tAg.createAgent(agName)))
-                    .build();
+            if (onlyWP) {
+                tAg.createWP(agName, metaData);
+                return Response
+                        .ok()
+                        .build();               
+            } else {
+                return Response
+                        .created(new URI(uriInfo.getBaseUri() + "agents/" + tAg.createAgent(agName)))
+                        .build();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();

@@ -14,7 +14,6 @@ import jacamo.rest.implementation.RestImplAg;
 import jacamo.rest.implementation.RestImplDF;
 import jacamo.rest.implementation.RestImplEnv;
 import jacamo.rest.implementation.RestImplOrg;
-import jacamo.rest.implementation.RestImplWP;
 
 @ApplicationPath("/")
 public class RestAppConfig extends ResourceConfig {
@@ -25,8 +24,7 @@ public class RestAppConfig extends ResourceConfig {
                 RestImplAg.class, 
                 RestImplEnv.class, 
                 RestImplOrg.class, 
-                RestImplDF.class,
-                RestImplWP.class);
+                RestImplDF.class);
         
         // gzip compression
         registerClasses(EncodingFilter.class, GZipEncoder.class, DeflateEncoder.class);

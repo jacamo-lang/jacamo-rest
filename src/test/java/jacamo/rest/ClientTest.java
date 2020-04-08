@@ -1,6 +1,7 @@
 package jacamo.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
@@ -403,7 +404,7 @@ public class ClientTest {
         assertEquals("tools.Counter", art.get("type"));
     }
 
-    @Test(timeout=2000)
+    @Test(timeout=10000)
     @SuppressWarnings("rawtypes")
     public void test401PostWP() {
         System.out.println("\n\ntest401PostWP");
@@ -411,7 +412,7 @@ public class ClientTest {
         Client client = ClientBuilder.newClient();
         Response response = client
             .target(uri.toString())
-            .path("wp")
+            .path("/agents")
             .request(MediaType.APPLICATION_JSON)
             .get();
         
@@ -420,29 +421,31 @@ public class ClientTest {
         assertTrue( vl.get("marcos") != null);
         
         Map<String,String> map = new HashMap<>();
-        map.put("agentid", "jomi");
         map.put("uri", "http://myhouse");
+        map.put("type", "Java Agent");
+        map.put("inbox", "http://myhouse/mb");
         //System.out.println("=="+new Gson().toJson(map));
        
         // add new entry
         client
             .target(uri.toString())
-            .path("wp")
+            .path("/agents/jomi")
+            .queryParam("only_wp", "true")
             .request(MediaType.APPLICATION_JSON)
             .accept(MediaType.TEXT_PLAIN)
             .post(Entity.json(new Gson().toJson( map )));
 
         response = client
                 .target(uri.toString())
-                .path("wp")
+                .path("/agents")
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.TEXT_PLAIN)
                 .get();
             
         vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
+        assertNotNull(vl.get("jomi"));
+        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl.get("jomi"));
     
-        assertTrue( vl.get("jomi").equals("http://myhouse"));       
+        assertTrue( ((Map)vl.get("jomi")).get("inbox").equals("http://myhouse/mb"));       
     }
 }

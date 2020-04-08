@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +29,8 @@ import cartago.CartagoException;
 import cartago.CartagoService;
 import cartago.WorkspaceId;
 import jaca.CAgentArch;
+import jacamo.rest.JCMRest;
+import jacamo.rest.config.RestAgArch;
 import jacamo.rest.util.Message;
 import jason.JasonException;
 import jason.architecture.AgArch;
@@ -62,12 +63,25 @@ public class TranslAg {
     Executor executor = Executors.newFixedThreadPool(4);
 
     /**
-     * Get list of existing agents Example: ["ag1","ag2"]
+     * Get list of existing agents Example: 
+     * {"kk":{ "type":"Jason",
+     *         "inbox":"http://192.168.0.19:8080/agents/kk/inbox",
+     *         "url":"http://192.168.0.19:8080/agents/kk"},
+     *  "marcos":{"type":"Jason",
+     *         "inbox":"http://192.168.0.19:8080/agents/marcos/inbox",
+     *         "url":"http://192.168.0.19:8080/agents/marcos"}
+     * }
      * 
      * @return Set of agents;
      */
-    public Set<String> getAgents() {
-        return BaseCentralisedMAS.getRunner().getAgs().keySet();
+    public Map<String,Map<String,String>> getAgents() {
+        // read all data from ZK
+        try {
+            return JCMRest.getWP();            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null; //RuntimeServicesFactory.get().getAgentsNames();
     }
 
     /**
@@ -112,6 +126,15 @@ public class TranslAg {
         // ag.setASLSrc("no-inicial.asl");
         createAgLog(givenName, ag);
         return givenName;
+    }
+    
+    
+    /**
+     * Creates a new entry in the WP
+     * @throws Exception 
+     */
+    public void createWP(String agName, Map<String,String> metaData) throws Exception {     
+        RestAgArch.registerWP(JCMRest.getZKClient(), agName, metaData, false);      
     }
     
     /**
@@ -518,8 +541,6 @@ public class TranslAg {
      * @throws Exception
      */
     public Map<String, Object> getJsonifiedDF() throws Exception {
-        // Using format Map<String, Set> as a common representation of ZK and
-        // BaseCentralisedMAS
         Map<String, Set<String>> commonDF = getCommonDF();
 
         // Json of the DF

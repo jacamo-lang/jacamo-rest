@@ -1,5 +1,8 @@
 package jacamo.rest.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -9,7 +12,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.x.async.AsyncCuratorFramework;
-import org.apache.zookeeper.CreateMode;
 
 import com.google.gson.Gson;
 
@@ -35,11 +37,34 @@ public class RestAgArch extends AgArch {
             zkClient.start();
 
             // register the agent in ZK
-            if (zkClient.checkExists().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+getAgName()) != null) {
-                System.err.println("Agent "+getAgName()+" is already registered in zookeeper!");
-            } else {
-                zkClient.create().withMode(CreateMode.EPHEMERAL).forPath(JCMRest.JaCaMoZKAgNodeId+"/"+getAgName(), (JCMRest.getRestHost()+"agents/"+getAgName()).getBytes());                
+            Map<String,String> md = new HashMap<>();
+            md.put("type", "JaCaMo");
+            registerWP(zkClient, getAgName(), md, true);            
+        }
+    }
+
+    public static boolean registerWP(CuratorFramework zkClient, String agName, Map<String,String> md, boolean addInbox) throws Exception {
+        // register the agent in ZK
+        if (zkClient.checkExists().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+agName) != null) {
+            System.err.println("Agent "+agName+" is already registered in zookeeper!");
+            return false;
+        } else {
+            String agAddr = JCMRest.JaCaMoZKAgNodeId+"/"+agName;
+            String agUri  = md.getOrDefault("uri", JCMRest.getRestHost()+"agents/"+agName);
+            zkClient.create()//.withMode(CreateMode.EPHEMERAL)
+                .forPath(agAddr, agUri.getBytes());
+            
+            // store meta-data
+            try {
+                if (addInbox)
+                    md.put("inbox", agUri+"/inbox");
+
+                zkClient.create()//.withMode(CreateMode.EPHEMERAL)
+                    .forPath(agAddr+"/"+JCMRest.JaCaMoZKMDNodeId, new Gson().toJson(md).getBytes());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return true;
         }
     }
     
@@ -64,6 +89,7 @@ public class RestAgArch extends AgArch {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void sendMsg(Message m) throws Exception {
         try {
@@ -76,10 +102,21 @@ public class RestAgArch extends AgArch {
                 if (m.getReceiver().startsWith("http")) {
                     adr = m.getReceiver();
                 } else {
-                    // try ZK
-                    byte[] badr = zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+m.getReceiver());
-                    if (badr != null)
-                        adr = new String(badr);
+                    try {
+                        // try ZK inbox meta data
+                        byte[] lmd = zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+m.getReceiver()+"/"+JCMRest.JaCaMoZKMDNodeId);
+                        Map<String,String> md = new Gson().fromJson(new String(lmd), Map.class);
+                        adr = md.get("inbox");
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+
+                    if (adr == null) {
+                        // try ZK agent data
+                        byte[] badr = zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+m.getReceiver());
+                        if (badr != null)
+                            adr = new String(badr)+"/inbox";
+                    }
                 }
 
                 // try to send the message by REST API
@@ -88,7 +125,6 @@ public class RestAgArch extends AgArch {
                     if (adr.startsWith("http")) {
                         restClient
                                   .target(adr)
-                                  .path("inbox")
                                   .request(MediaType.APPLICATION_XML)
                                   .accept(MediaType.TEXT_PLAIN)
                                   .post(

@@ -33,6 +33,8 @@ import org.apache.zookeeper.server.ZooKeeperServer;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 
+import com.google.gson.Gson;
+
 import jacamo.platform.DefaultPlatformImpl;
 import jacamo.rest.config.RestAgArch;
 import jacamo.rest.config.RestAppConfig;
@@ -53,6 +55,8 @@ public class JCMRest extends DefaultPlatformImpl {
 
     public static String JaCaMoZKAgNodeId = "/jacamo/agents";
     public static String JaCaMoZKDFNodeId = "/jacamo/df";
+    public static String JaCaMoZKMDNodeId = "metadata";
+    
     
     protected HttpServer restHttpServer = null;
 
@@ -281,6 +285,28 @@ public class JCMRest extends DefaultPlatformImpl {
             zkClient.start();
         }
         return zkClient;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static Map<String,Map<String,String>> getWP() throws Exception {
+        Map<String,Map<String,String>> data = new HashMap<>();
+        Gson gson = new Gson();
+        for (String ag : getZKClient().getChildren().forPath(JCMRest.JaCaMoZKAgNodeId)) {
+            
+            // try to load metadata from ZK
+            Map<String,String> md;
+            try {
+                byte[] lmd = getZKClient().getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+ag+"/"+JaCaMoZKMDNodeId);
+                md = gson.fromJson(new String(lmd), Map.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                md = new HashMap<>();
+            }
+            md.put("uri", new String(zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+ag)));
+            data.put(ag, md);
+        }
+
+        return data;
     }
     
     class JCMRuntimeServices extends DelegatedRuntimeServices {

@@ -66,7 +66,7 @@ public class RestImpl extends AbstractBinder {
 
             List<Object> agents = new ArrayList<>();
             overview.put("agents", agents);
-            tAg.getAgents().forEach(a -> {
+            tAg.getAgents().keySet().forEach(a -> {
                 try {
                     agents.add(tAg.getAgentDetails(a));
                 } catch (CartagoException e) {
