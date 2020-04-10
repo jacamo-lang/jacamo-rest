@@ -24,18 +24,15 @@ public class ClientOverviewTest {
     public static void launchSystem() {
         uri = TestUtils.launchSystem("src/test/test1.jcm");
     }
-
-    @AfterClass
-    public static void stopSystem() {
-        TestUtils.stopSystem();
-    } 
     
     @Test(timeout=2000)
-    public void test301GetOverview() {
-        System.out.println("\n\test301GetOverview");
+    public void test401GetOverview() {
+        System.out.println("\n\test401GetOverview");
         Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
+
+        client = ClientBuilder.newClient();
         
         // Testing ok from root URI
         response = client.target(uri.toString()).path("overview/")

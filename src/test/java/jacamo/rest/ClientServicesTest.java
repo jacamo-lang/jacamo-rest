@@ -12,8 +12,11 @@ import javax.ws.rs.core.Response;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ClientServicesTest {
 
     static URI uri;
@@ -22,15 +25,11 @@ public class ClientServicesTest {
     public static void launchSystem() {
         uri = TestUtils.launchSystem("src/test/test1.jcm");
     }
-
-    @AfterClass
-    public static void stopSystem() {
-        TestUtils.stopSystem();
-    }
     
     @BeforeClass
     public static void createService() {
         Client client = ClientBuilder.newClient();
+        client = ClientBuilder.newClient();
         client.target(uri.toString()).path("agents/marcos/services/banking")
             .request()
             .post(Entity.json("{\"service\":\"banking(retail)\",\"type\":\"financial services\"}"));
@@ -42,6 +41,8 @@ public class ClientServicesTest {
         Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
+
+        client = ClientBuilder.newClient();
         
         // Testing ok from root URI
         response = client.target(uri.toString()).path("services/")

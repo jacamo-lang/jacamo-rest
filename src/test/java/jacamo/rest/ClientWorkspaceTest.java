@@ -1,8 +1,6 @@
 package jacamo.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -29,11 +27,6 @@ public class ClientWorkspaceTest {
     @BeforeClass
     public static void launchSystem() {
         uri = TestUtils.launchSystem("src/test/test1.jcm");
-    }
-
-    @AfterClass
-    public static void stopSystem() {
-        TestUtils.stopSystem();
     }
     
     @Test(timeout=2000)
@@ -112,50 +105,6 @@ public class ClientWorkspaceTest {
         Map vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
         Map art = (Map)((Map)vl.get("artifacts")).get("newart");
         assertEquals("tools.Counter", art.get("type"));
-    }
-
-    @Test(timeout=10000)
-    @SuppressWarnings("rawtypes")
-    public void test401PostWP() {
-        System.out.println("\n\ntest401PostWP");
-
-        Client client = ClientBuilder.newClient();
-        Response response = client
-            .target(uri.toString())
-            .path("/agents")
-            .request(MediaType.APPLICATION_JSON)
-            .get();
-        
-        Map vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
-        assertTrue( vl.get("marcos") != null);
-        
-        Map<String,String> map = new HashMap<>();
-        map.put("uri", "http://myhouse");
-        map.put("type", "Java Agent");
-        map.put("inbox", "http://myhouse/mb");
-       
-        // add new entry
-        client
-            .target(uri.toString())
-            .path("/agents/jomi")
-            .queryParam("only_wp", "true")
-            .request(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_PLAIN)
-            .post(Entity.json(new Gson().toJson( map )));
-
-        response = client
-                .target(uri.toString())
-                .path("/agents")
-                .request(MediaType.APPLICATION_JSON)
-                .accept(MediaType.TEXT_PLAIN)
-                .get();
-            
-        vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
-        assertNotNull(vl.get("jomi"));
-        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl.get("jomi"));
-    
-        assertTrue( ((Map)vl.get("jomi")).get("inbox").equals("http://myhouse/mb"));       
     }
     
 }

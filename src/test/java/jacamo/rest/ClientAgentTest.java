@@ -23,7 +23,7 @@ import org.junit.runners.MethodSorters;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-
+    
 import jacamo.rest.util.Message;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -33,12 +33,7 @@ public class ClientAgentTest {
     @BeforeClass
     public static void launchSystem() {
         uri = TestUtils.launchSystem("src/test/test1.jcm");
-    }
-
-    @AfterClass
-    public static void stopSystem() {
-        TestUtils.stopSystem();
-    }   
+    } 
     
     
     @Test(timeout=2000)
@@ -236,6 +231,8 @@ public class ClientAgentTest {
         Response response;
         String rStr;
 
+        client = ClientBuilder.newClient();
+
         // empty body
         response = client.target(uri.toString()).path("agents/marcos/services/consulting")
                 .request()
@@ -281,6 +278,8 @@ public class ClientAgentTest {
         Response response;
         String rStr;
 
+        client = ClientBuilder.newClient();
+
         response = client.target(uri.toString()).path("agents/myalice")
                 .request()
                 .post(Entity.json(""));
@@ -302,6 +301,8 @@ public class ClientAgentTest {
         Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
+
+        client = ClientBuilder.newClient();
 
         // empty body
         response = client.target(uri.toString()).path("agents/kk/")
