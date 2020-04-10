@@ -2,6 +2,7 @@ package jacamo.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
@@ -18,8 +19,8 @@ import javax.ws.rs.core.Response;
 
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.google.gson.Gson;
     
@@ -341,7 +342,7 @@ public class ClientAgentTest {
 
     @Test(timeout=10000)
     @SuppressWarnings("rawtypes")
-    public void test401PostWP() {
+    public void test401PostWP() throws Exception {
         System.out.println("\n\ntest401PostWP");
 
         Client client = ClientBuilder.newClient();
@@ -381,7 +382,25 @@ public class ClientAgentTest {
         assertNotNull(vl.get("jomi"));
         System.out.println("\n\nResponse: " + response.toString() + "\n" + vl.get("jomi"));
     
-        assertTrue( ((Map)vl.get("jomi")).get("inbox").equals("http://myhouse/mb"));       
+        assertTrue( ((Map)vl.get("jomi")).get("inbox").equals("http://myhouse/mb"));  
+        
+        response = client.target(uri.toString())
+                .path("agents/jomi")
+                .request()
+                .delete();
+        
+        // wait a bit for delete finish
+        Thread.sleep(1000);
+
+        response = client
+                .target(uri.toString())
+                .path("/agents")
+                .request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_PLAIN)
+                .get();
+        vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
+        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
+        assertNull(vl.get("jomi"));
     }
     
 }

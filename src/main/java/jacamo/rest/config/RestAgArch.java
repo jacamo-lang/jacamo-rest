@@ -68,6 +68,14 @@ public class RestAgArch extends AgArch {
         }
     }
     
+    public static void deleteWP(CuratorFramework zkClient, String agName) {
+        try {
+            zkClient.delete().deletingChildrenIfNeeded().inBackground().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+agName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public CuratorFramework      getCurator() {
         return zkClient;
     }
@@ -80,6 +88,7 @@ public class RestAgArch extends AgArch {
     @Override
     public void stop() {
         if (zkClient != null) {
+            deleteWP(zkClient, getAgName());
             zkClient.close();
             zkClient = null;
         }
