@@ -189,13 +189,11 @@ public class TranslAg {
      * @throws Exception 
      */
     public void deleteAgent(String agName) throws Exception {
-        if (BaseCentralisedMAS.getRunner().getAg(agName) == null) {
-            // only register case
-            RestAgArch.deleteWP(JCMRest.getZKClient(), agName);
-        } else {
+        if (BaseCentralisedMAS.getRunner().getAg(agName) != null) {
             if (!RuntimeServicesFactory.get().killAgent(agName, "web", 0))
                 throw new Exception("Unable to kill agent: " + agName);
         }
+        RestAgArch.deleteWP(JCMRest.getZKClient(), agName);
     }
     
     /**
