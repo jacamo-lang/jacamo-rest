@@ -32,6 +32,8 @@ public class ClientServicesTest {
         client.target(uri.toString()).path("agents/marcos/services/banking")
             .request()
             .post(Entity.json("{\"service\":\"banking(retail)\",\"type\":\"financial services\"}"));
+        
+        client.close();
     }
     
     @Test
@@ -49,6 +51,8 @@ public class ClientServicesTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (services/): " + rStr);
         assertTrue(rStr.contains("banking"));
+        
+        client.close();
     }
     
 }

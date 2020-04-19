@@ -39,6 +39,8 @@ public class ClientOverviewTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (overview/): " + rStr);
         assertTrue(rStr.contains("cartago.NodeArtifact"));
+        
+        client.close();
     }
     
 }

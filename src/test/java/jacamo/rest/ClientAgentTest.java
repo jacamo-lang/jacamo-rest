@@ -49,6 +49,8 @@ public class ClientAgentTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/): " + rStr);
         assertTrue(rStr.contains("marcos"));
+        
+        client.close();
     }
     
     @Test
@@ -70,6 +72,8 @@ public class ClientAgentTest {
                 .request(MediaType.APPLICATION_JSON).get();
         System.out.println("Response (agents/marcos2): should be 500");
         assertEquals(500, response.getStatus());
+        
+        client.close();
     }
      
     @Test
@@ -92,6 +96,8 @@ public class ClientAgentTest {
                 .request(MediaType.APPLICATION_JSON).get();
         System.out.println("Response (agents/marcos2/status): should be 500");
         assertEquals(500, response.getStatus());
+        
+        client.close();
     }
     
     @Test
@@ -125,6 +131,7 @@ public class ClientAgentTest {
         System.out.println("Response (agents/marcos2/log): should be 500");
         assertEquals(500, response.getStatus());
 
+        client.close();
     }
     
     @Test
@@ -140,6 +147,8 @@ public class ClientAgentTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/marcos): " + rStr);
         assertTrue(rStr.contains("price(banana,X)[source(self)]"));
+        
+        client.close();
     }
 
     @Test
@@ -166,7 +175,9 @@ public class ClientAgentTest {
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/marcos): " + rStr);
-        assertTrue(rStr.contains("vl(10)[source(jomi)]"));    
+        assertTrue(rStr.contains("vl(10)[source(jomi)]"));
+        
+        client.close();
     }
     
     @SuppressWarnings("unchecked")
@@ -221,7 +232,9 @@ public class ClientAgentTest {
         
         rStr = response.readEntity(String.class);
         System.out.println("Response (agents/marcos): " + rStr);
-        assertTrue(rStr.contains("bb1(13)[source(self)]"));    
+        assertTrue(rStr.contains("bb1(13)[source(self)]"));
+        
+        client.close();
     }
     
     @Test
@@ -240,6 +253,8 @@ public class ClientAgentTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/marcos/services/consulting): " + rStr);
         assertEquals(200, response.getStatus());
+        
+        client.close();
     }
     
     @Test
@@ -269,6 +284,8 @@ public class ClientAgentTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (services): " + rStr);
         assertTrue(rStr.contains("gardening"));
+        
+        client.close();
     }
     
     @Test
@@ -292,7 +309,9 @@ public class ClientAgentTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/myalice/status): " + rStr);
         assertEquals(200, response.getStatus());
-        assertTrue(rStr.contains("cycle"));     
+        assertTrue(rStr.contains("cycle"));  
+        
+        client.close();
     }
     
     @Test
@@ -311,6 +330,8 @@ public class ClientAgentTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/kk/): " + rStr);
         assertEquals(200, response.getStatus());
+        
+        client.close();
     }
     
     @Test
@@ -338,6 +359,8 @@ public class ClientAgentTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/marcos/log): " + rStr);
         assertTrue(rStr.contains("Command .print(oi); +xyz979898;"));
+        
+        client.close();
     }
 
     @Test
@@ -401,6 +424,8 @@ public class ClientAgentTest {
         vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
         System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
         assertNull(vl.get("jomi"));
+        
+        client.close();
     }
     
 }

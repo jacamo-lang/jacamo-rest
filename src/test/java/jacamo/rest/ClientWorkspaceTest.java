@@ -32,16 +32,43 @@ public class ClientWorkspaceTest {
     public void test201PostProperty() {
         System.out.println("\n\ntest201PostProperty");
 
-        assertEquals( 10, getCount("testwks","a"));
-
         Client client = ClientBuilder.newClient();
+        
+        Response response = client
+                .target(uri.toString())
+                .path("workspaces/testwks/artifacts/a/properties/count")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+
+        Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
+        
+        double v = 0.0;
+        if (vl[0] != null)
+            v = ((Double)vl[0]).intValue();
+
+        assertEquals( 10, v, 0 );
+        
         client
             .target(uri.toString())
             .path("workspaces/testwks/artifacts/a/operations/inc/execute")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(new Object[] {})));
         
-        assertEquals( 11, getCount("testwks","a"));
+        response = client
+                .target(uri.toString())
+                .path("workspaces/testwks/artifacts/a/properties/count")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+
+        Object[] vl2 = new Gson().fromJson(response.readEntity(String.class), Object[].class);
+        
+        double v2 = 0.0;
+        if (vl2[0] != null)
+            v2 = ((Double)vl2[0]).intValue();
+
+        assertEquals( 11, v2, 0 );
+
+        client.close();
     }
 
     @Test
@@ -55,20 +82,21 @@ public class ClientWorkspaceTest {
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(new Object[] { 40 })));
 
-        assertEquals( 40, getCount("testwks","a"));
-    }
-
-    public int getCount(String w, String art) {
-        Client client = ClientBuilder.newClient();
         Response response = client
                 .target(uri.toString())
-                .path("workspaces/"+w+"/artifacts/"+art+"/properties/count")
+                .path("workspaces/testwks/artifacts/a/properties/count")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        return ((Double)vl[0]).intValue();
+        double v = 0.0;
+        if (vl[0] != null)
+            v = ((Double)vl[0]).intValue();
+
+        assertEquals( 40, v, 0 );
+        
+        client.close();
     }
     
     @Test
@@ -93,17 +121,32 @@ public class ClientWorkspaceTest {
             .path("workspaces/neww3/artifacts/newart")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(m)));
-        assertEquals( 22, getCount("neww3","newart"));
-
+        
         Response response = client
+                .target(uri.toString())
+                .path("workspaces/neww3/artifacts/newart/properties/count")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+
+        Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
+        
+        double v = 0.0;
+        if (vl[0] != null)
+            v = ((Double)vl[0]).intValue();
+
+        assertEquals( 22, v, 0 );
+
+        response = client
                 .target(uri.toString())
                 .path("workspaces/neww3")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
-        Map vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
-        Map art = (Map)((Map)vl.get("artifacts")).get("newart");
+        Map vl2 = new Gson().fromJson(response.readEntity(String.class), Map.class);
+        Map art = (Map)((Map)vl2.get("artifacts")).get("newart");
         assertEquals("tools.Counter", art.get("type"));
+        
+        client.close();
     }
     
 }
