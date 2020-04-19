@@ -36,6 +36,8 @@ public class ClientOrganizationTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (organisations/): " + rStr);
         assertTrue(rStr.contains("testOrg"));
+        
+        client.close();
     }
     
     @Test(timeout=2000)
@@ -49,6 +51,8 @@ public class ClientOrganizationTest {
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (organisations/testOrg): " + rStr);
         assertTrue(rStr.contains("scheme1.mission1"));
+        
+        client.close();
     }
     
     @Test(timeout=2000)
@@ -74,6 +78,7 @@ public class ClientOrganizationTest {
         System.out.println("Response (organisations/testOrg): " + rStr);
         assertTrue(rStr.contains("role3"));
         
+        client.close();
     }
     
 }
