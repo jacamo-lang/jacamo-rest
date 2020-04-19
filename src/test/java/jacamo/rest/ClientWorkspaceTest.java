@@ -28,7 +28,7 @@ public class ClientWorkspaceTest {
         uri = TestUtils.launchSystem("src/test/test1.jcm");
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test201PostProperty() {
         System.out.println("\n\ntest201PostProperty");
 
@@ -44,7 +44,7 @@ public class ClientWorkspaceTest {
         assertEquals( 11, getCount("testwks","a"));
     }
 
-    @Test(timeout=2000)
+    @Test
     public void test202PostOperationExecute() {
         System.out.println("\n\ntest202PostOperationExecute");
 
@@ -71,7 +71,7 @@ public class ClientWorkspaceTest {
         return ((Double)vl[0]).intValue();
     }
     
-    @Test(timeout=2000)
+    @Test
     @SuppressWarnings("rawtypes")
     public void test203PostArtifact() {
         System.out.println("\n\ntest203PostArtifact");

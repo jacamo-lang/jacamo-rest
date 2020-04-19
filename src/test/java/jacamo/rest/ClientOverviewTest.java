@@ -24,7 +24,7 @@ public class ClientOverviewTest {
         uri = TestUtils.launchSystem("src/test/test1.jcm");
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test401GetOverview() {
         System.out.println("\n\test401GetOverview");
         Client client = ClientBuilder.newClient();

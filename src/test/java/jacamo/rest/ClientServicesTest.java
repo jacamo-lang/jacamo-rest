@@ -34,7 +34,7 @@ public class ClientServicesTest {
             .post(Entity.json("{\"service\":\"banking(retail)\",\"type\":\"financial services\"}"));
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test301GetServices() {
         System.out.println("\n\test301GetServices");
         Client client = ClientBuilder.newClient();

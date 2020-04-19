@@ -36,7 +36,7 @@ public class ClientAgentTest {
     } 
     
     
-    @Test(timeout=2000)
+    @Test
     public void test001GetAgents() {
         System.out.println("\n\ntest001GetAgents");
         Client client = ClientBuilder.newClient();
@@ -51,7 +51,7 @@ public class ClientAgentTest {
         assertTrue(rStr.contains("marcos"));
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test002GetAgent() {
         System.out.println("\n\ntest002GetAgent");
         Client client = ClientBuilder.newClient();
@@ -72,7 +72,7 @@ public class ClientAgentTest {
         assertEquals(500, response.getStatus());
     }
      
-    @Test(timeout=2000)
+    @Test
     public void test003GetAgentStatus() {
         System.out.println("\n\ntest003GetAgentStatus");
         Client client = ClientBuilder.newClient();
@@ -94,7 +94,7 @@ public class ClientAgentTest {
         assertEquals(500, response.getStatus());
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test004GetAgentLog() {
         System.out.println("\n\ntest004GetAgentLog");
         Client client = ClientBuilder.newClient();
@@ -127,7 +127,7 @@ public class ClientAgentTest {
 
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test005GetAgentBeliefs() {
         System.out.println("\n\ntest005GetAgentBeliefs");
         Client client = ClientBuilder.newClient();
@@ -142,7 +142,7 @@ public class ClientAgentTest {
         assertTrue(rStr.contains("price(banana,X)[source(self)]"));
     }
 
-    @Test(timeout=2000)
+    @Test
     public void test006PostAgentInbox() {
         System.out.println("\n\ntest006PostAgentInbox");
         Client client = ClientBuilder.newClient();
@@ -170,7 +170,7 @@ public class ClientAgentTest {
     }
     
     @SuppressWarnings("unchecked")
-    @Test(timeout=2000)
+    @Test
     public void test007PostAgentPlan() {
         System.out.println("\n\ntest007PostAgentPlan");
         Client client = ClientBuilder.newClient();
@@ -224,7 +224,7 @@ public class ClientAgentTest {
         assertTrue(rStr.contains("bb1(13)[source(self)]"));    
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test008PostAgentService() {
         System.out.println("\n\ntest008PostAgentService");
         Client client = ClientBuilder.newClient();
@@ -242,7 +242,7 @@ public class ClientAgentTest {
         assertEquals(200, response.getStatus());
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test009GetAgentServices() {
         System.out.println("\n\ntest009GetAgentServices");
         Client client = ClientBuilder.newClient();
@@ -271,7 +271,7 @@ public class ClientAgentTest {
         assertTrue(rStr.contains("gardening"));
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test010CreateAgent() {
         System.out.println("\n\ntest01XCreateAgent");
         Client client = ClientBuilder.newClient();
@@ -295,7 +295,7 @@ public class ClientAgentTest {
         assertTrue(rStr.contains("cycle"));     
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test010bDeleteAgent() {
         System.out.println("\n\ntest010DeleteAgent");
         Client client = ClientBuilder.newClient();
@@ -313,7 +313,7 @@ public class ClientAgentTest {
         assertEquals(200, response.getStatus());
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test011PostAgentCommand() {
         System.out.println("\n\ntest011PostAgentCommand");
 
@@ -340,7 +340,7 @@ public class ClientAgentTest {
         assertTrue(rStr.contains("Command .print(oi); +xyz979898;"));
     }
 
-    @Test(timeout=10000)
+    @Test
     @SuppressWarnings("rawtypes")
     public void test401PostWP() throws Exception {
         System.out.println("\n\ntest401PostWP");
