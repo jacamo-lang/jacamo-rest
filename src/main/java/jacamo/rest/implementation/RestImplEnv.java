@@ -1,22 +1,14 @@
 package jacamo.rest.implementation;
 
-import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -26,7 +18,6 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.ibm.icu.impl.UResource.Array;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -174,7 +165,7 @@ public class RestImplEnv extends AbstractBinder {
      * 
      * @param wrksName name of the workspace the artifact is situated in
      * @param artName  name of the artifact to be retrieved
-     * @param obsProp  name of the observable property
+     * @param obsPropId  name of the observable property
      * @return HTTP 200 Response (ok an array of values) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         Sample:
@@ -191,8 +182,7 @@ public class RestImplEnv extends AbstractBinder {
     public Response getArtifactProperties(
             @PathParam("wrksname") String wrksName, 
             @PathParam("artname") String artName, 
-            @PathParam("propertyid") 
-            String obsPropId) {
+            @PathParam("propertyid") String obsPropId) {
         try {
             return Response
                     .ok()
