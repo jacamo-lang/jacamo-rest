@@ -30,6 +30,7 @@ price(banana,10).
    <- .print("I received hello from ",A)
    .
 
++hello[source(A)] <- .print("I received hello from ",A).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }
