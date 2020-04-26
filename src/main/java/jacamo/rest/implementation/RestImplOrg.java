@@ -2,7 +2,6 @@ package jacamo.rest.implementation;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -112,7 +111,7 @@ public class RestImplOrg extends AbstractBinder {
      */
     @Path("/{oename}/groups/{groupname}/roles/{roleid}")
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON })
     @ApiOperation(value = "Add a new role into an organisation/group.")
     @ApiResponses(value = { 
             @ApiResponse(code = 200, message = "success"),
