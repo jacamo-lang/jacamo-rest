@@ -18,6 +18,7 @@ import org.junit.runners.MethodSorters;
 public class ClientOverviewTest {
 
     static URI uri;
+    Client client = ClientBuilder.newClient();
 
     @BeforeClass
     public static void launchSystem() {
@@ -27,11 +28,8 @@ public class ClientOverviewTest {
     @Test
     public void test401GetOverview() {
         System.out.println("\n\test401GetOverview");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
-
-        client = ClientBuilder.newClient();
         
         // Testing ok from root URI
         response = client.target(uri.toString()).path("overview/")

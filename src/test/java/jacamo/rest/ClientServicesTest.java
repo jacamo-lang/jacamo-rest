@@ -19,6 +19,7 @@ import org.junit.runners.MethodSorters;
 public class ClientServicesTest {
 
     static URI uri;
+    Client client = ClientBuilder.newClient();
 
     @BeforeClass
     public static void launchSystem() {
@@ -28,7 +29,6 @@ public class ClientServicesTest {
     @BeforeClass
     public static void createService() {
         Client client = ClientBuilder.newClient();
-        client = ClientBuilder.newClient();
         client.target(uri.toString()).path("agents/marcos/services/banking")
             .request()
             .post(Entity.json("{\"service\":\"banking(retail)\",\"type\":\"financial services\"}"));
@@ -39,11 +39,8 @@ public class ClientServicesTest {
     @Test
     public void test301GetServices() {
         System.out.println("\n\test301GetServices");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
-
-        client = ClientBuilder.newClient();
         
         // Testing ok from root URI
         response = client.target(uri.toString()).path("services/")

@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ClientWorkspaceTest {
     static URI uri;
+    Client client = ClientBuilder.newClient();
 
     @BeforeClass
     public static void launchSystem() {
@@ -31,8 +32,6 @@ public class ClientWorkspaceTest {
     @Test
     public void test201PostProperty() {
         System.out.println("\n\ntest201PostProperty");
-
-        Client client = ClientBuilder.newClient();
         
         Response response = client
                 .target(uri.toString())
@@ -72,7 +71,6 @@ public class ClientWorkspaceTest {
     public void test202PostOperationExecute() {
         System.out.println("\n\ntest202PostOperationExecute");
 
-        Client client = ClientBuilder.newClient();
         client
             .target(uri.toString())
             .path("workspaces/testwks/artifacts/a/operations/reset/execute")
@@ -99,8 +97,6 @@ public class ClientWorkspaceTest {
     @SuppressWarnings("rawtypes")
     public void test203PostArtifact() {
         System.out.println("\n\ntest203PostArtifact");
-
-        Client client = ClientBuilder.newClient();
 
         client
             .target(uri.toString())
