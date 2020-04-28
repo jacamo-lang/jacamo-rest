@@ -29,6 +29,7 @@ import jacamo.rest.util.Message;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ClientAgentTest {
     static URI uri;
+    Client client = ClientBuilder.newClient();
 
     @BeforeClass
     public static void launchSystem() {
@@ -39,7 +40,6 @@ public class ClientAgentTest {
     @Test
     public void test001GetAgents() {
         System.out.println("\n\ntest001GetAgents");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
         
@@ -56,7 +56,6 @@ public class ClientAgentTest {
     @Test
     public void test002GetAgent() {
         System.out.println("\n\ntest002GetAgent");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
 
@@ -79,7 +78,6 @@ public class ClientAgentTest {
     @Test
     public void test003GetAgentStatus() {
         System.out.println("\n\ntest003GetAgentStatus");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
 
@@ -103,7 +101,6 @@ public class ClientAgentTest {
     @Test
     public void test004GetAgentLog() {
         System.out.println("\n\ntest004GetAgentLog");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
 
@@ -112,7 +109,6 @@ public class ClientAgentTest {
         Entity<Form> entity = Entity.form(form);
         
         //Send a command to write something on marcos's log
-        client = ClientBuilder.newClient();
         response = client.target(uri.toString())
                 .path("agents/marcos/command")
                 .request()
@@ -137,11 +133,9 @@ public class ClientAgentTest {
     @Test
     public void test005GetAgentBeliefs() {
         System.out.println("\n\ntest005GetAgentBeliefs");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
 
-        client = ClientBuilder.newClient();
         response = client.target(uri.toString()).path("agents/marcos")
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString(); 
@@ -154,11 +148,8 @@ public class ClientAgentTest {
     @Test
     public void test006PostAgentInbox() {
         System.out.println("\n\ntest006PostAgentInbox");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
-
-        client = ClientBuilder.newClient();
 
         Message m = new Message("34", "tell", "jomi", "marcos", "vl(10)");
         Gson gson = new Gson();
@@ -184,12 +175,10 @@ public class ClientAgentTest {
     @Test
     public void test007PostAgentPlan() {
         System.out.println("\n\ntest007PostAgentPlan");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
 
         // 1. add plan
-        client = ClientBuilder.newClient();
         response = client.target(uri.toString())
                 .path("agents/marcos/plans")
                 .request()
@@ -240,11 +229,8 @@ public class ClientAgentTest {
     @Test
     public void test008PostAgentService() {
         System.out.println("\n\ntest008PostAgentService");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
-
-        client = ClientBuilder.newClient();
 
         // empty body
         response = client.target(uri.toString()).path("agents/marcos/services/consulting")
@@ -260,11 +246,9 @@ public class ClientAgentTest {
     @Test
     public void test009GetAgentServices() {
         System.out.println("\n\ntest009GetAgentServices");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
 
-        client = ClientBuilder.newClient();
         response = client.target(uri.toString()).path("services")
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString(); 
@@ -291,11 +275,8 @@ public class ClientAgentTest {
     @Test
     public void test010CreateAgent() {
         System.out.println("\n\ntest01XCreateAgent");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
-
-        client = ClientBuilder.newClient();
 
         response = client.target(uri.toString()).path("agents/myalice")
                 .request()
@@ -317,11 +298,8 @@ public class ClientAgentTest {
     @Test
     public void test010bDeleteAgent() {
         System.out.println("\n\ntest010DeleteAgent");
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
-
-        client = ClientBuilder.newClient();
 
         // empty body
         response = client.target(uri.toString()).path("agents/kk/")
@@ -337,8 +315,6 @@ public class ClientAgentTest {
     @Test
     public void test011PostAgentCommand() {
         System.out.println("\n\ntest011PostAgentCommand");
-
-        Client client = ClientBuilder.newClient();
         Response response;
         String rStr;
 
@@ -347,7 +323,6 @@ public class ClientAgentTest {
         Entity<Form> entity = Entity.form(form);
         
         //Send a command to write something on marcos's log
-        client = ClientBuilder.newClient();
         response = client.target(uri.toString())
                 .path("agents/marcos/command")
                 .request()
@@ -368,7 +343,6 @@ public class ClientAgentTest {
     public void test401PostWP() throws Exception {
         System.out.println("\n\ntest401PostWP");
 
-        Client client = ClientBuilder.newClient();
         Response response = client
             .target(uri.toString())
             .path("/agents")
