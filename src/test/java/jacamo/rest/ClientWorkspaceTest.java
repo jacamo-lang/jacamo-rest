@@ -195,7 +195,7 @@ public class ClientWorkspaceTest {
         Map art = (Map)((Map)vl2.get("artifacts")).get("da");
         System.out.println(art);
         assertEquals("jacamo.rest.util.DummyArt", art.get("type"));
-        assertEquals("1111.0", ((Map)art.get("properties")).get("count").toString());
+        assertEquals("1111.0", ((Map)((List)art.get("properties")).get(0)).get("count").toString());
 
         // run updateObsProperty
         response = client

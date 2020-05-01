@@ -1,8 +1,10 @@
 package jacamo.rest.mediation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,10 +67,12 @@ public class TranslEnv {
         ArtifactInfo info = CartagoService.getController(wrksName).getArtifactInfo(artName);
 
         // Get artifact's properties
-        Map<String, Object> properties = new HashMap<>();
+        List<Object> properties = new ArrayList<>();
         for (ArtifactObsProperty op : info.getObsProperties()) {
             for (Object vl : op.getValues()) {
-                properties.put(op.getName(), vl);
+                Map<String, Object> property = new HashMap<String, Object>();
+                property.put(op.getName(), vl);
+                properties.add(property);
             }
         }
 
@@ -131,7 +135,7 @@ public class TranslEnv {
         CartagoContext ctxt = getContext(wrksName);
         ArtifactId aid = ctxt.lookupArtifact(getWId(wrksName), artName);
         if (aid == null) {
-            throw new CartagoException("artifact "+artName+" not found");
+        	throw new CartagoException("artifact "+artName+" not found");
         }
         ctxt.doAction(aid, new Op(operation, values));
     }
