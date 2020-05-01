@@ -135,7 +135,7 @@ public class RestImplEnv extends AbstractBinder {
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         Sample:
      *         {"artifact":"a","operations":["observeProperty","inc"],"linkedArtifacts":["b"],
-     *         "type":"tools.Counter","properties":[{"count":10}],"observers":["marcos"]}
+     *         "type":"tools.Counter","properties":{"count":10},"observers":["marcos"]}
      */
     @Path("/{wrksname}/artifacts/{artname}")
     @GET

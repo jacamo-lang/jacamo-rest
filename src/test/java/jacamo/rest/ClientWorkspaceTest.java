@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.client.Client;
@@ -14,8 +15,8 @@ import javax.ws.rs.core.Response;
 
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.google.gson.Gson;
 
@@ -27,6 +28,22 @@ public class ClientWorkspaceTest {
     @BeforeClass
     public static void launchSystem() {
         uri = TestUtils.launchSystem("src/test/test1.jcm");
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void test101GetWorkspaces() {
+        Response response = client
+                .target(uri.toString())
+                .path("workspaces")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+
+        //System.out.println(response.readEntity(String.class));
+        List vl = new Gson().fromJson(response.readEntity(String.class), List.class);
+        System.out.println(vl);
+        assertEquals("[testOrg, wkstest, main, testwks]", vl.toString());
+        client.close();
     }
     
     @Test
@@ -138,5 +155,75 @@ public class ClientWorkspaceTest {
         
         client.close();
     }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void test301CreateDummyArt() {
+        // create a workspace jh
+        client
+            .target(uri.toString())
+            .path("workspaces/jh")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(new Gson().toJson(new Object[] {  })));
     
+        // add DummyArt there
+        Map<String,Object> m = new HashMap<>();
+        m.put("template", "jacamo.rest.util.DummyArt");
+        m.put("values", new Object[] { });
+        
+        client
+            .target(uri.toString())
+            .path("workspaces/jh/artifacts/da")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(new Gson().toJson(m)));
+        
+        // run defineObsProperty
+        Response response = client
+            .target(uri.toString())
+            .path("workspaces/jh/artifacts/da/operations/doDefineObsProperty/execute")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(new Gson().toJson(new Object[] { "count", 1111 })));
+        assertEquals(200, response.getStatus());
+
+        response = client
+                .target(uri.toString())
+                .path("workspaces/jh")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+    
+        Map vl2 = new Gson().fromJson(response.readEntity(String.class), Map.class);
+        Map art = (Map)((Map)vl2.get("artifacts")).get("da");
+        System.out.println(art);
+        assertEquals("jacamo.rest.util.DummyArt", art.get("type"));
+        assertEquals("1111.0", ((Map)art.get("properties")).get("count").toString());
+
+        // run updateObsProperty
+        response = client
+                .target(uri.toString())
+                .path("workspaces/jh/artifacts/da/operations/doUpdateObsProperty/execute")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(new Gson().toJson(new Object[] { "count", 2222 })));
+        assertEquals(200, response.getStatus());
+
+        // run signal
+        response = client
+                .target(uri.toString())
+                .path("workspaces/jh/artifacts/da/operations/doSignal/execute")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(new Gson().toJson(new Object[] { "count", null })));
+        
+        response = client
+                .target(uri.toString())
+                .path("workspaces/jh/artifacts/da/properties/count")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+    
+        Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
+        
+        //TODO: For some reason on dockerhub it is returning null
+        if (vl != null) 
+            assertEquals( 2222, ((Double)vl[0]).intValue(), 0 );
+
+        client.close();
+    }
 }

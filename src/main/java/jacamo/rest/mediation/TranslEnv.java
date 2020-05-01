@@ -65,12 +65,10 @@ public class TranslEnv {
         ArtifactInfo info = CartagoService.getController(wrksName).getArtifactInfo(artName);
 
         // Get artifact's properties
-        Set<Object> properties = new HashSet<>();
+        Map<String, Object> properties = new HashMap<>();
         for (ArtifactObsProperty op : info.getObsProperties()) {
             for (Object vl : op.getValues()) {
-                Map<String, Object> property = new HashMap<String, Object>();
-                property.put(op.getName(), vl);
-                properties.add(property);
+                properties.put(op.getName(), vl);
             }
         }
 
@@ -132,6 +130,9 @@ public class TranslEnv {
     public void execOp(String wrksName, String artName, String operation, Object[] values) throws CartagoException {
         CartagoContext ctxt = getContext(wrksName);
         ArtifactId aid = ctxt.lookupArtifact(getWId(wrksName), artName);
+        if (aid == null) {
+            throw new CartagoException("artifact "+artName+" not found");
+        }
         ctxt.doAction(aid, new Op(operation, values));
     }
     

@@ -130,7 +130,7 @@ public class JCMRest extends DefaultPlatformImpl {
             }           
         }
         
-        restHttpServer = startRestServer(restPort);
+        restHttpServer = startRestServer(restPort,0);
         
         if (useZK) {
             if (zkHost == null) {
@@ -211,7 +211,11 @@ public class JCMRest extends DefaultPlatformImpl {
         }
     }
     
-    public HttpServer startRestServer(int port) {
+    public HttpServer startRestServer(int port, int tryc) {
+        if (tryc > 20) {
+            System.err.println("Error starting rest server!");
+            return null;
+        }
         try {
             restServerURI = UriBuilder.fromUri("http://"+InetAddress.getLocalHost().getHostAddress()+"/").port(port).build();
             
@@ -224,7 +228,7 @@ public class JCMRest extends DefaultPlatformImpl {
             return s;
         } catch (javax.ws.rs.ProcessingException e) {           
             System.out.println("trying next port for rest server "+(port+1)+". e="+e);
-            return startRestServer(port+1);
+            return startRestServer(port+1,tryc+1);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
