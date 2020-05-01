@@ -14,12 +14,12 @@ public class DummyArt extends Artifact {
     }
     
     @OPERATION public void doUpdateObsProperty(String obName, Object arg) {
-    	ObsProperty op = getObsProperty(obName);
-    	if (op == null) {
+        ObsProperty op = getObsProperty(obName);
+        if (op == null) {
             defineObsProperty(obName, arg);
-    	} else {
-    		op.updateValues(arg);
-    	}
+        } else {
+            op.updateValues(arg);
+        }
         //System.out.println("** update ob "+obName+"("+arg+")");
     }
 

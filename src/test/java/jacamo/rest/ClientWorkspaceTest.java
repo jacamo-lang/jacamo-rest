@@ -1,6 +1,7 @@
 package jacamo.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -41,8 +42,9 @@ public class ClientWorkspaceTest {
 
         //System.out.println(response.readEntity(String.class));
         List vl = new Gson().fromJson(response.readEntity(String.class), List.class);
-        System.out.println(vl);
-        assertEquals("[testOrg, wkstest, main, testwks]", vl.toString());
+        assertTrue(vl.contains("testOrg"));
+        assertTrue(vl.contains("wkstest"));
+        assertTrue(vl.contains("main"));
         client.close();
     }
     
