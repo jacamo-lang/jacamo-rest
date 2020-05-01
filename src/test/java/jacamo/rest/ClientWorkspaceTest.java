@@ -43,7 +43,7 @@ public class ClientWorkspaceTest {
         //System.out.println(response.readEntity(String.class));
         List vl = new Gson().fromJson(response.readEntity(String.class), List.class);
         assertTrue(vl.contains("testOrg"));
-        assertTrue(vl.contains("wkstest"));
+        assertTrue(vl.contains("testwks"));
         assertTrue(vl.contains("main"));
         client.close();
     }
@@ -195,7 +195,7 @@ public class ClientWorkspaceTest {
     
         Map vl2 = new Gson().fromJson(response.readEntity(String.class), Map.class);
         Map art = (Map)((Map)vl2.get("artifacts")).get("da");
-        System.out.println(art);
+        //System.out.println(art);
         assertEquals("jacamo.rest.util.DummyArt", art.get("type"));
         assertEquals("1111.0", ((Map)((List)art.get("properties")).get(0)).get("count").toString());
 
