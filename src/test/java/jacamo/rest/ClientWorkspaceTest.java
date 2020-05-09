@@ -162,7 +162,7 @@ public class ClientWorkspaceTest {
 
     @SuppressWarnings("rawtypes")
     @Test
-    public void test301CreateDummyArt() {
+    public void test301CreateDummyArt() throws InterruptedException {
         // create a workspace jh
         client
             .target(uri.toString())
@@ -255,6 +255,8 @@ public class ClientWorkspaceTest {
         // ask to act
         sendMsg("belovedbob", "achieve", "test(door)");
         
+        // wait the agent to proceed
+        Thread.sleep(500);
         response = client.target(uri.toString())
                 .path("agents/belovedbob")
                 .request(MediaType.APPLICATION_JSON).get();
