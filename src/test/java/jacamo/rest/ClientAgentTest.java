@@ -220,7 +220,7 @@ public class ClientAgentTest {
                 .request(MediaType.APPLICATION_JSON).get();
         
         rStr = response.readEntity(String.class);
-        System.out.println("Response (agents/marcos): " + rStr);
+        //System.out.println("Response (agents/marcos): " + rStr);
         assertTrue(rStr.contains("bb1(13)[source(self)]"));
         
         client.close();
@@ -238,7 +238,7 @@ public class ClientAgentTest {
                 .post(null);
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/marcos/services/consulting): " + rStr);
-        assertEquals(200, response.getStatus());
+        assertEquals(201, response.getStatus());
         
         client.close();
     }
@@ -261,7 +261,7 @@ public class ClientAgentTest {
                 .post(Entity.json("{\"service\":\"gardening(vegetables)\",\"type\":\"hand services\"}"));
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (agents/marcos/services/gardening): " + rStr);
-        assertEquals(200, response.getStatus());
+        assertEquals(201, response.getStatus());
 
         response = client.target(uri.toString()).path("services")
                 .request(MediaType.APPLICATION_JSON).get();

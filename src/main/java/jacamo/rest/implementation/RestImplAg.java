@@ -105,7 +105,7 @@ public class RestImplAg extends AbstractBinder {
         try {
             if (onlyWP) {
                 if (tAg.createWP(agName, metaData))
-                    return Response.ok().build();
+                    return Response.created(new URI(uriInfo.getBaseUri() + "agents/" + agName)).build();
                 else
                     return Response.status(500, "Agent "+agName+" already exists!").build();
             } else {
@@ -438,7 +438,7 @@ public class RestImplAg extends AbstractBinder {
             value = "Append a service to the agent.",
             notes = "Example: curl --request POST 'http://127.0.0.1:8080/agents/marcos/services/gardening'" + 
                             " --header 'Content-Type: application/json'" + 
-                            " --data-raw '{\"service\":\"gardening(vegetables)\",\"type\":\"garden services\"}"
+                            " --data-raw '{\"service\":\"gardening(vegetables)\",\"type\":\"agent\"}"
     )
     @ApiResponses(value = { 
             @ApiResponse(code = 201, message = "generated uri"),
@@ -453,7 +453,7 @@ public class RestImplAg extends AbstractBinder {
             tAg.addServiceToAgent(agName, service, values);
             
             return Response
-                    .ok()
+                    .created(new URI(uriInfo.getBaseUri() + agName + "/services/" + agName + "/services/" + service))
                     .build();
         } catch (Exception e) {
             e.printStackTrace();

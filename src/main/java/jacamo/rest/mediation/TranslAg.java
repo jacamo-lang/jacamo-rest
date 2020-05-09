@@ -92,8 +92,8 @@ public class TranslAg {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("//Agent created automatically\n\n");
-        stringBuilder.append("!start.\n\n");
-        stringBuilder.append("+!start <- .print(\"Hi\").\n\n");
+        //stringBuilder.append("!start.\n\n");
+        //stringBuilder.append("+!start <- .print(\"Hi\").\n\n");
         stringBuilder.append("{ include(\"$jacamoJar/templates/common-cartago.asl\") }\n");
         stringBuilder.append("{ include(\"$jacamoJar/templates/common-moise.asl\") }\n");
         stringBuilder.append(

@@ -21,6 +21,8 @@ import org.junit.runners.MethodSorters;
 
 import com.google.gson.Gson;
 
+import jacamo.rest.util.Message;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ClientWorkspaceTest {
     static URI uri;
@@ -226,6 +228,54 @@ public class ClientWorkspaceTest {
         if (vl != null) 
             assertEquals( 2222, ((Double)vl[0]).intValue(), 0 );
 
+        // agent acting on the dummy art
+        
+        // register callback
+        response = client
+                .target(uri.toString())
+                .path("workspaces/jh/artifacts/da/operations/register/execute")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(new Gson().toJson(new Object[] { "http://localhost:1010" })));
+        // create agent
+        response = client.target(uri.toString()).path("agents/belovedbob")
+                .request()
+                .post(Entity.json(""));
+        response = client.target(uri.toString())
+                .path("agents/belovedbob/plans")
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .post(
+                        Entity.json(
+                                "+!test(A) <- .print(doing,A); act(open(A)). "
+                        )
+                );
+
+        // ask the agent to focus and act
+        sendMsg("belovedbob", "achieve", "jcm::focus_env_art(art_env(jh,local,da,ns1),5)");
+        // ask to act
+        sendMsg("belovedbob", "achieve", "test(door)");
+        
+        response = client.target(uri.toString())
+                .path("agents/belovedbob")
+                .request(MediaType.APPLICATION_JSON).get();
+        
+        String rStr = response.readEntity(String.class);
+        System.out.println("Response (agents/marcos): " + rStr);
+        assertTrue(rStr.contains("ns1::count(2222)[artifact_id("));
+        
         client.close();
+    }
+    
+    int msgId = 0;
+    void sendMsg(String to, String perf, String content) {
+        Message msg = new Message(""+(msgId++), perf, "rest", to, content);
+
+        Response response = client.target(uri.toString())
+                .path("agents/belovedbob/inbox")
+                .request(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_PLAIN)
+                .post(Entity.json(new Gson().toJson(msg)));
+        assertEquals(200, response.getStatus());
+
     }
 }
