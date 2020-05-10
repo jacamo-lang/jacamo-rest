@@ -262,7 +262,7 @@ public class ClientWorkspaceTest {
                 .request(MediaType.APPLICATION_JSON).get();
         
         String rStr = response.readEntity(String.class);
-        System.out.println("Response (agents/marcos): " + rStr);
+        //System.out.println("Response (agents/marcos): " + rStr);
         assertTrue(rStr.contains("ns1::count(2222)[artifact_id("));
         
         client.close();

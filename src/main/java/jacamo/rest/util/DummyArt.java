@@ -62,7 +62,7 @@ public class DummyArt extends Artifact {
                 Client client = ClientBuilder.newClient();
                 client.target(actionTarger.toString())
                     .request()
-                    .post(Entity.json(act.toString()));            
+                    .post(Entity.text(act.toString()));
                 client.close();
             } catch (Exception e) {
                 failed("Error to send "+act+" to "+actionTarger);

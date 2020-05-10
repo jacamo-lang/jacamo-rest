@@ -1,6 +1,5 @@
 package jacamo.rest.mediation;
 
-import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,24 +81,21 @@ public class TranslAg {
      * @return
      * @throws Exception
      * @throws JasonException
-     * @throws FileNotFoundException
      */
-    public String createAgent(String agName) throws Exception, JasonException, FileNotFoundException {
+    public String createAgent(String agName) throws Exception, JasonException {
         String givenName = RuntimeServicesFactory.get().createAgent(agName, null, null, null, null, null, null);
         RuntimeServicesFactory.get().startAgent(givenName);
         // set some source for the agent
         Agent ag = getAgent(givenName);
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("//Agent created automatically\n\n");
+        //stringBuilder.append("//Agent created automatically\n\n");
         //stringBuilder.append("!start.\n\n");
         //stringBuilder.append("+!start <- .print(\"Hi\").\n\n");
         stringBuilder.append("{ include(\"$jacamoJar/templates/common-cartago.asl\") }\n");
         stringBuilder.append("{ include(\"$jacamoJar/templates/common-moise.asl\") }\n");
-        stringBuilder.append(
-                "// uncomment the include below to have an agent compliant with its organisation\n");
-        stringBuilder.append("//{ include(\"$moiseJar/asl/org-obedient.asl\") }");
-        //TODO: consider to use Config.get().getTemplate("agent.asl");
+        //stringBuilder.append("// uncomment the include below to have an agent compliant with its organisation\n");
+        //stringBuilder.append("//{ include(\"$moiseJar/asl/org-obedient.asl\") }");
         ag.load(new StringInputStream( stringBuilder.toString()), "source-from-rest-api");
         // ag.setASLSrc("no-inicial.asl");
         createAgLog(givenName, ag);
