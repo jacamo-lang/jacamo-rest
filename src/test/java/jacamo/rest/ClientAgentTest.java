@@ -299,19 +299,34 @@ public class ClientAgentTest {
         client.close();
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void test010bDeleteAgent() {
         System.out.println("\n\ntest010DeleteAgent");
         Response response;
-        String rStr;
+        
+        // create ag
+        response = client.target(uri.toString()).path("agents/mybob")
+                .request()
+                .post(Entity.json(""));
 
         // empty body
-        response = client.target(uri.toString()).path("agents/kk/")
+        response = client.target(uri.toString()).path("agents/mybob/")
                 .request()
                 .delete();
-        rStr = response.readEntity(String.class).toString(); 
-        System.out.println("Response (agents/kk/): " + rStr);
         assertEquals(200, response.getStatus());
+        
+        // test if mybob is not in WP
+        response = client
+                .target(uri.toString())
+                .path("/agents")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+            
+        Map vl = new Gson().fromJson(response.readEntity(String.class), Map.class);
+        assertNotNull(vl);
+        System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
+        assertNull(vl.get("mybob"));
         
         client.close();
     }

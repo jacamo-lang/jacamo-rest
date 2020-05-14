@@ -410,7 +410,7 @@ public class TranslAg {
                 };*/
                 CircumstanceListener cl = new CircumstanceListener() {
                     public void intentionDropped(Intention ci) {
-                        System.out.println("*finished!"+ci);
+                        //System.out.println("*finished!"+ci);
                         if (ci.equals(i)) {
                             try {
                                 lock.lock();
@@ -435,8 +435,7 @@ public class TranslAg {
                 } catch (InterruptedException e) {                          
                 } finally {
                     lock.unlock();
-                }
-                System.out.println("fim thread");
+                }                
         });
         try {
             lock.lock();
@@ -460,7 +459,7 @@ public class TranslAg {
         if (agLog.containsKey(agName)) {
             return agLog.get(agName).toString();
         } else {
-            throw new Exception("Unable to access " + agName + "'s log.");
+            throw new ReceiverNotFoundException("Unable to access " + agName + "'s log.");
         }
     }
     

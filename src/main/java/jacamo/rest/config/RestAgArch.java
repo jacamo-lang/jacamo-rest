@@ -40,7 +40,7 @@ public class RestAgArch extends AgArch {
 
             // register the agent in ZK
             Map<String,String> md = new HashMap<>();
-            md.put("type", "JaCaMo");
+            md.put("type", "JaCaMoAgent");
             try {
                 registerWP(zkClient, getAgName(), md, true);            
             } catch (java.lang.InterruptedException e) {
@@ -76,7 +76,9 @@ public class RestAgArch extends AgArch {
     
     public static void deleteWP(CuratorFramework zkClient, String agName) {
         try {
-            zkClient.delete().deletingChildrenIfNeeded().inBackground().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+agName);
+            zkClient.delete().deletingChildrenIfNeeded()
+                //.inBackground() // causes problems in tests
+                .forPath(JCMRest.JaCaMoZKAgNodeId+"/"+agName);
         } catch (Exception e) {
             e.printStackTrace();
         }
