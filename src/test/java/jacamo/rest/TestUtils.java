@@ -4,6 +4,7 @@ import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 
+import cartago.CartagoService;
 import jacamo.infra.JaCaMoLauncher;
 import jason.JasonException;
 
@@ -28,17 +29,24 @@ public final class TestUtils {
     
                 // wait for start of jacamo rest
                 while (uri == null) {
-                    System.out.println("waiting for jacamo to start ....");
+                    System.out.println("waiting for rest server to start ....");
                     if (JCMRest.getRestHost() != null)
                         uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
                     else
                         Thread.sleep(400);
                 }
-                // wait for agents
-                while (JaCaMoLauncher.getRunner().getNbAgents() == 0) {
-                    System.out.println("waiting for agents to start...");
-                    Thread.sleep(200);
+                // wait for agents (a MAS should have at least one agent)
+                while ((JaCaMoLauncher.getRunner() == null) || (JaCaMoLauncher.getRunner().getNbAgents() == 0)) {
+                    System.out.println("waiting for jacamo and agents to start...");
+                    Thread.sleep(400);
                 }
+                // wait for cartago and for workspaces (at least the workspace main should exist)
+                while ((CartagoService.getNode() == null) || (CartagoService.getNode().getWorkspaces().size() <= 0)) {
+                    System.out.println("waiting for cartago...");
+                    Thread.sleep(400);
+                }
+
+                // still give some time for workspaces and artifacts 
                 Thread.sleep(600);
             } catch (Exception e) {
                 e.printStackTrace();
