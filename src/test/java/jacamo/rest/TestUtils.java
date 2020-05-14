@@ -12,7 +12,7 @@ public final class TestUtils {
     static Boolean systemRunning = false;
     static URI uri = null;
     
-    public static URI launchSystem(String jcm) {
+    synchronized public static URI launchSystem(String jcm) {
         if (!systemRunning) {
             try {
                 // Launch jacamo and jacamo-rest running test0.jcm
