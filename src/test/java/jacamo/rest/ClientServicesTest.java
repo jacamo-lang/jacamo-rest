@@ -10,6 +10,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class ClientServicesTest {
 
     @BeforeClass
     public static void launchSystem() {
-        uri = TestUtils.launchSystem("src/test/test1.jcm");
+        uri = RestTestUtils.launchRestSystem("src/test/test1.jcm");
     }
     
     @BeforeClass
@@ -35,6 +36,11 @@ public class ClientServicesTest {
         
         client.close();
     }
+    
+    @AfterClass
+    public static void stopSystem() {
+        RestTestUtils.stopRestSystem();
+    } 
     
     @Test
     public void test301GetServices() {

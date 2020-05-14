@@ -12,6 +12,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,10 +23,16 @@ public class ClientOrganizationTest {
 
     @BeforeClass
     public static void launchSystem() {
-        uri = TestUtils.launchSystem("src/test/test1.jcm");
+        uri = RestTestUtils.launchRestSystem("src/test/test1.jcm");
     }
+ 
+    @AfterClass
+    public static void stopSystem() {
+        RestTestUtils.stopRestSystem();
+    } 
     
-    @Test(timeout=2000)
+
+    @Test
     public void test501GetOrganizations() {
         System.out.println("\n\test501GetOrganizations");
         Response response;
@@ -40,7 +47,7 @@ public class ClientOrganizationTest {
         client.close();
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test502GetOrganization() {
         System.out.println("\n\test502GetOrganization");
         Response response;
@@ -55,7 +62,7 @@ public class ClientOrganizationTest {
         client.close();
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test503PostRoleUrl() {
         System.out.println("\n\ntest503PostRoleUrl");
         Response response;
@@ -81,7 +88,7 @@ public class ClientOrganizationTest {
         client.close();
     }
     
-    @Test(timeout=2000)
+    @Test
     public void test504PostRoleJson() {
         System.out.println("\n\ntest504PostRoleJson");
         Response response;

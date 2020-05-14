@@ -163,13 +163,17 @@ public class JCMRest extends DefaultPlatformImpl {
         if (restHttpServer != null)
             try {
                 restHttpServer.shutdown();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         restHttpServer = null;
 
         if (zkFactory != null)
             try {
                 zkFactory.shutdown();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         zkFactory = null;
 
         if (zkClient != null)

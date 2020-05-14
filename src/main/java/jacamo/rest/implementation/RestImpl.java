@@ -69,7 +69,7 @@ public class RestImpl extends AbstractBinder {
             tAg.getAgents().keySet().forEach(a -> {
                 try {
                     agents.add(tAg.getAgentDetails(a));
-                } catch (CartagoException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });

@@ -30,44 +30,44 @@ repositories {
 }
 
 dependencies {
-	compile group: 'org.jacamo' , name: 'jacamo'   , version: '0.9-SNAPSHOT'  , changing: true , transitive: true
-	compile 'org.jason-lang:jason:2.5-SNAPSHOT'
+	implementation group: 'org.jacamo' , name: 'jacamo'   , version: '0.9-SNAPSHOT'  , changing: true , transitive: true
+	implementation 'org.jason-lang:jason:2.5-SNAPSHOT'
 
-	compile 'javax.xml.bind:jaxb-api:2.3.1'
-	compile 'com.sun.xml.bind:jaxb-core:2.3.0.1'
-	compile 'com.sun.xml.bind:jaxb-impl:2.3.1'
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+	implementation 'com.sun.xml.bind:jaxb-impl:2.3.1'
 
-	compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.29.1'
-	compile 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.29.1'
-	compile 'org.glassfish.jersey.inject:jersey-hk2:2.29.1'
-	compile group: 'org.glassfish.jersey', name: 'jersey-bom', version: '2.29.1', ext: 'pom'
+	implementation 'org.glassfish.jersey.containers:jersey-container-servlet:2.29.1'
+	implementation 'org.glassfish.jersey.containers:jersey-container-servlet-core:2.29.1'
+	implementation 'org.glassfish.jersey.inject:jersey-hk2:2.29.1'
+	implementation group: 'org.glassfish.jersey', name: 'jersey-bom', version: '2.29.1', ext: 'pom'
 
-	compile 'org.glassfish.jersey.core:jersey-server:2.29.1'
-	compile 'org.glassfish.jersey.core:jersey-client:2.29.1'
-	compile 'org.glassfish.jersey.media:jersey-media-multipart:2.29.1'
+	implementation 'org.glassfish.jersey.core:jersey-server:2.29.1'
+	implementation 'org.glassfish.jersey.core:jersey-client:2.29.1'
+	implementation 'org.glassfish.jersey.media:jersey-media-multipart:2.29.1'
 
-	compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.29.1'
+	implementation 'org.glassfish.jersey.media:jersey-media-json-jackson:2.29.1'
 
 	// containers:
-	compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.29.1'
-	compile 'org.glassfish.grizzly:grizzly-http-server:2.4.4'
+	implementation 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.29.1'
+	implementation 'org.glassfish.grizzly:grizzly-http-server:2.4.4'
 
-	compile 'org.apache.zookeeper:zookeeper:3.5.4-beta'
-	compile 'org.apache.curator:curator-framework:4.0.1'
-	compile 'org.apache.curator:curator-x-async:4.0.1'
+	implementation 'org.apache.zookeeper:zookeeper:3.5.4-beta'
+	implementation 'org.apache.curator:curator-framework:4.0.1'
+	implementation 'org.apache.curator:curator-x-async:4.0.1'
 
-	compile group: 'guru.nidi', name: 'graphviz-java', version: '0.7.0'
+	implementation group: 'guru.nidi', name: 'graphviz-java', version: '0.7.0'
 	// https://mvnrepository.com/artifact/com.google.guava/guava
-	compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
+	implementation group: 'com.google.guava', name: 'guava', version: '11.0.2'
 
-	compile 'com.google.code.gson:gson:2.8.5'
-	compile 'commons-io:commons-io:2.6'
+	implementation 'com.google.code.gson:gson:2.8.5'
+	implementation 'commons-io:commons-io:2.6'
 
 	// https://mvnrepository.com/artifact/io.swagger/swagger-annotations
-	compile 'io.swagger:swagger-annotations:1.6.1'
+	implementation 'io.swagger:swagger-annotations:1.6.1'
 
 	// https://mvnrepository.com/artifact/junit/junit
-	testCompile group: 'junit', name: 'junit', version: '4.12'
+	testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
 
 sourceSets {

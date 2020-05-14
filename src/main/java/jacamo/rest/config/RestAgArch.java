@@ -22,6 +22,8 @@ import jason.asSemantics.Message;
 
 public class RestAgArch extends AgArch {
 
+    private static final long serialVersionUID = 1L;
+    
     CuratorFramework      zkClient = null;
     AsyncCuratorFramework zkAsync = null;
 
@@ -39,7 +41,11 @@ public class RestAgArch extends AgArch {
             // register the agent in ZK
             Map<String,String> md = new HashMap<>();
             md.put("type", "JaCaMo");
-            registerWP(zkClient, getAgName(), md, true);            
+            try {
+                registerWP(zkClient, getAgName(), md, true);            
+            } catch (java.lang.InterruptedException e) {
+                // ignore, system is stopping
+            }
         }
     }
 

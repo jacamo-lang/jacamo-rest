@@ -29,6 +29,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import jacamo.rest.mediation.TranslAg;
 import jacamo.rest.util.Message;
+import jason.ReceiverNotFoundException;
 
 /**
  * Agent's REST compile class
@@ -193,6 +194,8 @@ public class RestImplAg extends AbstractBinder {
             return Response
                     .ok(gson.toJson(tAg.getAgentStatus(agName)))
                     .build();
+        } catch (ReceiverNotFoundException e) {
+            return Response.status(500, e.getMessage()).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
@@ -220,6 +223,8 @@ public class RestImplAg extends AbstractBinder {
             return Response
                     .ok(gson.toJson(tAg.getAgentDetails(agName)))
                     .build();
+        } catch (ReceiverNotFoundException e) {
+            return Response.status(500, e.getMessage()).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();

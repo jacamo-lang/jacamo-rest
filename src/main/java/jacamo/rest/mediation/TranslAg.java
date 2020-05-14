@@ -30,6 +30,7 @@ import jacamo.rest.JCMRest;
 import jacamo.rest.config.RestAgArch;
 import jacamo.rest.util.Message;
 import jason.JasonException;
+import jason.ReceiverNotFoundException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
 import jason.asSemantics.CircumstanceListener;
@@ -197,8 +198,13 @@ public class TranslAg {
      * @param agName
      * @return
      */
-    public Map<String, Object> getAgentStatus(String agName) {
-        return getAgent(agName).getTS().getUserAgArch().getStatus();
+    public Map<String, Object> getAgentStatus(String agName) throws JasonException {
+        Agent ag = getAgent(agName);
+        if (ag == null) {
+            throw new ReceiverNotFoundException("agent "+agName+" does not exist in the MAS");
+        }
+
+        return ag.getTS().getAgArch().getStatus();
     }
     
     /**
@@ -264,9 +270,12 @@ public class TranslAg {
      * @throws CartagoException
      * 
      */
-    public Map<String, Object> getAgentDetails(String agName) throws CartagoException {
+    public Map<String, Object> getAgentDetails(String agName) throws Exception {
 
         Agent ag = getAgent(agName);
+        if (ag == null) {
+            throw new ReceiverNotFoundException("agent "+agName+" does not exist in the MAS");
+        }
 
         // get workspaces the agent are in (including organisations)
         List<String> workspacesIn = new ArrayList<>();
@@ -360,6 +369,7 @@ public class TranslAg {
      * @return Status message
      * @throws ParseException 
      */
+    @SuppressWarnings("serial")
     Unifier execCmd(Agent ag, PlanBody lCmd) throws ParseException {
         Trigger te = ASSyntax.parseTrigger("+!run_repl_expr");
         Intention i = new Intention();
@@ -418,7 +428,7 @@ public class TranslAg {
                     //ts.addGoalListener(gl);
                     ts.getC().addEventListener(cl);
                     ts.getC().addRunningIntention(i);
-                    ts.getUserAgArch().wake();
+                    ts.getAgArch().wake();
                     goalFinished.await();
                     //ts.removeGoalListener(gl);
                     ts.getC().removeEventListener(cl);
@@ -475,7 +485,7 @@ public class TranslAg {
      * @return agent's CArtAgO architecture
      */
     protected CAgentArch getCartagoArch(Agent ag) {
-        AgArch arch = ag.getTS().getUserAgArch().getFirstAgArch();
+        AgArch arch = ag.getTS().getAgArch().getFirstAgArch();
         while (arch != null) {
             if (arch instanceof CAgentArch) {
                 return (CAgentArch) arch;
