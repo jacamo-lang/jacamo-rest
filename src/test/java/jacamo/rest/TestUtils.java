@@ -33,21 +33,21 @@ public final class TestUtils {
                     if (JCMRest.getRestHost() != null)
                         uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
                     else
-                        Thread.sleep(400);
+                        Thread.sleep(1000);
                 }
                 // wait for agents (a MAS should have at least one agent)
                 while ((JaCaMoLauncher.getRunner() == null) || (JaCaMoLauncher.getRunner().getNbAgents() == 0)) {
                     System.out.println("waiting for jacamo and agents to start...");
-                    Thread.sleep(400);
+                    Thread.sleep(1000);
                 }
                 // wait for cartago and for workspaces (at least the workspace main should exist)
                 while ((CartagoService.getNode() == null) || (CartagoService.getNode().getWorkspaces().size() <= 0)) {
                     System.out.println("waiting for cartago...");
-                    Thread.sleep(400);
+                    Thread.sleep(1000);
                 }
 
                 // still give some time for workspaces and artifacts 
-                Thread.sleep(600);
+                Thread.sleep(2000);
             } catch (Exception e) {
                 e.printStackTrace();
             }
