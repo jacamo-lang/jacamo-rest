@@ -42,14 +42,27 @@ public class ClientWorkspaceTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void test101GetWorkspaces() {
-        Response response = client
-                .target(uri.toString())
-                .path("workspaces")
-                .request(MediaType.APPLICATION_JSON)
-                .get();
+        List vl = null;
+        int tryTimes = 10;
+        // Trying to bypass dockerhub problem with a few tests, probably due delay
+        // of cartago from launching the engine to making available artifacts
+        try {
+            do {
+                Thread.sleep(1000);
 
-        //System.out.println(response.readEntity(String.class));
-        List vl = new Gson().fromJson(response.readEntity(String.class), List.class);
+                Response response = client
+                        .target(uri.toString())
+                        .path("workspaces")
+                        .request(MediaType.APPLICATION_JSON)
+                        .get();
+
+                // System.out.println(response.readEntity(String.class));
+                vl = new Gson().fromJson(response.readEntity(String.class), List.class);
+            } while ((vl.size() < 3) && (tryTimes-- > 0));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         assertTrue(vl.contains("testOrg"));
         assertTrue(vl.contains("testwks"));
         assertTrue(vl.contains("main"));
