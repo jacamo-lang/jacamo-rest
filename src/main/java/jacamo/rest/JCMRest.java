@@ -307,7 +307,7 @@ public class JCMRest extends DefaultPlatformImpl {
                 byte[] lmd = getZKClient().getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+ag+"/"+JaCaMoZKMDNodeId);
                 md = gson.fromJson(new String(lmd), Map.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                // no meta data
                 md = new HashMap<>();
             }
             if (!md.containsKey("uri"))
