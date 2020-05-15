@@ -160,6 +160,14 @@ public class JCMRest extends DefaultPlatformImpl {
     
     @Override
     public void stop() {
+        System.out.println("Stopping jacamo-rest...");
+        if (BaseCentralisedMAS.getRunner() != null) {
+            BaseCentralisedMAS.getRunner().getAgs().forEach((a, b) -> {
+                BaseCentralisedMAS.getRunner().delAg(b.getAgName());
+            });
+        }
+
+        System.out.println("Stopping http server...");
         if (restHttpServer != null)
             try {
                 restHttpServer.shutdown();
@@ -167,25 +175,38 @@ public class JCMRest extends DefaultPlatformImpl {
                 e.printStackTrace();
             }
         restHttpServer = null;
+        System.out.println("Http server stopped!");
 
-        if (zkFactory != null)
+        System.out.println("Stopping zookeeper...");
+        if (zkClient != null) {
+            zkClient.close();
+            zkClient = null;
+        }
+
+        if (zkFactory != null) {
             try {
+                while (zkFactory.getNumAliveConnections() > 0 || zkFactory.getZooKeeperServer().getNumAliveConnections() > 0) {
+                    System.out.println("Closing connections...");
+                    zkFactory.getZooKeeperServer().shutdown(true);
+                    Thread.sleep(500);
+                }
                 zkFactory.shutdown();
+                zkFactory = null;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        zkFactory = null;
-
-        if (zkClient != null)
-            zkClient.close();
+        }
         
-        /*if (zkTmpDir != null) {
+/*        RuntimeServicesFactory.set(null);
+        if (zkTmpDir != null) {
             try {
                 FileUtils.deleteDirectory(zkTmpDir);
             } catch (IOException e) {
             }
             zkTmpDir = null;
-        }*/
+        }
+        System.out.println("Zookeeper stopped!");
+*/        
     }
     
     static void confLog4j() {
