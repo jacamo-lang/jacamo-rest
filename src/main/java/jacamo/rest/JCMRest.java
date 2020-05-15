@@ -196,8 +196,9 @@ public class JCMRest extends DefaultPlatformImpl {
                 e.printStackTrace();
             }
         }
+        System.out.println("Zookeeper stopped!");
         
-/*        RuntimeServicesFactory.set(null);
+/*        
         if (zkTmpDir != null) {
             try {
                 FileUtils.deleteDirectory(zkTmpDir);
@@ -205,7 +206,6 @@ public class JCMRest extends DefaultPlatformImpl {
             }
             zkTmpDir = null;
         }
-        System.out.println("Zookeeper stopped!");
 */        
     }
     
