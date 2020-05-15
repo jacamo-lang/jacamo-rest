@@ -32,11 +32,6 @@ public class ClientWorkspaceTest {
     public static void launchSystem() {
         uri = RestTestUtils.launchRestSystem("src/test/test1.jcm");
     }
-//    @AfterClass
-//    public static void stopSystem() {
-//        RestTestUtils.stopRestSystem();
-//    } 
-//    
 
     @SuppressWarnings("rawtypes")
     @Test
