@@ -97,6 +97,7 @@ public class RestAgArch extends AgArch {
     public void stop() {
         if (zkClient != null) {
             deleteWP(zkClient, getAgName());
+            // no need to delete DF, they are ephemeral nodes
             zkClient.close();
             zkClient = null;
         }
@@ -118,7 +119,7 @@ public class RestAgArch extends AgArch {
 
                 if (m.getReceiver().startsWith("http")) {
                     adr = m.getReceiver();
-                } else {
+                } else if (zkClient != null) {
                     try {
                         // try ZK inbox meta data
                         byte[] lmd = zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+m.getReceiver()+"/"+JCMRest.JaCaMoZKMDNodeId);

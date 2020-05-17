@@ -161,11 +161,6 @@ public class JCMRest extends DefaultPlatformImpl {
     @Override
     public void stop() {
         System.out.println("Stopping jacamo-rest...");
-        if (BaseCentralisedMAS.getRunner() != null) {
-            BaseCentralisedMAS.getRunner().getAgs().forEach((a, b) -> {
-                BaseCentralisedMAS.getRunner().delAg(b.getAgName());
-            });
-        }
 
         System.out.println("Stopping http server...");
         if (restHttpServer != null)
