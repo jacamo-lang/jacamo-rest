@@ -24,7 +24,11 @@ public class Message {
         receiver = r;
         content = c;
     }
-
+    public Message(String id, String p, String s, String r, String c, String inReplyTo) {
+        this(id,p,s,r,c);
+        this.inReplyTo = inReplyTo;
+    }
+    
     public String getPerformative() {
         return performative;
     }

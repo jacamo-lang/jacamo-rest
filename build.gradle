@@ -202,7 +202,7 @@ publishing {
 }
 
 // transfer local maven artifact to our maven2 repository at sourceforge
-task publishMavenSF(dependsOn: [ 'build', 'publishToMavenLocal']) {
+/*task publishMavenSF(dependsOn: [ 'build', 'publishToMavenLocal']) {
   doLast {
     def wdir = System.getProperty("user.home")+'/.m2/repository/org/jacamo/jacamo-rest'
     def tdir = 'jomifred,jacamo@web.sf.net:/home/project-web/jacamo/htdocs/maven2/org/jacamo/jacamo-rest'
@@ -219,7 +219,7 @@ task publishMavenSF(dependsOn: [ 'build', 'publishToMavenLocal']) {
         workingDir wdir
     }
   }
-}
+}*/
 
 task publishMavenGitHub(dependsOn: [ 'build', 'publishToMavenLocal']) {
   doLast {

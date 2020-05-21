@@ -17,6 +17,7 @@ import cartago.CartagoException;
 import cartago.CartagoService;
 import cartago.Op;
 import cartago.WorkspaceId;
+import jacamo.platform.EnvironmentWebInspector;
 
 public class TranslEnv {
 
@@ -111,7 +112,13 @@ public class TranslEnv {
     }
     
     public void createWorkspace(String wrksName) throws CartagoException {
-        CartagoService.createWorkspace(wrksName);
+        if (!CartagoService.getNode().getWorkspaces().contains(wrksName)) {
+            CartagoService.createWorkspace(wrksName);
+            if (EnvironmentWebInspector.get() != null)
+                EnvironmentWebInspector.get().registerWorkspace(wrksName);
+        } else {
+            throw new CartagoException("Workspace " + wrksName + " already exists.");
+        }
     }
     
     public void createArtefact(String wrksName, String artName, String javaClass, Object[] values) throws CartagoException {
