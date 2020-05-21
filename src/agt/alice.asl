@@ -25,6 +25,10 @@ price(banana,10).
       .print("removing abacaxi again....")
       .df_deregister(vender(abacaxi));
    .
+   
++hello[source(A)]
+   <- .print("I received hello from ",A)
+   .
 
 +hello[source(A)] <- .print("I received hello from ",A).
 

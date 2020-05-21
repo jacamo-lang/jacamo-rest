@@ -33,7 +33,11 @@ import org.apache.zookeeper.server.ZooKeeperServer;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 
+import com.google.gson.Gson;
+
 import jacamo.platform.DefaultPlatformImpl;
+import jacamo.rest.config.RestAgArch;
+import jacamo.rest.config.RestAppConfig;
 import jason.architecture.AgArch;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ASSyntax;
@@ -51,6 +55,8 @@ public class JCMRest extends DefaultPlatformImpl {
 
     public static String JaCaMoZKAgNodeId = "/jacamo/agents";
     public static String JaCaMoZKDFNodeId = "/jacamo/df";
+    public static String JaCaMoZKMDNodeId = "metadata";
+    
     
     protected HttpServer restHttpServer = null;
 
@@ -124,7 +130,7 @@ public class JCMRest extends DefaultPlatformImpl {
             }           
         }
         
-        restHttpServer = startRestServer(restPort);
+        restHttpServer = startRestServer(restPort,0);
         
         if (useZK) {
             if (zkHost == null) {
@@ -154,28 +160,48 @@ public class JCMRest extends DefaultPlatformImpl {
     
     @Override
     public void stop() {
+        System.out.println("Stopping jacamo-rest...");
+
+        System.out.println("Stopping http server...");
         if (restHttpServer != null)
             try {
                 restHttpServer.shutdown();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         restHttpServer = null;
+        System.out.println("Http server stopped!");
 
-        if (zkFactory != null)
-            try {
-                zkFactory.shutdown();
-            } catch (Exception e) {}
-        zkFactory = null;
-
-        if (zkClient != null)
+        System.out.println("Stopping zookeeper...");
+        if (zkClient != null) {
             zkClient.close();
+            zkClient = null;
+        }
+
+        if (zkFactory != null) {
+            try {
+                while (zkFactory.getNumAliveConnections() > 0 || zkFactory.getZooKeeperServer().getNumAliveConnections() > 0) {
+                    System.out.println("Closing connections...");
+                    zkFactory.getZooKeeperServer().shutdown(true);
+                    Thread.sleep(500);
+                }
+                zkFactory.shutdown();
+                zkFactory = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Zookeeper stopped!");
         
-        /*if (zkTmpDir != null) {
+/*        
+        if (zkTmpDir != null) {
             try {
                 FileUtils.deleteDirectory(zkTmpDir);
             } catch (IOException e) {
             }
             zkTmpDir = null;
-        }*/
+        }
+*/        
     }
     
     static void confLog4j() {
@@ -205,7 +231,11 @@ public class JCMRest extends DefaultPlatformImpl {
         }
     }
     
-    public HttpServer startRestServer(int port) {
+    public HttpServer startRestServer(int port, int tryc) {
+        if (tryc > 20) {
+            System.err.println("Error starting rest server!");
+            return null;
+        }
         try {
             restServerURI = UriBuilder.fromUri("http://"+InetAddress.getLocalHost().getHostAddress()+"/").port(port).build();
             
@@ -218,7 +248,7 @@ public class JCMRest extends DefaultPlatformImpl {
             return s;
         } catch (javax.ws.rs.ProcessingException e) {           
             System.out.println("trying next port for rest server "+(port+1)+". e="+e);
-            return startRestServer(port+1);
+            return startRestServer(port+1,tryc+1);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -279,6 +309,29 @@ public class JCMRest extends DefaultPlatformImpl {
             zkClient.start();
         }
         return zkClient;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static Map<String,Map<String,String>> getWP() throws Exception {
+        Map<String,Map<String,String>> data = new HashMap<>();
+        Gson gson = new Gson();
+        for (String ag : getZKClient().getChildren().forPath(JCMRest.JaCaMoZKAgNodeId)) {
+            
+            // try to load metadata from ZK
+            Map<String,String> md;
+            try {
+                byte[] lmd = getZKClient().getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+ag+"/"+JaCaMoZKMDNodeId);
+                md = gson.fromJson(new String(lmd), Map.class);
+            } catch (Exception e) {
+                // no meta data
+                md = new HashMap<>();
+            }
+            if (!md.containsKey("uri"))
+                md.put("uri", new String(zkClient.getData().forPath(JCMRest.JaCaMoZKAgNodeId+"/"+ag)));
+            data.put(ag, md);
+        }
+
+        return data;
     }
     
     class JCMRuntimeServices extends DelegatedRuntimeServices {

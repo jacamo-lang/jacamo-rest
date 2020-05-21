@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.mediation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import java.util.Map;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Term;
+import moise.common.MoiseConsistencyException;
 import moise.os.Cardinality;
 import moise.os.OS;
 import moise.os.fs.Goal;
@@ -228,4 +229,23 @@ public class TranslOrg {
         }
         return list;
     }
+    
+    /**
+     * create a role in the given organisation
+     * 
+     * @param oeName
+     * @param role
+     * @throws MoiseConsistencyException
+     */
+    public void createRole(String oeName, String role) throws MoiseConsistencyException {
+        for (GroupBoard gb : GroupBoard.getGroupBoards()) {
+            if (gb.getOEId().equals(oeName)) {
+                Role newRole = new Role(role, gb.getSpec().getSS());
+                newRole.addSuperRole("soc");
+                gb.getSpec().getSS().addRoleDef(newRole, true);
+                gb.getSpec().addRole(role);
+            }
+        }
+    }
+
 }

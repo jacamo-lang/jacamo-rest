@@ -1,4 +1,4 @@
-package jacamo.rest;
+package jacamo.rest.implementation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,9 +17,17 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import com.google.gson.Gson;
 
 import cartago.CartagoException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import jacamo.rest.mediation.TranslAg;
+import jacamo.rest.mediation.TranslEnv;
+import jacamo.rest.mediation.TranslOrg;
 
 @Singleton
 @Path("/")
+@Api(value = "/")
 public class RestImpl extends AbstractBinder {
 
     @Override
@@ -28,7 +36,7 @@ public class RestImpl extends AbstractBinder {
     }
 
     /**
-     * Generates whole MAS overview in JSON format.
+     * Get MAS overview.
      * 
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
@@ -36,6 +44,11 @@ public class RestImpl extends AbstractBinder {
     @Path("/overview")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get MAS overview.")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
     public Response getOverviewJSON() {
         Gson gson = new Gson();
         Map<String, Object> overview = new HashMap<>();
@@ -53,10 +66,10 @@ public class RestImpl extends AbstractBinder {
 
             List<Object> agents = new ArrayList<>();
             overview.put("agents", agents);
-            tAg.getAgents().forEach(a -> {
+            tAg.getAgents().keySet().forEach(a -> {
                 try {
                     agents.add(tAg.getAgentDetails(a));
-                } catch (CartagoException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
@@ -74,8 +87,7 @@ public class RestImpl extends AbstractBinder {
             return Response.ok(gson.toJson(overview)).build();
         } catch (Exception e) {
             e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
         }
-
-        return Response.status(500).build();
     }
 }
