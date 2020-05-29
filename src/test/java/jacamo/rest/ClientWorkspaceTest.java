@@ -180,7 +180,7 @@ public class ClientWorkspaceTest {
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(m)));
         
-        // run defineObsProperty
+        // add obs prop in the dummy art using operation defineObsProperty
         Response response = client
             .target(uri.toString())
             .path("workspaces/jh/artifacts/da/operations/doDefineObsProperty/execute")
@@ -234,8 +234,8 @@ public class ClientWorkspaceTest {
                 .target(uri.toString())
                 .path("workspaces/jh/artifacts/da/operations/register/execute")
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(new Gson().toJson(new Object[] { "http://localhost:1010" })));
-        // create agent
+                .post(Entity.json(new Gson().toJson(new Object[] { "https://jacamotest.free.beeceptor.com/my/api/path" })));
+        // create agent and add a plan to test 
         response = client.target(uri.toString()).path("agents/belovedbob")
                 .request()
                 .post(Entity.json(""));
@@ -245,7 +245,7 @@ public class ClientWorkspaceTest {
                 .accept(MediaType.TEXT_PLAIN)
                 .post(
                         Entity.json(
-                                "+!test(A) <- .print(doing,A); act(open(A)). "
+                                "+!test(A) <- .print(doing,A); act(open(A),R); .print(R). "
                         )
                 );
 
@@ -255,7 +255,7 @@ public class ClientWorkspaceTest {
         sendMsg("belovedbob", "achieve", "test(door)");
         
         // wait the agent to proceed
-        Thread.sleep(500);
+        Thread.sleep(3000);
         response = client.target(uri.toString())
                 .path("agents/belovedbob")
                 .request(MediaType.APPLICATION_JSON).get();

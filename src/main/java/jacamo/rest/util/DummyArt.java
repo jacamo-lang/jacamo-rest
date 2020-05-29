@@ -6,10 +6,14 @@ import java.net.URL;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Response;
 
 import cartago.Artifact;
 import cartago.OPERATION;
 import cartago.ObsProperty;
+import cartago.OpFeedbackParam;
+import jason.asSyntax.ASSyntax;
+import jason.asSyntax.Term;
 
 public class DummyArt extends Artifact {
     
@@ -53,20 +57,27 @@ public class DummyArt extends Artifact {
         }
     }
     
-    @OPERATION public void act(Object act) {
+    @OPERATION public void act(String act, OpFeedbackParam<Term> res) {
         if (actionTarger == null) {
             failed("no URL registered for actions!");           
         } else {
             System.out.println(getCurrentOpAgentId().getAgentName()+" ** doing "+act+" at "+actionTarger);
             try {
                 Client client = ClientBuilder.newClient();
-                client.target(actionTarger.toString())
+                Response response = client.target(actionTarger.toString())
                     .request()
-                    .post(Entity.text(act.toString()));
+                    .post(Entity.json( ASSyntax.parseTerm(act).getAsJSON("") ));
+                String ans = response.readEntity(String.class);
+                System.out.println(getCurrentOpAgentId().getAgentName()+" ** answer "+ans);
+                try {
+                	res.set(ASSyntax.parseTerm(ans));
+                } catch (Exception e2) {
+                	res.set(ASSyntax.createString(ans));
+                }
                 client.close();
             } catch (Exception e) {
-                failed("Error to send "+act+" to "+actionTarger);
                 e.printStackTrace();
+                failed("Error to send "+act+" to "+actionTarger);
             }
         }
     }
