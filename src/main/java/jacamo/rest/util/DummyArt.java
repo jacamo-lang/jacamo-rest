@@ -66,13 +66,19 @@ public class DummyArt extends Artifact {
                 Client client = ClientBuilder.newClient();
                 Response response = client.target(actionTarger.toString())
                     .request()
-                    .post(Entity.json( ASSyntax.parseTerm(act).getAsJSON("") ));
+                    .post(Entity.json( ASSyntax.parseTerm(act).getAsJSON("") ));                
                 String ans = response.readEntity(String.class);
-                System.out.println(getCurrentOpAgentId().getAgentName()+" ** answer "+ans);
-                try {
-                	res.set(ASSyntax.parseTerm(ans));
-                } catch (Exception e2) {
-                	res.set(ASSyntax.createString(ans));
+                System.out.println(getCurrentOpAgentId().getAgentName()+" ** answer "+ans+" "+response.getMediaType());
+                if (response.getMediaType().toString().equals("text/plain")) {
+                	// try to parse answer as a jason term
+	                try {
+	                    res.set(ASSyntax.parseTerm(ans));
+	                } catch (Exception e2) {
+	                    res.set(ASSyntax.createString(ans));
+	                }
+                } else {
+                	// store answer as string
+                    res.set(ASSyntax.createString(ans));
                 }
                 client.close();
             } catch (Exception e) {
