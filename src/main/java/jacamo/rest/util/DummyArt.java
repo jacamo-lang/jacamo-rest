@@ -2,6 +2,8 @@ package jacamo.rest.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -17,6 +19,8 @@ import jason.asSyntax.Term;
 
 public class DummyArt extends Artifact {
     
+    protected transient Logger logger  = Logger.getLogger(DummyArt.class.getName());
+
     private URL actionTarger = null;
     
     public void init() {
@@ -24,7 +28,7 @@ public class DummyArt extends Artifact {
 
     @OPERATION public void doDefineObsProperty(String obName, Object arg) {
         defineObsProperty(obName, arg);
-        //System.out.println("** new ob "+obName+"("+arg+")");
+        logger.log(Level.FINE,"new ob "+obName+"("+arg+")");
     }
     
     @OPERATION public void doUpdateObsProperty(String obName, Object arg) {
@@ -34,23 +38,23 @@ public class DummyArt extends Artifact {
         } else {
             op.updateValues(arg);
         }
-        //System.out.println("** update ob "+obName+"("+arg+")");
+        logger.log(Level.FINE,"update ob "+obName+"("+arg+")");
     }
 
     @OPERATION public void doSignal(String signal, Object arg) {
         if (arg == null || arg.toString().equals("null")) {
             signal(signal);
-            //System.out.println("** signal "+signal);
+            logger.log(Level.FINE, "signal "+signal);
         } else {
             signal(signal, arg);
-            //System.out.println("** signal "+signal+"("+arg+")");
+            logger.log(Level.FINE, "signal "+signal+"("+arg+")");
         }
     }
     
     @OPERATION public void register(String url) {
         try {
             actionTarger = new URL(url);
-            //System.out.println("** registered "+actionTarger);
+            logger.log(Level.FINE, "registered "+actionTarger);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             failed("error creating URL: "+e.getMessage());
@@ -61,7 +65,7 @@ public class DummyArt extends Artifact {
         if (actionTarger == null) {
             failed("no URL registered for actions!");           
         } else {
-            System.out.println(getCurrentOpAgentId().getAgentName()+" ** doing "+act+" at "+actionTarger);
+            logger.log(Level.FINE, getCurrentOpAgentId().getAgentName()+"doing "+act+" at "+actionTarger);
             try {
                 act = ASSyntax.parseTerm(act).getAsJSON("");
             } catch (Exception e) {
@@ -76,7 +80,7 @@ public class DummyArt extends Artifact {
                     .request()
                     .post(Entity.json( act ));                
                 String ans = response.readEntity(String.class);
-                System.out.println(getCurrentOpAgentId().getAgentName()+" ** answer "+ans+" "+response.getMediaType());
+                logger.log(Level.FINE, getCurrentOpAgentId().getAgentName()+"answer "+ans+" "+response.getMediaType());
                 if (response.getMediaType().toString().equals("text/plain")) {
                     // try to parse answer as a jason term
                     try {
@@ -90,7 +94,7 @@ public class DummyArt extends Artifact {
                 }
                 client.close();
             } catch (Exception e) {
-                e.printStackTrace();
+            	logger.log(Level.SEVERE, "error in act", e); 
                 failed("Error to send "+act+" to "+actionTarger);
             }
         }
