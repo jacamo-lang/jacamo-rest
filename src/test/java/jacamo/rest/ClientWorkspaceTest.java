@@ -229,7 +229,7 @@ public class ClientWorkspaceTest {
 
         // agent acting on the dummy art
         
-        // register callback
+        // register callback (created at https://beeceptor.com/console/jacamotest)
         response = client
                 .target(uri.toString())
                 .path("workspaces/jh/artifacts/da/operations/register/execute")
