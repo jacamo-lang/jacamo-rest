@@ -65,36 +65,43 @@ public class DummyArt extends Artifact {
         if (actionTarger == null) {
             failed("no URL registered for actions!");           
         } else {
-            logger.log(Level.FINE, getCurrentOpAgentId().getAgentName()+"doing "+act+" at "+actionTarger);
+            String nact = act;
             try {
-                act = ASSyntax.parseTerm(act).getAsJSON("");
+                nact = ASSyntax.parseTerm(act).getAsJSON("");
             } catch (Exception e) {
+                nact = act;
                 // ignore parsing error, use string format
-                if (!act.startsWith("\""))
-            		act = "\"" + act+ "\"";
+                if (!nact.startsWith("\""))
+                	nact = "\"" + act+ "\"";
             } 
+            logger.log(Level.INFO, getCurrentOpAgentId().getAgentName()+" doing "+act+" at "+actionTarger+" as JSON: "+nact);
             
             try {
                 Client client = ClientBuilder.newClient();
                 Response response = client.target(actionTarger.toString())
                     .request()
-                    .post(Entity.json( act ));                
+                    .post(Entity.json( nact ));                
                 String ans = response.readEntity(String.class);
-                logger.log(Level.FINE, getCurrentOpAgentId().getAgentName()+"answer "+ans+" "+response.getMediaType());
+                Term   ansj = null;
                 if (response.getMediaType().toString().equals("text/plain")) {
                     // try to parse answer as a jason term
                     try {
-                        res.set(ASSyntax.parseTerm(ans));
+                    	ansj = ASSyntax.parseTerm(ans);
+                        res.set(ansj);
                     } catch (Exception e2) {
                         res.set(ASSyntax.createString(ans));
                     }
                 } else {
                     // store answer as string
-                    res.set(ASSyntax.createString(ans));
+                	if (ans.startsWith("\"") && ans.endsWith("\"")) 
+                		ans = ans.substring(1,ans.length()-1);
+                	ansj = ASSyntax.createString(ans);
+                    res.set(ansj);
                 }
+                logger.log(Level.INFO, getCurrentOpAgentId().getAgentName()+" answer "+ans+" "+response.getMediaType()+" as jason "+ansj);
                 client.close();
             } catch (Exception e) {
-            	logger.log(Level.SEVERE, "error in act", e); 
+                logger.log(Level.SEVERE, "error in act", e); 
                 failed("Error to send "+act+" to "+actionTarger);
             }
         }
