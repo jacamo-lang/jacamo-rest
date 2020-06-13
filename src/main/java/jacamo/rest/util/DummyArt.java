@@ -74,7 +74,7 @@ public class DummyArt extends Artifact {
                 if (!nact.startsWith("\""))
                 	nact = "\"" + act+ "\"";
             } 
-            logger.log(Level.INFO, getCurrentOpAgentId().getAgentName()+" doing "+act+" at "+actionTarger+" as JSON: "+nact);
+            logger.log(Level.FINE, getCurrentOpAgentId().getAgentName()+" doing "+act+" at "+actionTarger+" as JSON: "+nact);
             
             try {
                 Client client = ClientBuilder.newClient();
@@ -98,7 +98,7 @@ public class DummyArt extends Artifact {
                 	ansj = ASSyntax.createString(ans);
                     res.set(ansj);
                 }
-                logger.log(Level.INFO, getCurrentOpAgentId().getAgentName()+" answer "+ans+" "+response.getMediaType()+" as jason "+ansj);
+                logger.log(Level.FINE, getCurrentOpAgentId().getAgentName()+" answer "+ans+" "+response.getMediaType()+" as jason "+ansj);
                 client.close();
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "error in act", e); 
