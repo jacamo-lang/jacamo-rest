@@ -148,7 +148,7 @@ public class TranslAg {
      * @param agName agent name
      * @param ag     agent object
      */
-    protected void createAgLog(String agName, Agent ag) {
+    public void createAgLog(String agName, Agent ag) {
         // adds a log for the agent
         if (agLog.get(agName) == null) {
             agLog.put(agName, new StringBuilder());
