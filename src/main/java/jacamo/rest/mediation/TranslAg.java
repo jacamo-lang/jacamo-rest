@@ -483,7 +483,7 @@ public class TranslAg {
      * @param ag Agent object
      * @return agent's CArtAgO architecture
      */
-    protected CAgentArch getCartagoArch(Agent ag) {
+    public CAgentArch getCartagoArch(Agent ag) {
         AgArch arch = ag.getTS().getAgArch().getFirstAgArch();
         while (arch != null) {
             if (arch instanceof CAgentArch) {
