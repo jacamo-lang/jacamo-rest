@@ -121,6 +121,13 @@ public class ClientAgentTest {
         System.out.println("Response (agents/marcos/log): " + rStr);
         assertTrue(rStr.contains("Command +raining"));
 
+        // Testing 500 agents/marcos2/log - (marcos2 does not exist)
+        response = client.target(uri.toString()).path("agents/marcos2/log")
+                .request(MediaType.TEXT_PLAIN).get();
+        rStr = response.readEntity(String.class).toString(); 
+        System.out.println("Response (agents/marcos2/log): " + rStr);
+        assertTrue(rStr.contains("Log is empty/absent."));
+
         client.close();
     }
     
