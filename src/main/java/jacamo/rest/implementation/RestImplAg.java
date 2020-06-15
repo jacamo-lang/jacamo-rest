@@ -349,8 +349,6 @@ public class RestImplAg extends AbstractBinder {
             return Response
                     .ok(tAg.getAgentLog(agName))
                     .build();
-        } catch (ReceiverNotFoundException e) {
-            return Response.status(500, e.getMessage()).build();        	
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();

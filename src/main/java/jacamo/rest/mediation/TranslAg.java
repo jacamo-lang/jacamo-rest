@@ -455,11 +455,11 @@ public class TranslAg {
      * @param agName
      * @throws Exception
      */
-    public String getAgentLog(String agName) throws Exception {
+    public String getAgentLog(String agName) {
         if (agLog.containsKey(agName)) {
             return agLog.get(agName).toString();
         } else {
-            throw new ReceiverNotFoundException("Unable to access " + agName + "'s log.");
+            return "Log is empty/absent.";
         }
     }
     
