@@ -24,7 +24,8 @@ import jason.infra.centralised.BaseCentralisedMAS;
 import jason.runtime.DelegatedRuntimeServices;
 import jason.runtime.RuntimeServicesFactory;
 
-class JCMRuntimeServices extends DelegatedRuntimeServices {
+public class JCMRuntimeServices extends DelegatedRuntimeServices {
+    
     public JCMRuntimeServices() {
         super(RuntimeServicesFactory.get());
     }
