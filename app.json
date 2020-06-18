@@ -1,5 +1,0 @@
-{
-  "name": "jacamo-rest",
-  "description": "Jacamo-rest provides REST interface to access agents, environment and organisations of a JaCaMo Multi-Agent System.",
-  "image": "heroku/gradle"
-}
