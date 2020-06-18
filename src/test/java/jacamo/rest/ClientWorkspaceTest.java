@@ -61,9 +61,7 @@ public class ClientWorkspaceTest {
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
-        if (vl != null) 
-            assertEquals( 10, ((Double)vl[0]).intValue(), 0 );
+        assertEquals( 10, ((Double)vl[0]).intValue(), 0 );
 
         
         client
@@ -80,9 +78,7 @@ public class ClientWorkspaceTest {
 
         Object[] vl2 = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
-        if (vl2 != null) 
-            assertEquals( 11, ((Double)vl2[0]).intValue(), 0 );
+        assertEquals( 11, ((Double)vl2[0]).intValue(), 0 );
 
         client.close();
     }
@@ -105,10 +101,7 @@ public class ClientWorkspaceTest {
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
-        if (vl != null) 
-            assertEquals( 40, ((Double)vl[0]).intValue(), 0 );
-
+        assertEquals( 40, ((Double)vl[0]).intValue(), 0 );
         
         client.close();
     }
@@ -142,9 +135,7 @@ public class ClientWorkspaceTest {
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
-        if (vl != null) 
-            assertEquals( 22, ((Double)vl[0]).intValue(), 0 );
+        assertEquals( 22, ((Double)vl[0]).intValue(), 0 );
 
         response = client
                 .target(uri.toString())
@@ -223,9 +214,7 @@ public class ClientWorkspaceTest {
     
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
-        if (vl != null) 
-            assertEquals( 2222, ((Double)vl[0]).intValue(), 0 );
+        assertEquals( 2222, ((Double)vl[0]).intValue(), 0 );
 
         // agent acting on the dummy art
         

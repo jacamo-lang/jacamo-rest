@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
@@ -39,40 +40,40 @@ public class JCMRest extends DefaultPlatformImpl {
     public static String JaCaMoZKAgNodeId = "/jacamo/agents";
     public static String JaCaMoZKDFNodeId = "/jacamo/df";
     public static String JaCaMoZKMDNodeId = "metadata";
-    
-    
+
+
     protected HttpServer restHttpServer = null;
 
     protected static URI restServerURI = null;
-    
+
     protected ServerCnxnFactory zkFactory = null;
     protected static String zkHost = null;
     protected static CuratorFramework zkClient;
-    
+
     static public String getRestHost() {
         if (restServerURI == null)
             return null;
         else
             return restServerURI.toString();
     }
-    
+
     static public String getZKHost() {
         return zkHost;
     }
-    
+
     static {
         confLog4j();
     }
-    
+
     @Override
     public void init(String[] args) throws Exception {
-        
+
         // change the runtimeservices
         RuntimeServicesFactory.set( new JCMRuntimeServices() );
-        
+
         // adds RestAgArch as default ag arch when using this platform
         RuntimeServicesFactory.get().registerDefaultAgArch(RestAgArch.class.getName());
-        
+
         int restPort = 3280;
         int zkPort   = 2181;
         boolean useZK = false;
@@ -84,7 +85,7 @@ public class JCMRest extends DefaultPlatformImpl {
         } else {
             restPort = Integer.parseInt(webPort);
         }
-        
+
         if (args.length > 0) {
             String la = "";
             for (String a: args[0].split(" ")) {
@@ -110,11 +111,11 @@ public class JCMRest extends DefaultPlatformImpl {
                     useZK = true;
                 }
                 la = a;
-            }           
+            }
         }
-        
+
         restHttpServer = startRestServer(restPort,0);
-        
+
         if (useZK) {
             if (zkHost == null) {
                 zkFactory  = startZookeeper(zkPort);
@@ -123,7 +124,7 @@ public class JCMRest extends DefaultPlatformImpl {
                 System.out.println("Platform (zookeeper) running on "+zkHost);
             }
         }
-        
+
     }
 
     @Override
@@ -160,8 +161,8 @@ public class JCMRest extends DefaultPlatformImpl {
             }
         }
         System.out.println("Zookeeper stopped!");
-        
-/*        
+
+/*
         if (zkTmpDir != null) {
             try {
                 FileUtils.deleteDirectory(zkTmpDir);
@@ -169,15 +170,15 @@ public class JCMRest extends DefaultPlatformImpl {
             }
             zkTmpDir = null;
         }
-*/        
+*/
     }
-    
+
     static void confLog4j() {
         try {
             ConsoleAppender console = new ConsoleAppender(); //create appender
             //configure the appender
             String PATTERN = "%d [%p|%c|%C{1}] %m%n";
-            console.setLayout(new PatternLayout(PATTERN)); 
+            console.setLayout(new PatternLayout(PATTERN));
             console.setThreshold(Level.WARN);
             console.activateOptions();
             //add appender to any Logger (here is root)
@@ -190,15 +191,14 @@ public class JCMRest extends DefaultPlatformImpl {
             fa.setThreshold(Level.WARN);
             fa.setAppend(true);
             fa.activateOptions();
-            
+
             //add appender to any Logger (here is root)
             Logger.getRootLogger().addAppender(fa);
-            //repeat with all other desired appenders
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     public HttpServer startRestServer(int port, int tryc) {
         if (tryc > 20) {
             System.err.println("Error starting rest server!");
@@ -206,15 +206,15 @@ public class JCMRest extends DefaultPlatformImpl {
         }
         try {
             restServerURI = UriBuilder.fromUri("http://"+InetAddress.getLocalHost().getHostAddress()+"/").port(port).build();
-            
+
             RestAppConfig rc = new RestAppConfig();
-            
+
             // get a server from factory
             HttpServer s = GrizzlyHttpServerFactory.createHttpServer(restServerURI, rc);
-            
+
             System.out.println("JaCaMo Rest API is running on "+restServerURI);
             return s;
-        } catch (javax.ws.rs.ProcessingException e) {           
+        } catch (javax.ws.rs.ProcessingException e) {
             System.out.println("trying next port for rest server "+(port+1)+". e="+e);
             return startRestServer(port+1,tryc+1);
         } catch (Exception e) {
@@ -222,27 +222,27 @@ public class JCMRest extends DefaultPlatformImpl {
             return null;
         }
     }
-    
+
     File zkTmpDir = null;
     static String zkTmpFileName = "jcm-zookeeper";
-    
+
     public ServerCnxnFactory startZookeeper(int port) {
         int numConnections = 500;
         int tickTime = 2000;
 
         try {
             cleanZKFiles();
-            
+
             zkHost = InetAddress.getLocalHost().getHostAddress()+":"+port;
 
-            zkTmpDir = Files.createTempDirectory(zkTmpFileName).toFile(); 
+            zkTmpDir = Files.createTempDirectory(zkTmpFileName).toFile();
             //System.out.println("ZK data at "+zkTmpDir);
             ZooKeeperServer server = new ZooKeeperServer(zkTmpDir, zkTmpDir, tickTime);
             server.setMaxSessionTimeout(4000);
-            
+
             ServerCnxnFactory factory = new NIOServerCnxnFactory();
             factory.configure(new InetSocketAddress(port), numConnections);
-            factory.startup(server); // start the server.   
+            factory.startup(server); // start the server.
 
             // create main nodes
             //client.delete().deletingChildrenIfNeeded().forPath("/jacamo");
@@ -259,7 +259,7 @@ public class JCMRest extends DefaultPlatformImpl {
             return null;
         }
     }
-    
+
     void cleanZKFiles() {
         for (File f: FileUtils.getTempDirectory().listFiles()) {
             if (f.getName().startsWith(zkTmpFileName)) {
@@ -282,13 +282,13 @@ public class JCMRest extends DefaultPlatformImpl {
         }
         return zkClient;
     }
-    
+
     @SuppressWarnings("unchecked")
     public static Map<String,Map<String,String>> getWP() throws Exception {
         Map<String,Map<String,String>> data = new HashMap<>();
         Gson gson = new Gson();
         for (String ag : getZKClient().getChildren().forPath(JCMRest.JaCaMoZKAgNodeId)) {
-            
+
             // try to load metadata from ZK
             Map<String,String> md;
             try {
