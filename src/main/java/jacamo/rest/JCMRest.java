@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -20,13 +18,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.curator.x.async.WatchMode;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.server.NIOServerCnxnFactory;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ZooKeeperServer;
@@ -38,16 +34,6 @@ import com.google.gson.Gson;
 import jacamo.platform.DefaultPlatformImpl;
 import jacamo.rest.config.RestAgArch;
 import jacamo.rest.config.RestAppConfig;
-import jason.architecture.AgArch;
-import jason.asSemantics.Unifier;
-import jason.asSyntax.ASSyntax;
-import jason.asSyntax.Atom;
-import jason.asSyntax.Literal;
-import jason.asSyntax.StringTermImpl;
-import jason.asSyntax.Term;
-import jason.asSyntax.UnnamedVar;
-import jason.infra.centralised.BaseCentralisedMAS;
-import jason.runtime.DelegatedRuntimeServices;
 import jason.runtime.RuntimeServicesFactory;
 
 
@@ -210,7 +196,6 @@ public class JCMRest extends DefaultPlatformImpl {
             
             //add appender to any Logger (here is root)
             Logger.getRootLogger().addAppender(fa);
-            //repeat with all other desired appenders
         } catch (Exception e) {
             e.printStackTrace();
         }

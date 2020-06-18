@@ -61,7 +61,7 @@ public class ClientWorkspaceTest {
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
+        //TODO: check if recent changes when launching jacamo solved this issue on docker hub
         if (vl != null) 
             assertEquals( 10, ((Double)vl[0]).intValue(), 0 );
 
@@ -80,7 +80,6 @@ public class ClientWorkspaceTest {
 
         Object[] vl2 = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
         if (vl2 != null) 
             assertEquals( 11, ((Double)vl2[0]).intValue(), 0 );
 
@@ -105,7 +104,6 @@ public class ClientWorkspaceTest {
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
         if (vl != null) 
             assertEquals( 40, ((Double)vl[0]).intValue(), 0 );
 
@@ -142,7 +140,6 @@ public class ClientWorkspaceTest {
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
         if (vl != null) 
             assertEquals( 22, ((Double)vl[0]).intValue(), 0 );
 
@@ -223,7 +220,6 @@ public class ClientWorkspaceTest {
     
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
         
-        //TODO: For some reason on dockerhub it is returning null
         if (vl != null) 
             assertEquals( 2222, ((Double)vl[0]).intValue(), 0 );
 
