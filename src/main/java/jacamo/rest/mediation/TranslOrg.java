@@ -60,7 +60,8 @@ public class TranslOrg {
                 Map<String, Object> group = new HashMap<>();
                 groups.add(group);
                 List<Object> roles = new ArrayList<>();
-                group.put("group", gb.getSpec().toString());
+                group.put("id", gb.getArtId());
+                group.put("group", gb.getSpec().getId());
                 group.put("roles", roles);
                 group.put("isWellFormed", gb.isWellFormed());
                 for (Role r : gb.getSpec().getSS().getRolesDef()) {
