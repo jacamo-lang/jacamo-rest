@@ -77,10 +77,13 @@ public class DummyArt extends Artifact {
             logger.log(Level.FINE, getCurrentOpAgentId().getAgentName()+" doing "+act+" at "+actionTarger+" as JSON: "+nact);
             
             try {
+            	// send request
                 Client client = ClientBuilder.newClient();
                 Response response = client.target(actionTarger.toString())
                     .request()
-                    .post(Entity.json( nact ));                
+                    .post(Entity.json( nact ));
+                
+                // process answer
                 String ans = response.readEntity(String.class);
                 Term   ansj = null;
                 if (response.getMediaType().toString().equals("text/plain")) {

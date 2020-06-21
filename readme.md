@@ -31,14 +31,14 @@ mas yourmas {
 }
 
 ```
-## A bit about jacamo-rest...
+# About jacamo-rest...
 
 * Each agent has REST endpoints to receive messages and be inspected.
 * ZooKeeper is used for name service. `Bob` can send a message to `marcos` using its name. ZooKeeper maps the name to a URL.
 * DF service is provided also by ZooKeeper.
 * Java JAX-RS is used for the API.
-* More information see paper: [Towards Jacamo-rest: A Resource-Oriented Abstraction for Managing Multi-Agent Systems](doc/paper.pdf)
-* Information for developers and how to contribute, please see [contributing](doc/contributing.md).
+* For more information, see the paper: [Towards Jacamo-rest: A Resource-Oriented Abstraction for Managing Multi-Agent Systems](doc/paper.pdf)
+* Information for developers and how to contribute can be found at [contributing](doc/contributing.md).
 
 # REST API version 0.5
 
