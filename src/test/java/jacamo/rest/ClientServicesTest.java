@@ -39,7 +39,7 @@ public class ClientServicesTest {
 
     @Test
     public void test301GetServices() {
-        System.out.println("\n test301GetServices");
+        System.out.println("\ntest301GetServices");
         Response response;
         String rStr;
 
@@ -55,7 +55,7 @@ public class ClientServicesTest {
     
     @Test
     public void test401Subcribe() {
-        System.out.println("\n test401Subcribe");
+        System.out.println("\ntest401Subcribe");
 
         Response response = client.target(uri.toString())
                 .path("services/banana/subscriptions/jomi")

@@ -41,11 +41,17 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
     
     @Override
     public void dfDeRegister(String agName, String service, String type) {
-        //if (restImpl.isMain()) {
+        if (restImpl.isMain()) {
             super.dfDeRegister(agName, service, type);
-        //} else {
-            // TODO: implement deregister in the interface REST
-        //}
+        } else {
+            synchronized (client) {
+                client
+                        .target( restImpl.getMainRest())
+                        .path("agents/"+agName+"/services/"+service)
+                        .request()
+                        .delete();                
+            }
+        }
     }
 
     @Override

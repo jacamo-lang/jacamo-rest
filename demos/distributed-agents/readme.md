@@ -6,7 +6,7 @@ Run ngrok:
 ngrok http 8080
 ```
 
-note the given URL, edit `host1.jcm` and place this host after `--hostname`.
+note the given URL, edit `host1.jcm` and place this host after `--registerURL`.
 
 Run the application of host 1:
 
@@ -22,7 +22,7 @@ Run ngrok:
 ngrok http 8080
 ```
 
-note the given URL, edit `host2.jcm` and place this host after `--hostname`. Place the host given for host1 after `--connect`.
+note the given URL, edit `host2.jcm` and place this host after `--registerURL`. Place the host given for host1 after `--connect`.
 
 Run the application of host 2:
 
