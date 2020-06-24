@@ -29,10 +29,6 @@ import jason.runtime.RuntimeServicesFactory;
 
 public class JCMRest extends DefaultPlatformImpl {
 
-    public static String JaCaMoZKAgNodeId = "/jacamo/agents";
-    public static String JaCaMoZKDFNodeId = "/jacamo/df";
-    public static String JaCaMoZKMDNodeId = "metadata";
-
     private static JCMRest singleton = null;
     public  static JCMRest getJCMRest() {
         return singleton;
@@ -43,6 +39,7 @@ public class JCMRest extends DefaultPlatformImpl {
     protected HttpServer restHttpServer = null;
     protected URI restServerURI = null;
     protected String mainRest = null;
+    protected String registerHostName = null;
     
     protected Map<String, Map<String,Object>> ans = new TreeMap<String, Map<String,Object>>();
 
@@ -59,6 +56,14 @@ public class JCMRest extends DefaultPlatformImpl {
     }
     public String getMainRest() {
         return mainRest;
+    }
+    
+    public String getHostNameForRegister() {
+        if (registerHostName == null) {
+            return restServerURI.toString();
+        } else {
+            return registerHostName;
+        }
     }
 
     @Override
@@ -92,6 +97,11 @@ public class JCMRest extends DefaultPlatformImpl {
 
                 if (la.equals("--connect")) {
                     mainRest = a;
+                }
+                if (la.equals("--hostname")) {
+                    registerHostName = a;
+                    if (!registerHostName.endsWith("/"))
+                        registerHostName += "/";
                 }
                 la = a;
             }
@@ -150,17 +160,18 @@ public class JCMRest extends DefaultPlatformImpl {
     Client client = ClientBuilder.newClient();
 
     public void registerAgent(String agentName, Map<String,Object> metadata) {
+        if (metadata == null)
+            metadata = new HashMap<>();
+        metadata.putIfAbsent("uri", getHostNameForRegister()+"agents/"+agentName);
+        metadata.putIfAbsent("type", "JaCaMoAgent");
+        metadata.putIfAbsent("inbox", getHostNameForRegister()+"agents/"+agentName+"/inbox");
+
         ans.put(agentName, metadata);
         
         if (!isMain()) {
             // register also in main
             synchronized (client) {
-                metadata.put("uri", getRestHost()+"agents/"+agentName);
-                metadata.put("type", "JaCaMoAgent");
-                metadata.put("inbox", getRestHost()+"agents/"+agentName+"/inbox");
-               
                 // add new entry
-                //Response response = 
                 client
                     .target(mainRest)
                     .path("/agents/"+agentName)
@@ -176,13 +187,11 @@ public class JCMRest extends DefaultPlatformImpl {
     public boolean deregisterAgent(String agentName) {
         if (!isMain()) {
             synchronized (client) {
-                //Response response = 
                 client
                         .target(mainRest)
                         .path("/agents/"+agentName)
                         .request()
                         .delete();
-                //return response.getStatus() == 200;
             }
         }
         return ans.remove(agentName) != null;

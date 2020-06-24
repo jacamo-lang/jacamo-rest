@@ -1,6 +1,5 @@
 package jacamo.rest.config;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.client.Client;
@@ -23,18 +22,13 @@ public class RestAgArch extends AgArch {
 
     @Override
     public void init() throws Exception {
-        //System.out.println("my ag arch init "+getAgName());
         restClient = ClientBuilder.newClient();
 
         if (JCMRest.getJCMRest().isMain() || !getAgName().equals("df")) {
             if (JCMRest.getJCMRest().getAgentMetaData(getAgName()) != null) {
                 System.err.println("Agent "+getAgName()+" is already registered in ANS! Registering again.");
             } 
-            Map<String,Object> md = new HashMap<>();
-            md.put("type", "JaCaMoAgent");
-            Object agUri = md.computeIfAbsent("uri", k -> JCMRest.getJCMRest().getRestHost()+"agents/"+getAgName());
-            md.put("inbox", agUri+"/inbox");
-            JCMRest.getJCMRest().registerAgent(getAgName(), md);        
+            JCMRest.getJCMRest().registerAgent(getAgName(), null);        
         }
     }
 

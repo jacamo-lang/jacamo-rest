@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.jacamo:jacamo-rest:0.5-SNAPSHOT'
+    compile 'org.jacamo:jacamo-rest:0.6-SNAPSHOT'
 }
 ```
 
