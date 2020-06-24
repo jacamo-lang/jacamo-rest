@@ -553,4 +553,15 @@ public class TranslAg {
         RuntimeServicesFactory.get().dfRegister(agName, service, type);
     }
 
+    /**
+     * Remove a service from a given agent
+     * 
+     * @param agName
+     * @param values
+     * @throws Exception
+     */
+    public void removeServiceToAgent(String agName, String service) throws Exception {
+        RuntimeServicesFactory.get().dfDeRegister(agName, service, "no-type");
+    }
+
 }

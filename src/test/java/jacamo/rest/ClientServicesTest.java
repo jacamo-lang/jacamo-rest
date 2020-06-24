@@ -1,5 +1,6 @@
 package jacamo.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
@@ -52,4 +53,29 @@ public class ClientServicesTest {
         client.close();
     }
     
+    @Test
+    public void test501DeleteServices() {
+        System.out.println("\ntest501DeleteServices");
+        Response response;
+        String rStr;
+
+        response = client.target(uri.toString()).path("services/")
+                .request(MediaType.APPLICATION_JSON).get();
+        rStr = response.readEntity(String.class).toString(); 
+        assertTrue(rStr.contains("banking"));
+
+        response = client.target(uri.toString())
+                .path("agents/marcos/services/banking(retail)")
+                .request()
+                .delete();
+        assertEquals(200, response.getStatus());
+        
+        response = client.target(uri.toString()).path("services/")
+                .request(MediaType.APPLICATION_JSON).get();
+        rStr = response.readEntity(String.class).toString(); 
+        //System.out.println("Response (services/): " + rStr);
+        assertTrue(!rStr.contains("banking"));
+        
+        client.close();
+    }
 }
