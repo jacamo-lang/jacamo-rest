@@ -11,6 +11,6 @@ mas h2 {
 
     agent alice
 
-    platform: jacamo.rest.JCMRest("--connect 2.tcp.ngrok.io:13025 --restPort 8081")
+    platform: jacamo.rest.JCMRest("--connect http://7a72c6d78d1b.ngrok.io --hostname http://localhost:8081 --restPort 8081")
 
 }
