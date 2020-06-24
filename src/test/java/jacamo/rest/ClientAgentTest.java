@@ -375,6 +375,7 @@ public class ClientAgentTest {
         //System.out.println("=="+new Gson().toJson(map));
        
         // add new entry
+        System.out.println(uri);
         client
             .target(uri.toString())
             .path("/agents/jomi")

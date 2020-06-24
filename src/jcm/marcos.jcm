@@ -4,7 +4,7 @@ mas marcos {
         focus: testwks.a
                testwks.b
     }
-    
+
 
     workspace testwks {
         artifact a: tools.Counter(10)
@@ -27,6 +27,6 @@ mas marcos {
     //}
 
     //platform: jacamo.rest.JCMRest("--connect localhost:2181") // connects to platform at 2181
-    platform: jacamo.rest.JCMRest("--main 2181 --restPort 8080") // connects to platform at 2181
+    platform: jacamo.rest.JCMRest("--restPort 8080") // connects to platform at 2181
 
 }

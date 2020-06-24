@@ -27,6 +27,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jacamo.rest.JCMRest;
 import jacamo.rest.mediation.TranslAg;
 import jacamo.rest.util.Message;
 import jason.ReceiverNotFoundException;
@@ -79,6 +80,7 @@ public class RestImplAg extends AbstractBinder {
                 .header("Access-Control-Allow-Origin", "*")
                 .build();
     }
+    
 
     /**
      * Create an Agent. Produces PLAIN TEXT with HTTP response for this operation. If
@@ -101,11 +103,13 @@ public class RestImplAg extends AbstractBinder {
     public Response postAgent(
             @PathParam("agentname") String agName, 
             @DefaultValue("false") @QueryParam("only_wp") boolean onlyWP, 
-            Map<String,String> metaData,
+            @DefaultValue("false") @QueryParam("force")   boolean force, 
+            Map<String,Object> metaData,
             @Context UriInfo uriInfo) {
         try {
             if (onlyWP) {
-                if (tAg.createWP(agName, metaData))
+                metaData.put("remote", true);
+                if (tAg.createWP(agName, metaData, force))
                     return Response.created(new URI(uriInfo.getBaseUri() + "agents/" + agName)).build();
                 else
                     return Response.status(500, "Agent "+agName+" already exists!").build();

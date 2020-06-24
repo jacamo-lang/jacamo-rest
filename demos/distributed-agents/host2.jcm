@@ -1,0 +1,16 @@
+/*
+    distributed_agents
+    ---------------------------
+
+    JaCaMo Application File
+
+    to run at host2
+*/
+
+mas h2 {
+
+    agent alice
+
+    platform: jacamo.rest.JCMRest("--connect 2.tcp.ngrok.io:13025 --restPort 8081")
+
+}

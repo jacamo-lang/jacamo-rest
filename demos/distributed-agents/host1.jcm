@@ -1,0 +1,15 @@
+/*
+    distributed_agents
+    ---------------------------
+
+    JaCaMo Application File
+
+    to run at host1
+
+*/
+
+mas h1 {
+    agent karlos
+
+    platform: jacamo.rest.JCMRest("--restPort 8080")
+}

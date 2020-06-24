@@ -14,7 +14,7 @@ plugins {
 
 defaultTasks 'run'
 
-version '0.5-SNAPSHOT'
+version '0.6-SNAPSHOT'
 group   'org.jacamo'
 
 sourceCompatibility = 1.8
@@ -56,9 +56,9 @@ dependencies {
 	compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.29.1'
 	compile 'org.glassfish.grizzly:grizzly-http-server:2.4.4'
 
-	compile 'org.apache.zookeeper:zookeeper:3.5.4-beta'
-	compile 'org.apache.curator:curator-framework:4.0.1'
-	compile 'org.apache.curator:curator-x-async:4.0.1'
+	//compile 'org.apache.zookeeper:zookeeper:3.5.4-beta'
+	//compile 'org.apache.curator:curator-framework:4.0.1'
+	//compile 'org.apache.curator:curator-x-async:4.0.1'
 
 	compile group: 'guru.nidi', name: 'graphviz-java', version: '0.7.0'
 	// https://mvnrepository.com/artifact/com.google.guava/guava
