@@ -274,7 +274,7 @@ public class JCMRest extends DefaultPlatformImpl {
     public static CuratorFramework getZKClient() throws Exception {
         if (zkClient == null) {
             if (getZKHost() == null) {
-            	throw new Exception("ZK is not configured!");
+                throw new Exception("ZK is not configured!");
             } else {
                 zkClient = CuratorFrameworkFactory.newClient(getZKHost(), new ExponentialBackoffRetry(1000, 3));
                 zkClient.start();
