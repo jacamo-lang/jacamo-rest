@@ -3,8 +3,10 @@ package jacamo.rest;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -21,6 +23,7 @@ import com.google.gson.Gson;
 import jacamo.platform.DefaultPlatformImpl;
 import jacamo.rest.config.RestAgArch;
 import jacamo.rest.config.RestAppConfig;
+import jason.infra.centralised.RunCentralisedMAS;
 import jason.runtime.RuntimeServicesFactory;
 
 
@@ -34,6 +37,8 @@ public class JCMRest extends DefaultPlatformImpl {
     public  static JCMRest getJCMRest() {
         return singleton;
     }
+
+    protected transient Logger logger  = Logger.getLogger(JCMRest.class.getName());
 
     protected HttpServer restHttpServer = null;
     protected URI restServerURI = null;
@@ -94,6 +99,8 @@ public class JCMRest extends DefaultPlatformImpl {
 
         restHttpServer = startRestServer(restPort,0);
         singleton = this;
+        
+        new ClearDeadAgents().start();
         
         System.out.println("JaCaMo Rest API is running on "+restServerURI+ (mainRest == null ? "" : ", connected to "+mainRest)  );
     }
@@ -209,5 +216,52 @@ public class JCMRest extends DefaultPlatformImpl {
             data.put(ag, md);
         }
         return data;
+    }
+    
+    class ClearDeadAgents extends Thread {
+        @Override
+        public void run() {
+            while (!RuntimeServicesFactory.get().isRunning()) {
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                }
+            }
+            Client client = ClientBuilder.newClient();
+            while (RuntimeServicesFactory.get().isRunning()) {
+                try {
+                    sleep(3000);
+                    
+                    // for all remote agents, test if they are running
+                    for (String ag : new HashSet<String>(ans.keySet())) {
+                        Map<String,Object> md = ans.get(ag);
+                        if (md != null && (boolean)md.getOrDefault("remote", false)) {
+                            
+                            //System.out.println("** remote "+ag+ " "+md.get("uri").toString());
+                            String dead = null; 
+                            try {
+                                Response response = client
+                                        .target(md.get("uri").toString())
+                                        .path("/")
+                                        .request()
+                                        .get();
+                                if (response.getStatus() != 200) {
+                                    dead = "bad status";
+                                }
+                            } catch (Exception e) {
+                                dead = e.getMessage();
+                            }
+                            if (dead != null) {
+                                logger.info("agent "+ag+" seems not running anymore, removing from ANS! "+dead);
+                                
+                                ans.remove(ag);
+                                RunCentralisedMAS.getRunner().delAg(ag); // to remove entries in DF
+                            }
+                        }
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        }
     }
 }

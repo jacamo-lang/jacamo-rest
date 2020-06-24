@@ -44,7 +44,7 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
         //if (restImpl.isMain()) {
             super.dfDeRegister(agName, service, type);
         //} else {
-            // TODO: implement in the interface REST
+            // TODO: implement deregister in the interface REST
         //}
     }
 
