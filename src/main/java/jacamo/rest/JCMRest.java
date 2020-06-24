@@ -39,7 +39,7 @@ public class JCMRest extends DefaultPlatformImpl {
     protected HttpServer restHttpServer = null;
     protected URI restServerURI = null;
     protected String mainRest = null;
-    protected String registerHostName = null;
+    protected String registerURL = null;
     
     protected Map<String, Map<String,Object>> ans = new TreeMap<String, Map<String,Object>>();
 
@@ -58,11 +58,11 @@ public class JCMRest extends DefaultPlatformImpl {
         return mainRest;
     }
     
-    public String getHostNameForRegister() {
-        if (registerHostName == null) {
+    public String getURLForRegister() {
+        if (registerURL == null) {
             return restServerURI.toString();
         } else {
-            return registerHostName;
+            return registerURL;
         }
     }
 
@@ -92,16 +92,16 @@ public class JCMRest extends DefaultPlatformImpl {
                     try {
                         restPort = Integer.parseInt(a);
                     } catch (Exception e) {
-                        System.err.println("The argument for restPort is not a number.");
+                        logger.warning("The argument for restPort is not a number.");
                     }
 
                 if (la.equals("--connect")) {
                     mainRest = a;
                 }
-                if (la.equals("--hostname")) {
-                    registerHostName = a;
-                    if (!registerHostName.endsWith("/"))
-                        registerHostName += "/";
+                if (la.equals("--registerURL")) {
+                    registerURL = a;
+                    if (!registerURL.endsWith("/"))
+                        registerURL += "/";
                 }
                 la = a;
             }
@@ -112,14 +112,16 @@ public class JCMRest extends DefaultPlatformImpl {
         
         new ClearDeadAgents().start();
         
-        System.out.println("JaCaMo Rest API is running on "+restServerURI+ (mainRest == null ? "" : ", connected to "+mainRest)  );
+        logger.info("JaCaMo Rest API is running on "+restServerURI
+                + (registerURL == null ? "" : " (as "+registerURL+")")
+                + (mainRest == null ? "." : ", connected to "+mainRest+".")  );
     }
 
     @Override
     public void stop() {
-        System.out.println("Stopping jacamo-rest...");
+        logger.info("Stopping ...");
 
-        System.out.println("Stopping http server...");
+        logger.info("Stopping http server...");
         if (restHttpServer != null)
             try {
                 restHttpServer.shutdown();
@@ -127,12 +129,12 @@ public class JCMRest extends DefaultPlatformImpl {
                 e.printStackTrace();
             }
         restHttpServer = null;
-        System.out.println("Http server stopped!");
+        logger.info("stopped!");
     }
 
     public HttpServer startRestServer(int port, int tryc) {
         if (tryc > 20) {
-            System.err.println("Error starting rest server!");
+            logger.warning("Error starting rest server!");
             return null;
         }
         try {
@@ -144,7 +146,7 @@ public class JCMRest extends DefaultPlatformImpl {
             HttpServer s = GrizzlyHttpServerFactory.createHttpServer(restServerURI, rc);
             return s;
         } catch (javax.ws.rs.ProcessingException e) {
-            System.out.println("trying next port for rest server "+(port+1)+". e="+e);
+            logger.info("trying next port for rest server "+(port+1)+". e="+e);
             return startRestServer(port+1,tryc+1);
         } catch (Exception e) {
             e.printStackTrace();
@@ -162,9 +164,9 @@ public class JCMRest extends DefaultPlatformImpl {
     public void registerAgent(String agentName, Map<String,Object> metadata) {
         if (metadata == null)
             metadata = new HashMap<>();
-        metadata.putIfAbsent("uri", getHostNameForRegister()+"agents/"+agentName);
+        metadata.putIfAbsent("uri", getURLForRegister()+"agents/"+agentName);
         metadata.putIfAbsent("type", "JaCaMoAgent");
-        metadata.putIfAbsent("inbox", getHostNameForRegister()+"agents/"+agentName+"/inbox");
+        metadata.putIfAbsent("inbox", getURLForRegister()+"agents/"+agentName+"/inbox");
 
         ans.put(agentName, metadata);
         
@@ -261,7 +263,7 @@ public class JCMRest extends DefaultPlatformImpl {
                                 dead = e.getMessage();
                             }
                             if (dead != null) {
-                                logger.info("agent "+ag+" seems not running anymore, removing from ANS! "+dead);
+                                logger.info("agent "+ag+" ("+md.get("uri")+") seems not running anymore, removing from ANS! "+dead);
                                 
                                 ans.remove(ag);
                                 RunCentralisedMAS.getRunner().delAg(ag); // to remove entries in DF
