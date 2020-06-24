@@ -40,24 +40,24 @@ public class JCMRest extends DefaultPlatformImpl {
     protected URI restServerURI = null;
     protected String mainRest = null;
     protected String registerURL = null;
-    
+
     protected Map<String, Map<String,Object>> ans = new TreeMap<String, Map<String,Object>>();
 
-    
+
     public String getRestHost() {
         if (restServerURI == null)
             return null;
         else
             return restServerURI.toString();
     }
-    
+
     public boolean isMain() {
         return mainRest == null;
     }
     public String getMainRest() {
         return mainRest;
     }
-    
+
     public String getURLForRegister() {
         if (registerURL == null) {
             return restServerURI.toString();
@@ -68,10 +68,10 @@ public class JCMRest extends DefaultPlatformImpl {
 
     @Override
     public void init(String[] args) throws Exception {
-        
+
         // change the runtimeservices
         RuntimeServicesFactory.set( new JCMRuntimeServices(this) );
-        
+
         // adds RestAgArch as default ag arch when using this platform
         RuntimeServicesFactory.get().registerDefaultAgArch(RestAgArch.class.getName());
 
@@ -109,9 +109,9 @@ public class JCMRest extends DefaultPlatformImpl {
 
         restHttpServer = startRestServer(restPort,0);
         singleton = this;
-        
+
         new ClearDeadAgents().start();
-        
+
         logger.info("JaCaMo Rest API is running on "+restServerURI
                 + (registerURL == null ? "" : " (as "+registerURL+")")
                 + (mainRest == null ? "." : ", connected to "+mainRest+".")  );
@@ -153,8 +153,8 @@ public class JCMRest extends DefaultPlatformImpl {
             return null;
         }
     }
-    
-    
+
+
     //
     // ANS services
     //
@@ -169,7 +169,7 @@ public class JCMRest extends DefaultPlatformImpl {
         metadata.putIfAbsent("inbox", getURLForRegister()+"agents/"+agentName+"/inbox");
 
         ans.put(agentName, metadata);
-        
+
         if (!isMain()) {
             // register also in main
             synchronized (client) {
@@ -181,11 +181,11 @@ public class JCMRest extends DefaultPlatformImpl {
                     .queryParam("force", "true")
                     .request(MediaType.APPLICATION_JSON)
                     .accept(MediaType.TEXT_PLAIN)
-                    .post(Entity.json(new Gson().toJson( metadata )));               
+                    .post(Entity.json(new Gson().toJson( metadata )));
             }
         }
     }
-    
+
     public boolean deregisterAgent(String agentName) {
         if (!isMain()) {
             synchronized (client) {
@@ -198,7 +198,7 @@ public class JCMRest extends DefaultPlatformImpl {
         }
         return ans.remove(agentName) != null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public Map<String,Object> getAgentMetaData(String agentName) {
         if (ans.get(agentName) != null)
@@ -213,13 +213,13 @@ public class JCMRest extends DefaultPlatformImpl {
                         .accept(MediaType.TEXT_PLAIN)
                         .get();
                 if (response.getStatus() == 200) {
-                    return response.readEntity(Map.class); 
+                    return response.readEntity(Map.class);
                 }
             }
         }
         return null;
     }
-    
+
     public Map<String,Map<String,Object>> getWP() throws Exception {
         Map<String,Map<String,Object>> data = new HashMap<>();
         for (String ag : ans.keySet()) {
@@ -228,7 +228,7 @@ public class JCMRest extends DefaultPlatformImpl {
         }
         return data;
     }
-    
+
     class ClearDeadAgents extends Thread {
         @Override
         public void run() {
@@ -242,14 +242,14 @@ public class JCMRest extends DefaultPlatformImpl {
             while (RuntimeServicesFactory.get().isRunning()) {
                 try {
                     sleep(3000);
-                    
+
                     // for all remote agents, test if they are running
                     for (String ag : new HashSet<String>(ans.keySet())) {
                         Map<String,Object> md = ans.get(ag);
                         if (md != null && (boolean)md.getOrDefault("remote", false)) {
-                            
+
                             //System.out.println("** remote "+ag+ " "+md.get("uri").toString());
-                            String dead = null; 
+                            String dead = null;
                             try {
                                 Response response = client
                                         .target(md.get("uri").toString())
@@ -264,7 +264,7 @@ public class JCMRest extends DefaultPlatformImpl {
                             }
                             if (dead != null) {
                                 logger.info("agent "+ag+" ("+md.get("uri")+") seems not running anymore, removing from ANS! "+dead);
-                                
+
                                 ans.remove(ag);
                                 RunCentralisedMAS.getRunner().delAg(ag); // to remove entries in DF
                             }

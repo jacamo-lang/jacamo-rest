@@ -469,4 +469,37 @@ public class RestImplAg extends AbstractBinder {
             return Response.status(500, e.getMessage()).build();
         }
     }
+
+    /**
+     * Remove a service from the agent.
+     * 
+     * @param agName agent name
+     * @param serviceid service identification
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     */
+    @Path("/{agentname}/services/{serviceid}")
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(
+            value = "Remove a service from the agent."
+    )
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "generated uri"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response deleteAgentService(
+            @PathParam("agentname") String agName, 
+            @PathParam("serviceid") String service) {
+        try {
+            tAg.removeServiceToAgent(agName, service);
+            return Response
+                    .ok()
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+
 }
