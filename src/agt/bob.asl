@@ -1,5 +1,5 @@
 !start.
-!buy.
+//!buy.
 
 +!start
    <- .df_subscribe(iamhere);

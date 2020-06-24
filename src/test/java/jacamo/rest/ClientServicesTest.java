@@ -1,5 +1,6 @@
 package jacamo.rest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
@@ -38,7 +39,7 @@ public class ClientServicesTest {
     
     @Test
     public void test301GetServices() {
-        System.out.println("\n\test301GetServices");
+        System.out.println("\n test301GetServices");
         Response response;
         String rStr;
         
@@ -51,5 +52,19 @@ public class ClientServicesTest {
         
         client.close();
     }
-    
+
+    @Test
+    public void test401Subcribe() {
+        System.out.println("\n test401Subcribe");
+        
+        Response response = client.target(uri.toString())
+                .path("services/banana/subscriptions/jomi")
+                .request()
+                .post(null);
+        System.out.println(response);
+        assertEquals(201,  response.getStatus());
+        
+        client.close();
+    }
+
 }

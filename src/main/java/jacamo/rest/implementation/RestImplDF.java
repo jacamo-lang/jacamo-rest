@@ -1,12 +1,17 @@
 package jacamo.rest.implementation;
 
+import java.net.URI;
+
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
@@ -68,8 +73,6 @@ public class RestImplDF extends AbstractBinder {
     /**
      * Get a list of agents providing a service.
      * 
-     * We ing lists of maps
-     * 
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         when ok JSON of the DF Sample output (jsonifiedDF):
@@ -92,6 +95,36 @@ public class RestImplDF extends AbstractBinder {
                     .entity(gson.toJson(tAg.getJsonifiedDF(service)))
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+
+    /**
+     * subscribe to a service
+     * 
+     * We ing lists of maps
+     * 
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         when ok JSON of the DF Sample output (jsonifiedDF):
+     *         ["marcos", "alice"]
+     */
+    @Path("/{serviceid}/subscriptions/{agentname}")
+    @POST
+    @ApiOperation(value = "subscribe to a service")
+    @ApiResponses(value = { 
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response doSubscribe(
+            @PathParam("serviceid") String service,
+            @PathParam("agentname") String agName,
+            @Context UriInfo uriInfo) {
+        try {
+            tAg.subscribe(agName, service, "notype");
+            return Response.created(new URI(uriInfo.getBaseUri() + service + "/subscriptions/" + agName)).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();

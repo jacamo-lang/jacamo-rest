@@ -69,48 +69,24 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
         return super.dfSearch(service, type);
     }
     
-    /*@Override
+    @Override
     public void dfSubscribe(String agName, String service, String type) {
         if (restImpl.isMain()) {
             super.dfSubscribe(agName, service, type);
         } else {
-        }*/
-
-/*        
-        
-        try {
-            RestAgArch arch = getRestAgArch(agName); 
-            arch.getAsyncCurator()
-                .with(WatchMode.successOnly).watched().getChildren().forPath(JCMRest.JaCaMoZKDFNodeId+"/"+service).event().thenAccept(event -> {
-                    try {
-                        //System.out.println("something changed...."+event.getType()+"/"+event.getState());
-                        // stupid implementation: send them all again and
-                        dfSubscribe(agName, service, type); // keep watching
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-
-            // update providers
-            Term s = new Atom("df");
-            Literal l = ASSyntax.createLiteral("provider", new UnnamedVar(), new StringTermImpl(service));
-            l.addSource(s);
-            arch.getTS().getAg().abolish(l, new Unifier());
-            for (String a: dfSearch(service, type)) {
-                l = ASSyntax.createLiteral("provider", new Atom(a), new StringTermImpl(service));
-                l.addSource(s);
-                arch.getTS().getAg().addBel(l);
+            synchronized (client) {
+                client
+                        .target( restImpl.getMainRest())
+                        .path("/services/"+service+"/subscriptions/"+agName)
+                        .request()
+                        .post(null);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
+        } 
+    }
     
     @Override
     public Collection<String> getAgentsNames() {
-        if (restImpl.isMain()) {
-            super.getAgentsNames();
-        } else {
+        if (!restImpl.isMain()) {
             synchronized (client) {
                 Response response = client
                         .target( restImpl.getMainRest())

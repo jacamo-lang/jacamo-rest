@@ -557,6 +557,11 @@ public class TranslAg {
         return ans;
     }
 
+    public void subscribe(String agName, String service, String type) {
+        RuntimeServicesFactory.get().dfSubscribe(agName, service, type);
+    }
+    
+    
     /**
      * Add a service to a given agent
      * 
