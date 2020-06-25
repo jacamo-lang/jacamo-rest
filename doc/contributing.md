@@ -20,8 +20,8 @@
 * To test this project, run ``./gradlew test``. For details, please, see [unit tests](https://github.com/jacamo-lang/jacamo-rest/tree/master/src/test/java/jacamo/rest).
 
 ### Other examples using gradle
-* `$ ./gradle marcos` runs agent marcos and the REST platform.
-* `$ ./gradle bob` runs agents bob and alice. Bob sends a message to marcos using its rest API.
+* `$ ./gradlew marcos` runs agent marcos and the REST platform.
+* `$ ./gradlew bob` runs agents bob and alice. Bob sends a message to marcos using its rest API.
 
 ## Using a local docker (example of two machines communicating)
 ```sh
