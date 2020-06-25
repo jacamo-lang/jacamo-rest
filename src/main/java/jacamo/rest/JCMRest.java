@@ -88,8 +88,16 @@ public class JCMRest extends DefaultPlatformImpl {
         if (args.length > 0) {
             String la = "";
             for (String a: args[0].split(" ")) {
+                if (la.equals("--rest-port"))
+                    try {
+                        restPort = Integer.parseInt(a);
+                    } catch (Exception e) {
+                        logger.warning("The argument for restPort is not a number.");
+                    }
+
                 if (la.equals("--restPort"))
                     try {
+                        logger.warning("********* use parameter --rest-port in place of --restPort");
                         restPort = Integer.parseInt(a);
                     } catch (Exception e) {
                         logger.warning("The argument for restPort is not a number.");
@@ -103,6 +111,14 @@ public class JCMRest extends DefaultPlatformImpl {
                     if (!registerURL.endsWith("/"))
                         registerURL += "/";
                 }
+
+                if (la.equals("--hostname")) {
+                    logger.warning("********* use parameter --registerURL in place of --hostname");
+                    registerURL = a;
+                    if (!registerURL.endsWith("/"))
+                        registerURL += "/";
+                }
+
                 la = a;
             }
         }

@@ -26,8 +26,8 @@ mas marcos {
         //scheme build_house_sch : build_house_sch
     //}
 
-    platform: jacamo.rest.JCMRest("--restPort 8080") // start REST server at port 8080
+    platform: jacamo.rest.JCMRest("--rest-port 8080") // start REST server at port 8080
     //platform: jacamo.rest.JCMRest("--connect localhost:2181") // connects to platform at 2181
-    //platform: jacamo.rest.JCMRest("--restPort 8080 --registerURL http://2ab0ed01d5ad.ngrok.io") // use another hostname for ANS register
+    //platform: jacamo.rest.JCMRest("--rest-port 8080 --registerURL http://2ab0ed01d5ad.ngrok.io") // use another hostname for ANS register
 
 }

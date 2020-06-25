@@ -11,6 +11,6 @@
 mas h1 {
     agent karlos
 
-    platform: jacamo.rest.JCMRest("--restPort 8080")
-    //platform: jacamo.rest.JCMRest("--restPort 8080 --registerURL http://7a72c6d78d1b.ngrok.io")
+    platform: jacamo.rest.JCMRest("--rest-port 8080")
+    //platform: jacamo.rest.JCMRest("--rest-port 8080 --registerURL https://plecto.serveousercontent.com")
 }
