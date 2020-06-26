@@ -31,11 +31,9 @@ repositories {
 }
 
 dependencies {
-    compile ('org.jacamo:jacamo:0.9-SNAPSHOT') {
+    compile ('org.jacamo:jacamo:0.9') {
         exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
-
-    compile 'org.jason-lang:jason:2.5-SNAPSHOT'
 
     compile 'javax.xml.bind:jaxb-api:2.3.1'
     compile 'com.sun.xml.bind:jaxb-core:2.3.0.1'
@@ -261,7 +259,7 @@ task publishMavenGitHub(dependsOn: [ 'build', 'publishToMavenLocal']) {
             basePath = ''
             info {
                 title = 'REST API for JaCaMo'
-                version = 'v0.5 - SNAPSHOT'
+                version = 'v'+project.version
                 description = 'More information: https://github.com/jacamo-lang/jacamo-rest'
             }
             outputPath = "${project.rootDir}/generated/document.html"
