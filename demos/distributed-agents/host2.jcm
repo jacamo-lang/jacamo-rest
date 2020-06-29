@@ -12,6 +12,6 @@ mas h2 {
     agent alice
 
     platform: jacamo.rest.JCMRest("--connect http://localhost:8080 --rest-port 8081")
-    //platform: jacamo.rest.JCMRest("--connect https://plecto.serveousercontent.com --registerURL https://populus.serveousercontent.com --rest-port 8081")
+    //platform: jacamo.rest.JCMRest("--connect https://inieci.serveousercontent.com --registerURL https://igitur.serveousercontent.com --rest-port 8081")
 
 }

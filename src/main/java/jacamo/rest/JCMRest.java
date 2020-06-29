@@ -41,8 +41,8 @@ public class JCMRest extends DefaultPlatformImpl {
     protected String mainRest = null;
     protected String registerURL = null;
 
-    protected Map<String, Map<String,Object>> ans = new TreeMap<String, Map<String,Object>>();
-
+    protected Map<String, Map<String,Object>> ans = new TreeMap<>();
+    protected Map<String, Map<String,Object>> mdCache = new HashMap<>();
 
     public String getRestHost() {
         if (restServerURI == null)
@@ -215,12 +215,21 @@ public class JCMRest extends DefaultPlatformImpl {
         return ans.remove(agentName) != null;
     }
 
+    public boolean hasMetaDataCache(String agentName) {
+        return mdCache.containsKey(agentName);
+    }
+    public void clearAgentMetaDataCache(String agentName) {
+        mdCache.remove(agentName);
+    }
+
     @SuppressWarnings("unchecked")
     public Map<String,Object> getAgentMetaData(String agentName) {
         if (ans.get(agentName) != null)
             return ans.get(agentName);
         if (!isMain()) {
-            // TODO: implement some cache
+            Map<String,Object> md = mdCache.get(agentName);
+            if (md != null)
+                return md;
             synchronized (client) {
                 Response response = client
                         .target(mainRest)
@@ -229,7 +238,9 @@ public class JCMRest extends DefaultPlatformImpl {
                         .accept(MediaType.TEXT_PLAIN)
                         .get();
                 if (response.getStatus() == 200) {
-                    return response.readEntity(Map.class);
+                    md = response.readEntity(Map.class);
+                    mdCache.put(agentName, md);
+                    return md;
                 }
             }
         }
@@ -257,7 +268,7 @@ public class JCMRest extends DefaultPlatformImpl {
             Client client = ClientBuilder.newClient();
             while (RuntimeServicesFactory.get().isRunning()) {
                 try {
-                    sleep(3000);
+                    sleep(4000);
 
                     // for all remote agents, test if they are running
                     for (String ag : new HashSet<String>(ans.keySet())) {
@@ -267,14 +278,15 @@ public class JCMRest extends DefaultPlatformImpl {
                             //System.out.println("** remote "+ag+ " "+md.get("uri").toString());
                             String dead = null;
                             try {
-                                Response response = client
+                                //Response response =
+                                client
                                         .target(md.get("uri").toString())
                                         .path("/")
                                         .request()
                                         .get();
-                                if (response.getStatus() != 200) {
-                                    dead = "bad status";
-                                }
+                                /*if (response.getStatus() != 200) {
+                                    dead = "bad status "+response.getStatus();
+                                }*/
                             } catch (Exception e) {
                                 dead = e.getMessage();
                             }

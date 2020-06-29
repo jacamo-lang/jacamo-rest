@@ -12,5 +12,5 @@ mas h1 {
     agent karlos
 
     platform: jacamo.rest.JCMRest("--rest-port 8080")
-    //platform: jacamo.rest.JCMRest("--rest-port 8080 --registerURL https://plecto.serveousercontent.com")
+    //platform: jacamo.rest.JCMRest("--rest-port 8080 --registerURL https://inieci.serveousercontent.com")
 }

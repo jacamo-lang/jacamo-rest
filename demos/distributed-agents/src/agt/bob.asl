@@ -1,10 +1,8 @@
-+hi(0)[source(S)]
-   <- .print("last hi from ",S).
-+hi(X)[source(S)]
-   <- .print("hi ",X," from ",S);
-      //.wait(1000);
-      .send(S,signal,hi(X-1));
-   .
+!start.
+
++!start <- .send(alice,tell,hi(200)).
+
++hi(X)[source(S)] <- .print("hi ",X," from ",S).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }
