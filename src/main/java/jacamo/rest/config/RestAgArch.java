@@ -1,5 +1,6 @@
     package jacamo.rest.config;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.client.Client;
@@ -28,7 +29,12 @@ public class RestAgArch extends AgArch {
             if (JCMRest.getJCMRest().getAgentMetaData(getAgName()) != null) {
                 System.err.println("Agent "+getAgName()+" is already registered in ANS! Registering again.");
             }
-            JCMRest.getJCMRest().registerAgent(getAgName(), null);
+            Map<String,Object> metadata = new HashMap<>();
+            metadata.putIfAbsent("uri", JCMRest.getJCMRest().getURLForRegister()+"agents/"+getAgName());
+            metadata.putIfAbsent("type", "JaCaMoAgent");
+            metadata.putIfAbsent("inbox", JCMRest.getJCMRest().getURLForRegister()+"agents/"+getAgName()+"/inbox");
+
+            JCMRest.getJCMRest().registerAgent(getAgName(), metadata);
         }
     }
 

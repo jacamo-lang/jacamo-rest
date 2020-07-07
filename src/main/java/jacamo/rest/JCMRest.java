@@ -180,9 +180,6 @@ public class JCMRest extends DefaultPlatformImpl {
     public void registerAgent(String agentName, Map<String,Object> metadata) {
         if (metadata == null)
             metadata = new HashMap<>();
-        metadata.putIfAbsent("uri", getURLForRegister()+"agents/"+agentName);
-        metadata.putIfAbsent("type", "JaCaMoAgent");
-        metadata.putIfAbsent("inbox", getURLForRegister()+"agents/"+agentName+"/inbox");
 
         ans.put(agentName, metadata);
 
