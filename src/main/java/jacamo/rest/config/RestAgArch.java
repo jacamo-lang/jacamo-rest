@@ -106,9 +106,10 @@ public class RestAgArch extends AgArch {
     private String getAgentAddrFromANS(Message m, String adr) {
         Map<String,Object> metadata = JCMRest.getJCMRest().getAgentMetaData(m.getReceiver());
         if (metadata != null) {
-            adr = metadata.get("inbox").toString();
+            if (metadata.get("inbox") != null)
+                adr = metadata.get("inbox").toString();
 
-            if (adr == null)
+            if (adr == null && metadata.get("uri") != null)
                 adr = metadata.get("uri").toString();
         }
         return adr;
