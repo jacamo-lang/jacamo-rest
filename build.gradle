@@ -17,8 +17,10 @@ defaultTasks 'run'
 version '0.6-SNAPSHOT'
 group   'org.jacamo'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 repositories {
     maven { url "http://jacamo.sourceforge.net/maven2" }
