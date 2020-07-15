@@ -34,6 +34,7 @@ dependencies {
     compile ('org.jacamo:jacamo:0.9') {
         exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
+    compile 'org.jason-lang:jason:2.5.2'
 
     compile 'javax.xml.bind:jaxb-api:2.3.1'
     compile 'com.sun.xml.bind:jaxb-core:2.3.0.1'

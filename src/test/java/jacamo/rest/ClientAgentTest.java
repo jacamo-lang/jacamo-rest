@@ -151,8 +151,15 @@ public class ClientAgentTest {
         Response response;
         String rStr;
 
-        Message m = new Message("34", "tell", "jomi", "marcos", "vl(10)");
+        Message m = new Message("34", "tell", "jomi", "marcos", "vl(10,\"oi\")");
         Gson gson = new Gson();
+
+        String s1 = gson.toJson( m );
+        //System.out.println("*1"+s1);
+        //System.out.println("*2"+m.getAsJasonMsg().getAsJSON(""));
+        //System.out.println("*3"+gson.fromJson(m.getAsJasonMsg().getAsJSON(""),Message.class));
+        String s2 = gson.toJson( gson.fromJson(m.getAsJasonMsg().getAsJSON(""),Message.class));
+        assertEquals(s1, s2);
 
         response = client.target(uri.toString()).path("agents/marcos/inbox")
                 .request(MediaType.APPLICATION_JSON)
@@ -166,7 +173,7 @@ public class ClientAgentTest {
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString();
         System.out.println("Response (agents/marcos): " + rStr);
-        assertTrue(rStr.contains("vl(10)[source(jomi)]"));
+        assertTrue(rStr.contains("vl(10,\\\"oi\\\")[source(jomi)]"));
 
         client.close();
     }

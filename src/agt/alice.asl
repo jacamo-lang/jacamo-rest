@@ -26,7 +26,10 @@ price(banana,10).
       .df_deregister(vender(abacaxi));
    .
 
-+!send <- .send(marcos,signal,hello).
++!send
+   <- .send(marcos,signal,hello);
+      .send(marcos,tell,vl(10,"kk"));
+   .
 
 +hello[source(A)] <- .print("I received hello from ",A).
 
