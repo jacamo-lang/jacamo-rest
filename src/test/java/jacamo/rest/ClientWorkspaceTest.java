@@ -48,11 +48,11 @@ public class ClientWorkspaceTest {
         assertTrue(vl.contains("main"));
         client.close();
     }
-    
+
     @Test
     public void test201PostProperty() {
         System.out.println("\n\ntest201PostProperty");
-        
+
         Response response = client
                 .target(uri.toString())
                 .path("workspaces/testwks/artifacts/a/properties/count")
@@ -60,16 +60,16 @@ public class ClientWorkspaceTest {
                 .get();
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
-        
+
         assertEquals( 10, ((Double)vl[0]).intValue(), 0 );
 
-        
+
         client
             .target(uri.toString())
             .path("workspaces/testwks/artifacts/a/operations/inc/execute")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(new Object[] {})));
-        
+
         response = client
                 .target(uri.toString())
                 .path("workspaces/testwks/artifacts/a/properties/count")
@@ -77,7 +77,7 @@ public class ClientWorkspaceTest {
                 .get();
 
         Object[] vl2 = new Gson().fromJson(response.readEntity(String.class), Object[].class);
-        
+
         assertEquals( 11, ((Double)vl2[0]).intValue(), 0 );
 
         client.close();
@@ -100,12 +100,12 @@ public class ClientWorkspaceTest {
                 .get();
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
-        
+
         assertEquals( 40, ((Double)vl[0]).intValue(), 0 );
-        
+
         client.close();
     }
-    
+
     @Test
     @SuppressWarnings("rawtypes")
     public void test203PostArtifact() {
@@ -120,13 +120,13 @@ public class ClientWorkspaceTest {
         Map<String,Object> m = new HashMap<>();
         m.put("template", "tools.Counter");
         m.put("values", new Object[] { 22 });
-        
+
         client
             .target(uri.toString())
             .path("workspaces/neww3/artifacts/newart")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(m)));
-        
+
         Response response = client
                 .target(uri.toString())
                 .path("workspaces/neww3/artifacts/newart/properties/count")
@@ -134,7 +134,7 @@ public class ClientWorkspaceTest {
                 .get();
 
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
-        
+
         assertEquals( 22, ((Double)vl[0]).intValue(), 0 );
 
         response = client
@@ -146,7 +146,7 @@ public class ClientWorkspaceTest {
         Map vl2 = new Gson().fromJson(response.readEntity(String.class), Map.class);
         Map art = (Map)((Map)vl2.get("artifacts")).get("newart");
         assertEquals("tools.Counter", art.get("type"));
-        
+
         client.close();
     }
 
@@ -159,18 +159,18 @@ public class ClientWorkspaceTest {
             .path("workspaces/jh")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(new Object[] {  })));
-    
+
         // add DummyArt there
         Map<String,Object> m = new HashMap<>();
         m.put("template", "jacamo.rest.util.DummyArt");
         m.put("values", new Object[] { });
-        
+
         client
             .target(uri.toString())
             .path("workspaces/jh/artifacts/da")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(m)));
-        
+
         // add obs prop in the dummy art using operation defineObsProperty
         Response response = client
             .target(uri.toString())
@@ -184,7 +184,7 @@ public class ClientWorkspaceTest {
                 .path("workspaces/jh")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
-    
+
         Map vl2 = new Gson().fromJson(response.readEntity(String.class), Map.class);
         Map art = (Map)((Map)vl2.get("artifacts")).get("da");
         //System.out.println(art);
@@ -199,32 +199,25 @@ public class ClientWorkspaceTest {
                 .post(Entity.json(new Gson().toJson(new Object[] { "count", 2222 })));
         assertEquals(200, response.getStatus());
 
-        // run signal
-        response = client
-                .target(uri.toString())
-                .path("workspaces/jh/artifacts/da/operations/doSignal/execute")
-                .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(new Gson().toJson(new Object[] { "count", null })));
-        
         response = client
                 .target(uri.toString())
                 .path("workspaces/jh/artifacts/da/properties/count")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
-    
+
         Object[] vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
-        
+
         assertEquals( 2222, ((Double)vl[0]).intValue(), 0 );
 
         // agent acting on the dummy art
-        
+
         // register callback (created at https://beeceptor.com/console/jacamotest)
         response = client
                 .target(uri.toString())
                 .path("workspaces/jh/artifacts/da/operations/register/execute")
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(new Gson().toJson(new Object[] { "https://jacamotest.free.beeceptor.com/my/api/path" })));
-        // create agent and add a plan to test 
+        // create agent and add a plan to test
         response = client.target(uri.toString()).path("agents/belovedbob")
                 .request()
                 .post(Entity.json(""));
@@ -234,6 +227,7 @@ public class ClientWorkspaceTest {
                 .accept(MediaType.TEXT_PLAIN)
                 .post(
                         Entity.json(
+                                "+ns1::beep(X) <- .print(see,X); +bb(X). "+
                                 "+!test(A) <- .print(doing,A); act(open(A),R); .print(R). "
                         )
                 );
@@ -242,20 +236,29 @@ public class ClientWorkspaceTest {
         sendMsg("belovedbob", "achieve", "jcm::focus_env_art(art_env(jh,local,da,ns1),5)");
         // ask to act
         sendMsg("belovedbob", "achieve", "test(door)");
-        
+
+        // run signal
+        response = client
+                .target(uri.toString())
+                .path("workspaces/jh/artifacts/da/operations/doSignal/execute")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(new Gson().toJson(new Object[] { "beep",  1111 })));
+
         // wait the agent to proceed
         Thread.sleep(3000);
         response = client.target(uri.toString())
                 .path("agents/belovedbob")
                 .request(MediaType.APPLICATION_JSON).get();
-        
+
         String rStr = response.readEntity(String.class);
         //System.out.println("Response (agents/marcos): " + rStr);
         assertTrue(rStr.contains("ns1::count(2222)[artifact_id("));
-        
+        assertTrue(rStr.contains("bb(1111)"));
+
+
         client.close();
     }
-    
+
     int msgId = 0;
     void sendMsg(String to, String perf, String content) {
         Message msg = new Message(""+(msgId++), perf, "rest", to, content);
