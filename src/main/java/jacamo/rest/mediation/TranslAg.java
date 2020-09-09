@@ -207,11 +207,41 @@ public class TranslAg {
      * @param agName
      * @return
      */
-    public List<String> getAgentsBB(String agName) {
+    public List<Object> getAgentsBB(String agName) {
         Agent ag = getAgent(agName);
-        List<String> bbs = new ArrayList<>();
+        List<Object> bbs = new ArrayList<>();
+        List<String> deductedRules = new ArrayList<>();
         for (Literal l : ag.getBB()) {
-            bbs.add(l.toString());
+            Map<String, Object> belief = new HashMap<>();
+            belief.put("belief", l.toString());
+            belief.put("isRule", l.isRule());
+            if (l.isRule() && l.getNS().toString().equals("default")) {
+                try {
+                    String terms = "";
+                    if (l.getArity() > 0) {
+                        for (int i = 0; i < l.getArity(); i++) {
+                            if (i == 0)
+                                terms = "(";
+                            terms += l.getTerm(i).toString();
+                            if (i < l.getArity() - 1)
+                                terms += ", ";
+                            else
+                                terms += ")";
+                        }
+                    }
+                    String ruleKey = l.getFunctor() + "/" + l.getArity();
+                    if (!deductedRules.contains(ruleKey)) {
+                        Unifier u = execCmd(ag, ASSyntax.parsePlanBody(".findall("+l.getFunctor() + terms+","+l.getFunctor() + terms+",L)"));
+                        String deductions = "";
+                        for (VarTerm v : u) deductions += u.get(v).toString();
+                        belief.put("deductions", deductions);
+                        deductedRules.add(ruleKey);
+                    }
+                } catch (TokenMgrError | Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            bbs.add(belief);
         }
         return bbs;
     }
@@ -342,7 +372,7 @@ public class TranslAg {
             }
         });
         
-        List<String> beliefs = getAgentsBB(agName);
+        List<Object> beliefs = getAgentsBB(agName);
 
         Map<String, Object> agent = new HashMap<>();
         agent.put("agent", agName);

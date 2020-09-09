@@ -14,7 +14,7 @@ plugins {
 
 defaultTasks 'run'
 
-version '0.5'
+version '0.6-SNAPSHOT'
 group   'org.jacamo'
 
 sourceCompatibility = 1.8
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-	compile ('org.jacamo:jacamo:0.9') {
+	compile ('org.jacamo:jacamo:0.10-SNAPSHOT') {
         exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
 
