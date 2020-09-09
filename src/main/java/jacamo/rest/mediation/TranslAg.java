@@ -210,37 +210,12 @@ public class TranslAg {
     public List<Object> getAgentsBB(String agName) {
         Agent ag = getAgent(agName);
         List<Object> bbs = new ArrayList<>();
-        List<String> deductedRules = new ArrayList<>();
         for (Literal l : ag.getBB()) {
             Map<String, Object> belief = new HashMap<>();
             belief.put("belief", l.toString());
             belief.put("isRule", l.isRule());
-            if (l.isRule() && l.getNS().toString().equals("default")) {
-                try {
-                    String terms = "";
-                    if (l.getArity() > 0) {
-                        for (int i = 0; i < l.getArity(); i++) {
-                            if (i == 0)
-                                terms = "(";
-                            terms += l.getTerm(i).toString();
-                            if (i < l.getArity() - 1)
-                                terms += ", ";
-                            else
-                                terms += ")";
-                        }
-                    }
-                    String ruleKey = l.getFunctor() + "/" + l.getArity();
-                    if (!deductedRules.contains(ruleKey)) {
-                        Unifier u = execCmd(ag, ASSyntax.parsePlanBody(".findall("+l.getFunctor() + terms+","+l.getFunctor() + terms+",L)"));
-                        String deductions = "";
-                        for (VarTerm v : u) deductions += u.get(v).toString();
-                        belief.put("deductions", deductions);
-                        deductedRules.add(ruleKey);
-                    }
-                } catch (TokenMgrError | Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            belief.put("functor", l.getFunctor());
+            belief.put("arity", l.getArity());
             bbs.add(belief);
         }
         return bbs;
@@ -394,7 +369,7 @@ public class TranslAg {
      * @throws ParseException 
      */
     @SuppressWarnings("serial")
-    Unifier execCmd(Agent ag, PlanBody lCmd) throws ParseException {
+    public Unifier execCmd(Agent ag, PlanBody lCmd) throws ParseException {
         Trigger te = ASSyntax.parseTrigger("+!run_repl_expr");
         Intention i = new Intention();
         IntendedMeans im = new IntendedMeans(new Option(new Plan(null, te, null, lCmd), new Unifier()), te);
