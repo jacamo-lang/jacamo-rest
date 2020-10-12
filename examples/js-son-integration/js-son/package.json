@@ -1,0 +1,15 @@
+{
+  "name": "jacamo-rest-integration-example",
+  "version": "0.0.1",
+  "description": "Jacamo-rest integration example",
+  "main": "paranoid.js",
+  "dependencies": {
+    "js-son-agent": "^0.0.10"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node paranoid.js"
+  },
+  "author": "Timotheus Kampik",
+  "license": "BSD-2-Clause"
+}

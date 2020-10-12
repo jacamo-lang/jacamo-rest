@@ -1,0 +1,7 @@
+
+mas room {
+    agent porter
+    agent claustrophobe
+    agent paranoid
+    platform: jacamo.rest.JCMRest("--main 2181 --restPort 8080")
+}
