@@ -49,7 +49,7 @@ mas room {
 
 Now, we implement the *porter* and *claustrophobe* agents as ordinary Jason agents:
 
-* ``porter.asl`:
+* ``porter.asl``:
 
 ```prolog
 start.
