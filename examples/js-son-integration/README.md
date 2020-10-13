@@ -1,16 +1,16 @@
 # Tutorial: Integration jacamo-rest and JS-son
 This tutorial explains how to integrate jacamo-rest with the
 [JS-son](https://github.com/TimKam/JS-son) JavaScript agent programming library.
-As a simple example, re-implement the
+As a simple example, we re-implement the
 [Jason *room* example](https://github.com/jason-lang/jason/tree/master/examples/room) without the
 *paranoid* agent and launch it as a jacamo-rest MAS (note that our implementation differs from the
 Jason room example implementation).
 We then implement the *paranoid* agent as a Node.js client with JS-son and connect it to the JaCaMo
-multi-agent system via JaCaMo rest.
+multi-agent system via jacamo-rest.
 
 ## Prerequisites
 This tutorial shows how to create Gradle and Node.js projects that manage all dependencies
-automatically the only requirements are to have Java, Gradle, and Node.js installed.
+automatically. The only requirements are to have Java, Gradle, and Node.js installed.
 
 ## jacamo-rest
 Let us first set up the jacamo-rest project.
@@ -93,7 +93,7 @@ We also create a ``paranoid.asl`` file, in which we need to add some belief revi
   <- -locked(door)[source(porter)].
 ```
 
-The reason for this is that we manage the revision of the paranoid agent's belief about porter's
+The reason for this is that we manage the revision of the paranoid agent's belief about the porter's
 most recent announcement of the door lock status centrally. The JS-son agent obtains the belief
 by querying the belief base of this agent mock.
 
@@ -113,12 +113,12 @@ task run (type: JavaExec, dependsOn: 'classes') {
 }
 ```
 
-Now, we can start the jacamo-rest MAS by executing ``./gradlew run``.
+We can start the jacamo-rest MAS by executing ``./gradlew run``.
 
 ## JS-son
 Let us implement the JS-son agent.
-First, we run ``npm init`` to generate a ``package.json`` file with roughly the following
-properties:
+For this, we create a dedicated ``js-son`` folder. In this folder, we run ``npm init`` to generate a
+``package.json`` file with roughly the following properties:
 
 ```json
 {
@@ -133,19 +133,62 @@ properties:
 }
 ```
 
-Then, we create a ``paranoid.js`` file in which we implement the paranoid agent.s
-The first part of the agent is roughly just a standard belief-plan JS-son agent:
+Then, we create the ``JRClient.js`` file, in which we implement a small client that allows us to interact with jacamo-rest:
+
+```javascript
+/* implements a simple client to interact with jacamo-rest */
+const http = require('http')
+
+function JRClient(host, port=8080) {
+    /* generate request options */
+    this.genOptions = function(method, path, data) {
+        return {
+            host: host,
+            port: port,
+            path,
+            method: method,
+            headers:
+              method === 'POST' ?
+              {
+                'Content-Type': 'application/json',
+                'Content-Length': data.length
+              } : {}
+        }
+    }
+    /* issue request */
+    this.send = function(
+        method,
+        endpoint,
+        callback = _ => {},
+        data = undefined,
+        errorHandler = error => { console.log(error) }
+    ) {
+        const request = http.request(this.genOptions(method, endpoint, data), callback)
+        request.on('error', errorHandler)
+        if (data) request.write(data)
+        request.end()
+    }
+}
+
+module.exports = JRClient
+```
+
+Now, we create the ``paranoid.js`` file that implements the paranoid agent. The first part of the
+agent is roughly just a standard belief-plan JS-son agent:
 
 ```javascript
 // import JS-son
 const { Belief, Plan, Agent } = require('js-son-agent')
-const http = require('http')
+const JRClient = require('./JRClient')
+
 const args = process.argv.slice(2)
+jrClient = new JRClient(args[0], args[1])
 
 // implement paranoid agent
 const beliefs = {
   ...Belief('door', { locked: true }),
-  ...Belief('requests', [])
+  ...Belief('doorPrev', { locked: true }),
+  ...Belief('requestCount', 0)
 }
 
 const plans = [
@@ -154,15 +197,16 @@ const plans = [
     function() {
       console.log('Please, lock the door.')
       this.beliefs.requestCount += 1
+      this.beliefs.doorPrev.locked = false
       requestLockDoor()
       return []
     }
   ),
   Plan(
-    beliefs => beliefs.door.locked,
+    beliefs => beliefs.door.locked && !beliefs.doorPrev.locked,
     function() {
       console.log('Thanks for locking the door!')
-      this.beliefs.requestCount = 0
+      this.beliefs.doorPrev.locked = true
       return []
     }
   ),
@@ -183,33 +227,14 @@ const paranoid = new Agent(agentId, beliefs, {}, plans)
 
 Still, it is important to note the following two differences:
 
-1. *Minor difference:* we require the ``http`` package that allows us to interact with jacamo-rest and we parse the command line arguments.
+1. *Minor difference:* we require the ``JRClient`` class that allows us to interact with
+   jacamo-rest, we parse the command line arguments, and we instantiate a client.
 
 2. **Major difference:** the agent's plans return an empty array, because the agent registers its
-   actions directly with jacamo-rest. The environment merely handles the belief base update.
-   Note that the ``requestLockDoor`` and ``killClaustrophobe`` functions are introduced
-   further below.
+   actions directly with jacamo-rest. The environment merely handles the belief base update. Note
+   that the ``requestLockDoor`` and ``killClaustrophobe`` functions are introduced further below.
 
-We implement a function that allows for the configuration of a request option objects for the two
-types of requests we need to send to jacamo-rest (querying the mock agent and sending a message
-to the porter agent):
-
-```javascript
-const genOptions = (method, path, data) => ({
-  host: args[0],
-  port: args[1],
-  path,
-  method: method,
-  headers:
-    method === 'POST' ?
-    {
-      'Content-Type': 'application/json',
-      'Content-Length': data.length
-    } : {}
-})
-```
-
-Then, we implement the ``requestLockDoor`` function that asks the porter agent to lock the door:
+We implement the ``requestLockDoor`` function that asks the porter agent to lock the door:
 
 ```javascript
 function requestLockDoor () {
@@ -221,10 +246,7 @@ function requestLockDoor () {
       content: 'locked(door)'
     }
   )
-  const post = http.request(genOptions('POST', '/agents/porter/inbox', requestData), _ => {})
-  post.on('error', error => console.error(error))
-  post.write(requestData)
-  post.end()
+  jrClient.send('POST', '/agents/porter/inbox', _ => {}, requestData)
 }
 ```
 
@@ -232,9 +254,7 @@ Similarly, we implement the ``killClaustrophobe`` function:
 
 ```javascript
 function killClaustrophobe () {
-  const del = http.request(genOptions('DELETE', '/agents/claustrophobe'), () => {})
-  del.on('error', error => console.error(error))
-  del.end()
+  jrClient.send('DELETE', '/agents/claustrophobe', _ => {})
 }
 ```
 
@@ -245,30 +265,28 @@ status accordingly:
 ```javascript
 setInterval(() => {
   const beliefUpdate = {}
-  const get = http.request(genOptions('GET', '/agents/paranoid'), result => {
+  const callback = result => {
     let body = ''
     result.on('data', data => { body += data })
     result.on('end', () => {
       const jBody = JSON.parse(body)
-      const beliefs = jBody.beliefs
-      const lastBelief = beliefs[beliefs.length - 1]
+      const jBeliefs = jBody.beliefs
+      const lastBelief = jBeliefs[jBeliefs.length - 1]
       if(lastBelief.belief === '~locked(door)[source(porter)]') {
         beliefUpdate.door = { locked: false }
-        
       } else {
         beliefUpdate.door = { locked: true }
       }
-      const actions = paranoid.next(beliefUpdate)
+      paranoid.next(beliefUpdate)
     })
-  })
-  get.on('error', error => console.error(error))
-  get.end()
+  }
+  jrClient.send('GET', '/agents/paranoid', callback)
 }, 1000)
 ```
 
 To run the paranoid agent, we execute ``node paranoid.js <host> <port>``, for example
 ``npm run start 192.168.0.106 8080``.
-Note that the agent will *always* request the porter to close the door: because the
+Note that initially, the agent will *always* request the porter to close the door: because the
 centrally running claustrophobe and porter agents exchange messages much faster, the
 paranoid agent never realizes that the porter actually locks the door.
 This is why eventually, the paranoid agent simply decides to use jacamo-rest's capabilities
