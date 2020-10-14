@@ -125,7 +125,7 @@ For this, we create a dedicated ``js-son`` folder. In this folder, we run ``npm 
   "name": "jacamo-rest-integration-example",
   "version": "0.0.1",
   "description": "Jacamo-rest integration example",
-  "main": "index.js",
+  "main": "paranoid.js",
   "dependencies": {
     "js-son-agent": "^0.0.10"
   },
@@ -259,7 +259,7 @@ function killClaustrophobe () {
 ```
 
 Finally, we implement the environment that handles the belief update of the agent in regular
-intervals, by querying the belief base of the central mock agent and updating the door lock 
+intervals, by querying the belief base of the central mock agent and updating the door lock
 status accordingly:
 
 ```javascript
@@ -284,8 +284,8 @@ setInterval(() => {
 }, 1000)
 ```
 
-To run the paranoid agent, we execute ``node paranoid.js <host> <port>``, for example
-``npm run start 192.168.0.106 8080``.
+To run the paranoid agent we first run ``npm install`` to get ``js-son-agent`` then we execute
+``node paranoid.js <host> <port>``, for example ``npm run start 192.168.0.106 8080``.
 Note that initially, the agent will *always* request the porter to close the door: because the
 centrally running claustrophobe and porter agents exchange messages much faster, the
 paranoid agent never realizes that the porter actually locks the door.
