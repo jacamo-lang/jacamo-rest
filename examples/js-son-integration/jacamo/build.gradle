@@ -1,0 +1,27 @@
+plugins {
+  id 'java'
+}
+
+repositories {
+    mavenCentral()
+
+    maven { url "https://raw.github.com/jacamo-lang/mvn-repo/master" }
+    maven { url "http://jacamo.sourceforge.net/maven2" }
+
+}
+
+dependencies {
+    compile 'org.jacamo:jacamo-rest:0.6-SNAPSHOT'
+}
+
+task run (type: JavaExec, dependsOn: 'classes') {
+    group      ' JaCaMo'
+    description 'Runs the room example'
+    doFirst {
+        mkdir 'log'
+    }
+    main 'jacamo.infra.JaCaMoLauncher'
+    args 'Room.jcm'
+    classpath sourceSets.main.runtimeClasspath
+}
+

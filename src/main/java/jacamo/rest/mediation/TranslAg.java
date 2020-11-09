@@ -44,6 +44,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
 import jason.asSyntax.PlanLibrary;
+import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
@@ -213,11 +214,46 @@ public class TranslAg {
      * @param agName
      * @return
      */
-    public List<String> getAgentsBB(String agName) {
+    public List<Object> getAgentsBB(String agName) {
         Agent ag = getAgent(agName);
-        List<String> bbs = new ArrayList<>();
+        List<Object> bbs = new ArrayList<>();
         for (Literal l : ag.getBB()) {
-            bbs.add(l.toString());
+            Map<String, Object> belief = new HashMap<>();
+            belief.put("belief", l.toString());
+            belief.put("isRule", l.isRule());
+            belief.put("functor", l.getFunctor());
+            if (l.getArity() > 0) {
+                List<String> termsAsStr = new ArrayList<>();
+                Iterator<Term> it = l.getTerms().iterator();
+                while (it.hasNext()) {
+                    String termAsStr = it.next().toString();
+                    termsAsStr.add(termAsStr);
+                }
+                belief.put("terms", new ArrayList<String>(termsAsStr));
+            } else {
+                belief.put("terms", new ArrayList<String>());
+            }
+            
+            List<Object> annotations = new ArrayList<>();
+            for (Term t : l.getAnnots()) {
+                Map<String, Object> annot = new HashMap<>();
+                annot.put("functor", ((Literal)t).getFunctor());
+                if (((Literal)t).getArity() > 0) {
+                    List<String> termsAsStr = new ArrayList<>();
+                    Iterator<Term> it = ((Literal)t).getTerms().iterator();
+                    while (it.hasNext()) {
+                        String termAsStr = it.next().toString();
+                        termsAsStr.add(termAsStr);
+                    }
+                    annot.put("terms", new ArrayList<String>(termsAsStr));
+                } else {
+                    annot.put("terms", new ArrayList<String>());
+                }
+                annotations.add(annot);
+            }
+            belief.put("annotations", annotations);
+            
+            bbs.add(belief);
         }
         return bbs;
     }
@@ -373,7 +409,7 @@ public class TranslAg {
      * @throws ParseException 
      */
     @SuppressWarnings("serial")
-    Unifier execCmd(Agent ag, PlanBody lCmd) throws ParseException {
+    public Unifier execCmd(Agent ag, PlanBody lCmd) throws ParseException {
         Trigger te = ASSyntax.parseTrigger("+!run_repl_expr");
         Intention i = new Intention();
         IntendedMeans im = new IntendedMeans(new Option(new Plan(null, te, null, lCmd), new Unifier()), te);
