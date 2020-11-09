@@ -388,7 +388,7 @@ public class TranslAg {
                 }
             });
             
-            List<String> beliefs = getAgentsBB(agName);
+            List<Object> beliefs = getAgentsBB(agName);
 
             agentMD.put("namespaces", nameSpaces);
             agentMD.put("roles", roles);
