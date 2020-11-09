@@ -9,7 +9,7 @@ public class RestTestUtils extends jacamo.util.TestUtils {
     
     public static URI launchRestSystem(String jcm) {
         if (launchSystem(jcm)) {
-            uri = UriBuilder.fromUri(JCMRest.getRestHost()).build();
+            uri = UriBuilder.fromUri(JCMRest.getJCMRest().getRestHost()).build();
         }
         return uri;
     }

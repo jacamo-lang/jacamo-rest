@@ -1,0 +1,16 @@
+/*
+    distributed_agents
+    ---------------------------
+
+    JaCaMo Application File
+
+    to run at host1
+
+*/
+
+mas h1 {
+    agent karlos
+
+    platform: jacamo.rest.JCMRest("--rest-port 8080")
+    //platform: jacamo.rest.JCMRest("--rest-port 8080 --registerURL https://inieci.serveousercontent.com")
+}

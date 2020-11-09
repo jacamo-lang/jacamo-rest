@@ -1,0 +1,17 @@
+/*
+    distributed_agents
+    ---------------------------
+
+    JaCaMo Application File
+
+    to run at host3
+*/
+
+mas h3 {
+
+    agent bob
+
+    platform: jacamo.rest.JCMRest("--connect http://localhost:8080 --rest-port 8082")
+    //platform: jacamo.rest.JCMRest("--connect https://inieci.serveousercontent.com --registerURL https://insto.serveousercontent.com --rest-port 8082")
+
+}

@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compile 'org.jacamo:jacamo-rest:0.5'
+    compile 'org.jacamo:jacamo-rest:0.6-SNAPSHOT'
 }
 ```
 
@@ -25,8 +25,8 @@ mas yourmas {
 
     ...
 
-    // starts rest api on port 8080 (and zookeeper on 2181)
-    platform: jacamo.rest.JCMRest("--main 2181 --restPort 8080")
+    // starts rest api on port 8080
+    platform: jacamo.rest.JCMRest("--restPort 8080")
 
 }
 
@@ -34,8 +34,7 @@ mas yourmas {
 # About jacamo-rest...
 
 * Each agent has REST endpoints to receive messages and be inspected.
-* ZooKeeper is used for name service. `Bob` can send a message to `marcos` using its name. ZooKeeper maps the name to a URL.
-* DF service is provided also by ZooKeeper.
+* The REST API also implements a name and yellow pages services. `Bob` can send a message to `marcos` using its name.
 * Java JAX-RS is used for the API.
 * For more information, see the paper: [Towards Jacamo-rest: A Resource-Oriented Abstraction for Managing Multi-Agent Systems](doc/paper.pdf)
 * Information for developers and how to contribute can be found at [contributing](doc/contributing.md).

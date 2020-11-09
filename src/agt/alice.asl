@@ -7,7 +7,7 @@ price(banana,10).
 /* Initial goals */
 
 !start.
-
+!send.
 /* Plans */
 
 +!start : true
@@ -25,10 +25,13 @@ price(banana,10).
       .print("removing abacaxi again....")
       .df_deregister(vender(abacaxi));
    .
-   
-+hello[source(A)]
-   <- .print("I received hello from ",A)
+
++!send
+   <- .send(marcos,signal,hello);
+      .send(marcos,tell,vl(10,"kk"));
    .
+
++hello[source(A)] <- .print("I received hello from ",A).
 
 +hello[source(A)] <- .print("I received hello from ",A).
 

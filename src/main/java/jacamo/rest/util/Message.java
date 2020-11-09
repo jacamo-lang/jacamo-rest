@@ -15,6 +15,7 @@ public class Message {
     private String content = null;
     private String msgId    = null;
     private String inReplyTo = null;
+    private Object predicate = null;
 
     public Message() {}
     public Message(String id, String p, String s, String r, String c) {
@@ -27,6 +28,14 @@ public class Message {
     public Message(String id, String p, String s, String r, String c, String inReplyTo) {
         this(id,p,s,r,c);
         this.inReplyTo = inReplyTo;
+    }
+    public Message(jason.asSemantics.Message m) {
+        this.performative = m.getIlForce();
+        this.sender = m.getSender();
+        this.receiver = m.getReceiver();
+        this.content = m.getPropCont().toString();
+        this.msgId = m.getMsgId();
+        this.inReplyTo = m.getInReplyTo();
     }
     
     public String getPerformative() {
@@ -66,13 +75,11 @@ public class Message {
         this.inReplyTo = inReplyTo;
     }
 
-    public Message(jason.asSemantics.Message m) {
-        this.performative = m.getIlForce();
-        this.sender = m.getSender();
-        this.receiver = m.getReceiver();
-        this.content = m.getPropCont().toString();
-        this.msgId = m.getMsgId();
-        this.inReplyTo = m.getInReplyTo();
+    public Object getPredicate() {
+        return predicate;
+    }
+    public void setPredicate(Object predicate) {
+        this.predicate = predicate;
     }
 
     public jason.asSemantics.Message getAsJasonMsg() {

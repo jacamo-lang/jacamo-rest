@@ -1,16 +1,19 @@
 !start.
+//!buy.
 
 +!start
    <- .df_subscribe(iamhere);
-      .df_subscribe(vender(abacaxi)).
+      .df_subscribe(vender(abacaxi));
+      .all_names(L); .print("all registered agents: ",L);
+   .
 
 +!buy
    <- .df_search(vender(banana),L);
       .print("Banana sellers ", L);
       for (.member(A,L)) {
-          .send(A,askOne,price(banana,_),price(_,P),2000);
-          //.print("Price of ",A," is ",P);
-          .printf("%20s = %5.2f",A,P);
+          .send(A, askOne, price(banana,_), price(_,P), 2000);
+          .print("Price of ",A," is ",P);
+          //.printf("%20s = %5.2f",A,P);
       }
    .
 

@@ -2,7 +2,7 @@ mas test0 {
 
     agent bob : ag1.asl
 
-    platform: jacamo.rest.JCMRest("--main 2181 --restPort 8787") // connects to platform at 2181
+    platform: jacamo.rest.JCMRest("--main 2181 --rest-port 8787") // connects to platform at 2181
 
     asl-path: src/test/agt
 }

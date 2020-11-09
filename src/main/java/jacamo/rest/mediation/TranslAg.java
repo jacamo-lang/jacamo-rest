@@ -3,6 +3,7 @@ package jacamo.rest.mediation;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +28,6 @@ import cartago.CartagoService;
 import cartago.WorkspaceId;
 import jaca.CAgentArch;
 import jacamo.rest.JCMRest;
-import jacamo.rest.config.RestAgArch;
 import jacamo.rest.util.Message;
 import jason.JasonException;
 import jason.ReceiverNotFoundException;
@@ -66,10 +66,10 @@ public class TranslAg {
      * 
      * @return Set of agents;
      */
-    public Map<String,Map<String,String>> getAgents() {
+    public Map<String,Map<String,Object>> getAgents() {
         // read all data from ZK
         try {
-            return JCMRest.getWP();            
+            return JCMRest.getJCMRest().getWP();            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,8 +103,14 @@ public class TranslAg {
      * Creates a new entry in the WP
      * @throws Exception 
      */
-    public boolean createWP(String agName, Map<String,String> metaData) throws Exception {     
-        return RestAgArch.registerWP(JCMRest.getZKClient(), agName, metaData, false);      
+    public boolean createWP(String agName, Map<String,Object> metadata, boolean force) throws Exception {
+        if (!force && JCMRest.getJCMRest().getAgentMetaData(agName) != null) {
+            System.err.println("Agent "+agName+" is already registered in ANS!");
+            return false;           
+        } else {
+            JCMRest.getJCMRest().registerAgent(agName, metadata);
+            return true;
+        }
     }
     
     /**
@@ -185,7 +191,7 @@ public class TranslAg {
             if (!RuntimeServicesFactory.get().killAgent(agName, "web", 0))
                 throw new Exception("Unable to kill agent: " + agName);
         }
-        RestAgArch.deleteWP(JCMRest.getZKClient(), agName);
+        JCMRest.getJCMRest().deregisterAgent(agName); // should not count on the agent stop method, it could be just a register without running agent
     }
     
     /**
@@ -301,94 +307,97 @@ public class TranslAg {
      * 
      */
     public Map<String, Object> getAgentDetails(String agName) throws Exception {
+        Map<String, Object> agentMD = JCMRest.getJCMRest().getAgentMetaData(agName);
+        if (agentMD == null) {
+            throw new ReceiverNotFoundException("agent "+agName+" does not exist in the MAS");          
+        }
+        agentMD = new HashMap<>( agentMD );
+        agentMD.put("agent", agName);
 
         Agent ag = getAgent(agName);
-        if (ag == null) {
-            throw new ReceiverNotFoundException("agent "+agName+" does not exist in the MAS");
-        }
+        if (ag != null) {
 
-        // get workspaces the agent are in (including organisations)
-        List<String> workspacesIn = new ArrayList<>();
-        CAgentArch cartagoAgArch = getCartagoArch(ag);
-
-        for (WorkspaceId wid : cartagoAgArch.getSession().getJoinedWorkspaces()) {
-            workspacesIn.add(wid.getName());
-        }
-        List<String> nameSpaces = new ArrayList<>();
-        ag.getBB().getNameSpaces().forEach(x -> {
-            nameSpaces.add(x.toString());
-        });
-
-        // get groups and roles this agent plays
-        List<Object> roles = new ArrayList<>();
-        for (GroupBoard gb : GroupBoard.getGroupBoards()) {
-            if (workspacesIn.contains(gb.getOEId())) {
-                gb.getGrpState().getPlayers().forEach(p -> {
-                    if (p.getAg().equals(agName)) {
-                        Map<String, Object> groupRole = new HashMap<>();
-                        groupRole.put("group", gb.getArtId());
-                        groupRole.put("role", p.getTarget());
-                        roles.add(groupRole);
-                    }
-                });
-
+            // get workspaces the agent are in (including organisations)
+            List<String> workspacesIn = new ArrayList<>();
+            CAgentArch cartagoAgArch = getCartagoArch(ag);
+    
+            for (WorkspaceId wid : cartagoAgArch.getSession().getJoinedWorkspaces()) {
+                workspacesIn.add(wid.getName());
             }
-        }
-
-        // get schemed this agent belongs
-        List<Object> missions = new ArrayList<>();
-        for (SchemeBoard schb : SchemeBoard.getSchemeBoards()) {
-            schb.getSchState().getPlayers().forEach(p -> {
-                if (p.getAg().equals(agName)) {
-                    Map<String, Object> schemeMission = new HashMap<>();
-                    schemeMission.put("scheme", schb.getArtId());
-                    schemeMission.put("mission", p.getTarget());
-                    List<Object> responsibles = new ArrayList<>();
-                    schemeMission.put("responsibles", responsibles);
-                    for (Group gb : schb.getSchState().getGroupsResponsibleFor()) {
-                        responsibles.add(gb.getId());
-                    }
-                    missions.add(schemeMission);
-                }
+            List<String> nameSpaces = new ArrayList<>();
+            ag.getBB().getNameSpaces().forEach(x -> {
+                nameSpaces.add(x.toString());
             });
-        }
-
-        List<Object> workspaces = new ArrayList<>();
-        workspacesIn.forEach(wksName -> {
-            Map<String, Object> workspace = new HashMap<>();
-            workspace.put("workspace", wksName);
-            List<Object> artifacts = new ArrayList<>();
-            try {
-                for (ArtifactId aid : CartagoService.getController(wksName).getCurrentArtifacts()) {
-                    ArtifactInfo info = CartagoService.getController(wksName).getArtifactInfo(aid.getName());
-                    info.getObservers().forEach(y -> {
-                        if (y.getAgentId().getAgentName().equals(agName)) {
-                            // Build returning object
-                            Map<String, Object> artifact = new HashMap<String, Object>();
-                            artifact.put("artifact", info.getId().getName());
-                            artifact.put("type", info.getId().getArtifactType());
-                            artifacts.add(artifact);
+    
+            // get groups and roles this agent plays
+            List<Object> roles = new ArrayList<>();
+            for (GroupBoard gb : GroupBoard.getGroupBoards()) {
+                if (workspacesIn.contains(gb.getOEId())) {
+                    gb.getGrpState().getPlayers().forEach(p -> {
+                        if (p.getAg().equals(agName)) {
+                            Map<String, Object> groupRole = new HashMap<>();
+                            groupRole.put("group", gb.getArtId());
+                            groupRole.put("role", p.getTarget());
+                            roles.add(groupRole);
                         }
                     });
+    
                 }
-                workspace.put("artifacts", artifacts);
-                workspaces.add(workspace);
-            } catch (CartagoException e) {
-                e.printStackTrace();
             }
-        });
-        
-        List<Object> beliefs = getAgentsBB(agName);
+    
+            // get schemed this agent belongs
+            List<Object> missions = new ArrayList<>();
+            for (SchemeBoard schb : SchemeBoard.getSchemeBoards()) {
+                schb.getSchState().getPlayers().forEach(p -> {
+                    if (p.getAg().equals(agName)) {
+                        Map<String, Object> schemeMission = new HashMap<>();
+                        schemeMission.put("scheme", schb.getArtId());
+                        schemeMission.put("mission", p.getTarget());
+                        List<Object> responsibles = new ArrayList<>();
+                        schemeMission.put("responsibles", responsibles);
+                        for (Group gb : schb.getSchState().getGroupsResponsibleFor()) {
+                            responsibles.add(gb.getId());
+                        }
+                        missions.add(schemeMission);
+                    }
+                });
+            }
+    
+            List<Object> workspaces = new ArrayList<>();
+            workspacesIn.forEach(wksName -> {
+                Map<String, Object> workspace = new HashMap<>();
+                workspace.put("workspace", wksName);
+                List<Object> artifacts = new ArrayList<>();
+                try {
+                    for (ArtifactId aid : CartagoService.getController(wksName).getCurrentArtifacts()) {
+                        ArtifactInfo info = CartagoService.getController(wksName).getArtifactInfo(aid.getName());
+                        info.getObservers().forEach(y -> {
+                            if (y.getAgentId().getAgentName().equals(agName)) {
+                                // Build returning object
+                                Map<String, Object> artifact = new HashMap<String, Object>();
+                                artifact.put("artifact", info.getId().getName());
+                                artifact.put("type", info.getId().getArtifactType());
+                                artifacts.add(artifact);
+                            }
+                        });
+                    }
+                    workspace.put("artifacts", artifacts);
+                    workspaces.add(workspace);
+                } catch (CartagoException e) {
+                    e.printStackTrace();
+                }
+            });
+            
+            List<String> beliefs = getAgentsBB(agName);
 
-        Map<String, Object> agent = new HashMap<>();
-        agent.put("agent", agName);
-        agent.put("namespaces", nameSpaces);
-        agent.put("roles", roles);
-        agent.put("missions", missions);
-        agent.put("workspaces", workspaces);
-        agent.put("beliefs", beliefs);
+            agentMD.put("namespaces", nameSpaces);
+            agentMD.put("roles", roles);
+            agentMD.put("missions", missions);
+            agentMD.put("workspaces", workspaces);
+            agentMD.put("beliefs", beliefs);
+        }
 
-        return agent;
+        return agentMD;
     }
 
     /**
@@ -571,6 +580,23 @@ public class TranslAg {
         }
         return jsonifiedDF;
     }
+
+    public Collection<String> getJsonifiedDF(String service) throws Exception {
+        Map<String, Set<String>> commonDF = getCommonDF();
+
+        Collection<String> ans = new ArrayList<>();
+        for (String ag : commonDF.keySet()) {
+            if (commonDF.get(ag).contains(service)) {
+                ans.add(ag);
+            }
+        }
+        return ans;
+    }
+
+    public void subscribe(String agName, String service, String type) {
+        RuntimeServicesFactory.get().dfSubscribe(agName, service, type);
+    }
+    
     
     /**
      * Add a service to a given agent
