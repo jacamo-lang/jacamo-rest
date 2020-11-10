@@ -21,6 +21,9 @@ import java.util.logging.StreamHandler;
 
 import org.apache.tools.ant.filters.StringInputStream;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 import cartago.ArtifactId;
 import cartago.ArtifactInfo;
 import cartago.CartagoException;
@@ -44,7 +47,6 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
 import jason.asSyntax.PlanLibrary;
-import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
@@ -62,14 +64,14 @@ public class TranslAg {
     Executor executor = Executors.newFixedThreadPool(4);
 
     /**
-     * Get existing agents  
-     * 
+     * Get existing agents
+     *
      * @return Set of agents;
      */
     public Map<String,Map<String,Object>> getAgents() {
         // read all data from ZK
         try {
-            return JCMRest.getJCMRest().getWP();            
+            return JCMRest.getJCMRest().getWP();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,7 +80,7 @@ public class TranslAg {
 
     /**
      * Create agent and corresponding asl file with the agName if possible, or agName_1, agName_2,...
-     * 
+     *
      * @param agName
      * @return
      * @throws Exception
@@ -97,25 +99,25 @@ public class TranslAg {
         createAgLog(givenName, ag);
         return givenName;
     }
-    
-    
+
+
     /**
      * Creates a new entry in the WP
-     * @throws Exception 
+     * @throws Exception
      */
     public boolean createWP(String agName, Map<String,Object> metadata, boolean force) throws Exception {
         if (!force && JCMRest.getJCMRest().getAgentMetaData(agName) != null) {
             System.err.println("Agent "+agName+" is already registered in ANS!");
-            return false;           
+            return false;
         } else {
             JCMRest.getJCMRest().registerAgent(agName, metadata);
             return true;
         }
     }
-    
+
     /**
      * ask to agent to run a command
-     *  
+     *
      * @param cmd
      * @param agName
      * @return
@@ -142,10 +144,10 @@ public class TranslAg {
         }
         return um;
     }
-    
+
     /**
      * Creates a log area for an agent
-     * 
+     *
      * @param agName agent name
      * @param ag     agent object
      */
@@ -161,10 +163,10 @@ public class TranslAg {
             });
         }
     }
-    
+
     /**
      * Add a message to the agent log.
-     * 
+     *
      * @param agName agent name
      * @param msg    message to be added
      */
@@ -179,12 +181,12 @@ public class TranslAg {
         String dt = new SimpleDateFormat("dd-MM-yy HH:mm:ss").format(new Date());
         o.append("[" + dt + "] " + msg);
     }
-    
+
     /**
      * kill an agent
      * @param agName
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     public void deleteAgent(String agName) throws Exception {
         if (BaseCentralisedMAS.getRunner().getAg(agName) != null) {
@@ -193,7 +195,7 @@ public class TranslAg {
         }
         JCMRest.getJCMRest().deregisterAgent(agName); // should not count on the agent stop method, it could be just a register without running agent
     }
-    
+
     /**
      * Return status of the agent
      * @param agName
@@ -207,18 +209,20 @@ public class TranslAg {
 
         return ag.getTS().getAgArch().getStatus();
     }
-    
+
     /**
      * get Agent Belief Base
-     * 
+     *
      * @param agName
      * @return
      */
     public List<Object> getAgentsBB(String agName) {
         Agent ag = getAgent(agName);
         List<Object> bbs = new ArrayList<>();
+        JsonParser parser = new JsonParser();
         for (Literal l : ag.getBB()) {
-            Map<String, Object> belief = new HashMap<>();
+            bbs.add( parser.parse( l.getAsJSON("") ) );
+            /*Map<String, Object> belief = new HashMap<>();
             belief.put("belief", l.toString());
             belief.put("isRule", l.isRule());
             belief.put("functor", l.getFunctor());
@@ -233,7 +237,7 @@ public class TranslAg {
             } else {
                 belief.put("terms", new ArrayList<String>());
             }
-            
+
             List<Object> annotations = new ArrayList<>();
             for (Term t : l.getAnnots()) {
                 Map<String, Object> annot = new HashMap<>();
@@ -252,15 +256,16 @@ public class TranslAg {
                 annotations.add(annot);
             }
             belief.put("annotations", annotations);
-            
-            bbs.add(belief);
+
+            bbs.add(belief);*/
         }
         return bbs;
     }
-    
+
+
     /**
      * List of plans
-     * 
+     *
      * @param agName name of the agent
      * @param label optional filter
      * @return list of string
@@ -282,10 +287,10 @@ public class TranslAg {
         }
         return plans;
     }
-    
+
     /**
      * Add a plan to the agent's plan library
-     * 
+     *
      * @param agName
      * @param plans
      * @throws Exception
@@ -297,19 +302,19 @@ public class TranslAg {
         }
         ag.parseAS(new StringReader(plans), "RestAPI");
     }
-    
+
     /**
      * Get agent information (namespaces, roles, missions and workspaces)
-     * 
+     *
      * @param agName name of the agent
      * @return A Map with agent information
      * @throws CartagoException
-     * 
+     *
      */
     public Map<String, Object> getAgentDetails(String agName) throws Exception {
         Map<String, Object> agentMD = JCMRest.getJCMRest().getAgentMetaData(agName);
         if (agentMD == null) {
-            throw new ReceiverNotFoundException("agent "+agName+" does not exist in the MAS");          
+            throw new ReceiverNotFoundException("agent "+agName+" does not exist in the MAS");
         }
         agentMD = new HashMap<>( agentMD );
         agentMD.put("agent", agName);
@@ -320,7 +325,7 @@ public class TranslAg {
             // get workspaces the agent are in (including organisations)
             List<String> workspacesIn = new ArrayList<>();
             CAgentArch cartagoAgArch = getCartagoArch(ag);
-    
+
             for (WorkspaceId wid : cartagoAgArch.getSession().getJoinedWorkspaces()) {
                 workspacesIn.add(wid.getName());
             }
@@ -328,7 +333,7 @@ public class TranslAg {
             ag.getBB().getNameSpaces().forEach(x -> {
                 nameSpaces.add(x.toString());
             });
-    
+
             // get groups and roles this agent plays
             List<Object> roles = new ArrayList<>();
             for (GroupBoard gb : GroupBoard.getGroupBoards()) {
@@ -341,10 +346,10 @@ public class TranslAg {
                             roles.add(groupRole);
                         }
                     });
-    
+
                 }
             }
-    
+
             // get schemed this agent belongs
             List<Object> missions = new ArrayList<>();
             for (SchemeBoard schb : SchemeBoard.getSchemeBoards()) {
@@ -362,7 +367,7 @@ public class TranslAg {
                     }
                 });
             }
-    
+
             List<Object> workspaces = new ArrayList<>();
             workspacesIn.forEach(wksName -> {
                 Map<String, Object> workspace = new HashMap<>();
@@ -387,7 +392,7 @@ public class TranslAg {
                     e.printStackTrace();
                 }
             });
-            
+
             List<Object> beliefs = getAgentsBB(agName);
 
             agentMD.put("namespaces", nameSpaces);
@@ -402,11 +407,11 @@ public class TranslAg {
 
     /**
      * Send a command to an agent
-     * 
+     *
      * @param agName name of the agent
      * @param sCmd   command to be executed
      * @return Status message
-     * @throws ParseException 
+     * @throws ParseException
      */
     @SuppressWarnings("serial")
     public Unifier execCmd(Agent ag, PlanBody lCmd) throws ParseException {
@@ -418,7 +423,7 @@ public class TranslAg {
         Lock lock = new ReentrantLock();
         Condition goalFinished  = lock.newCondition();
         executor.execute( () -> {
-                /*GoalListener gl = new GoalListener() {                 
+                /*GoalListener gl = new GoalListener() {
                     public void goalSuspended(Trigger goal, String reason) {}
                     public void goalStarted(Event goal) {}
                     public void goalResumed(Trigger goal) {}
@@ -427,14 +432,14 @@ public class TranslAg {
                         if (goal.equals(te)) {
                             // finished
                             //if (result.equals(FinishStates.achieved)) {
-                            //}                           
+                            //}
                             try {
                                 lock.lock();
                                 goalFinished.signalAll();
                             } finally {
                                 lock.unlock();
                             }
-                        }                       
+                        }
                     }
                     public void goalFailed(Trigger goal) {
                         if (goal.equals(te)) {
@@ -444,7 +449,7 @@ public class TranslAg {
                             } finally {
                                 lock.unlock();
                             }
-                        }                                                   
+                        }
                     }
                 };*/
                 CircumstanceListener cl = new CircumstanceListener() {
@@ -471,15 +476,15 @@ public class TranslAg {
                     goalFinished.await();
                     //ts.removeGoalListener(gl);
                     ts.getC().removeEventListener(cl);
-                } catch (InterruptedException e) {                          
+                } catch (InterruptedException e) {
                 } finally {
                     lock.unlock();
-                }                
+                }
         });
         try {
             lock.lock();
             goalFinished.await();
-            
+
             return im.getUnif();
         } catch (InterruptedException e) {
         } finally {
@@ -487,10 +492,10 @@ public class TranslAg {
         }
         return null;
     }
-    
+
     /**
      * get agent log
-     * 
+     *
      * @param agName
      * @throws Exception
      */
@@ -501,10 +506,10 @@ public class TranslAg {
             return "Log is empty/absent.";
         }
     }
-    
+
     /**
      * Return agent object by agent's name
-     * 
+     *
      * @param agName name of the agent
      * @return Agent object
      */
@@ -518,7 +523,7 @@ public class TranslAg {
 
     /**
      * Get agent's CArtAgO architecture
-     * 
+     *
      * @param ag Agent object
      * @return agent's CArtAgO architecture
      */
@@ -532,10 +537,10 @@ public class TranslAg {
         }
         return null;
     }
-    
+
     /**
      * add a message to the agent's mailbox
-     * 
+     *
      * @param m
      * @param agName
      * @throws Exception
@@ -548,10 +553,10 @@ public class TranslAg {
             throw new Exception("Internal Server Error! Receiver '" + agName + "' not found");
         }
     }
-    
+
     /**
      * Returns agents by services
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -561,7 +566,7 @@ public class TranslAg {
 
     /**
      * Return content of getCommonDF but ready to send to the client (in Json format)
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -596,11 +601,11 @@ public class TranslAg {
     public void subscribe(String agName, String service, String type) {
         RuntimeServicesFactory.get().dfSubscribe(agName, service, type);
     }
-    
-    
+
+
     /**
      * Add a service to a given agent
-     * 
+     *
      * @param agName
      * @param values
      * @throws Exception
@@ -617,7 +622,7 @@ public class TranslAg {
 
     /**
      * Remove a service from a given agent
-     * 
+     *
      * @param agName
      * @param values
      * @throws Exception
