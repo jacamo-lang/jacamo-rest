@@ -14,7 +14,7 @@
 
 ## Compiling and running using gradle
 
-* Requirements: jdk >= 8
+* Requirements: jdk >= 15
 * Considering you have cloned this repository using `$ git clone http://github.com/jacamo-lang/jacamo-rest`
 * In the root folder of the project execute on mac/linux `$ ./gradlew run`, on windows `$ gradlew run`.
 * To test this project, run ``./gradlew test``. For details, please, see [unit tests](https://github.com/jacamo-lang/jacamo-rest/tree/master/src/test/java/jacamo/rest).

@@ -3,6 +3,7 @@ package jacamo.rest.mediation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.json.Json;
@@ -23,6 +24,7 @@ import cartago.ICartagoContext;
 import cartago.ICartagoController;
 import cartago.Op;
 import cartago.Workspace;
+import cartago.WorkspaceDescriptor;
 import jacamo.platform.EnvironmentWebInspector;
 
 public class TranslEnv {
@@ -35,7 +37,12 @@ public class TranslEnv {
      *         Sample: ["main","testOrg","testwks","wkstest"]
      */
     public Collection<String> getWorkspaces() {
-        return new ArrayList<>(); // TODO: CartagoService.getNode().getWorkspaces();
+        var res = new HashSet<String>();
+        cartago.CartagoEnvironment cenv = cartago.CartagoEnvironment.getInstance();
+        for (WorkspaceDescriptor w: cenv.getRootWSP().getWorkspace().getChildWSPs()) {
+            res.add(w.getId().getName());
+        }
+        return res;
     }
 
     /**
