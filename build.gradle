@@ -13,7 +13,7 @@ plugins {
 
 defaultTasks 'run'
 
-version '0.6-SNAPSHOT'
+version '0.7-SNAPSHOT'
 group   'org.jacamo'
 
 java {
