@@ -42,13 +42,10 @@ public class ClientWorkspaceTest {
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
-        // TODO: still to be implemented for cartago 3.0 (how to get the list of workspaces)
-        /*List vl  = new Gson().fromJson(response.readEntity(String.class), List.class);
+        List vl  = new Gson().fromJson(response.readEntity(String.class), List.class);
         assertTrue(vl.contains("testOrg"));
         assertTrue(vl.contains("testwks"));
-        assertTrue(vl.contains("main"));
         client.close();
-        */
     }
 
     @Test
