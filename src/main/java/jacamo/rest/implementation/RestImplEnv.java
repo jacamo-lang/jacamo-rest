@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import jacamo.rest.mediation.TranslEnv;
+import jacamo.rest.util.JsonFormater;
 import jacamo.rest.util.PostArtifact;
 
 @Singleton
@@ -90,7 +91,7 @@ public class RestImplEnv extends AbstractBinder {
         try {
             return Response
                     .ok()
-                    .entity(new Gson().toJson(tEnv.getWorkspace(wrksName)))
+                    .entity(JsonFormater.getAsJsonStr(tEnv.getWorkspace(wrksName)))
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
 
@@ -149,8 +150,7 @@ public class RestImplEnv extends AbstractBinder {
         try {
             return Response
                     .ok()
-                    .entity(new Gson()
-                            .toJson(tEnv.getArtifact(wrksName, artName)))
+                    .entity(JsonFormater.getAsJsonStr(tEnv.getArtifact(wrksName, artName)))
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
 

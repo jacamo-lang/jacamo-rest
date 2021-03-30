@@ -68,7 +68,7 @@ public class RestImpl extends AbstractBinder {
             overview.put("agents", agents);
             tAg.getAgents().keySet().forEach(a -> {
                 try {
-                    agents.add(tAg.getAgentDetails(a));
+                    agents.add(tAg.getAgentOverview(a));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

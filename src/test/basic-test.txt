@@ -135,3 +135,23 @@ http://localhost:8080/agents/marcos/services
 
 http://localhost:8080/agents/marcos/bb
 http://localhost:8080/agents/marcos/plans
+
+http://localhost:8080/workspaces/testwks/artifacts/a
+
+{
+    "artifact": "a",
+    "type": "tools.Counter",
+    "properties": [
+        {
+            "count": "10"
+        }
+    ],
+    "operations": [
+        "observeProperty",
+        "inc",
+        "reset"
+    ],
+    "observers": [
+        "marcos"
+    ]
+}

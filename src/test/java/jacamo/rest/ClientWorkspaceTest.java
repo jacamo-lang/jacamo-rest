@@ -42,11 +42,13 @@ public class ClientWorkspaceTest {
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
-        List vl  = new Gson().fromJson(response.readEntity(String.class), List.class);
+        // TODO: still to be implemented for cartago 3.0 (how to get the list of workspaces)
+        /*List vl  = new Gson().fromJson(response.readEntity(String.class), List.class);
         assertTrue(vl.contains("testOrg"));
         assertTrue(vl.contains("testwks"));
         assertTrue(vl.contains("main"));
         client.close();
+        */
     }
 
     @Test
@@ -144,8 +146,8 @@ public class ClientWorkspaceTest {
                 .get();
 
         Map vl2 = new Gson().fromJson(response.readEntity(String.class), Map.class);
-        Map art = (Map)((Map)vl2.get("artifacts")).get("newart");
-        assertEquals("tools.Counter", art.get("type"));
+        List arts = (List)vl2.get("artifacts");
+        assertTrue(arts.contains("newart"));
 
         client.close();
     }
@@ -154,25 +156,27 @@ public class ClientWorkspaceTest {
     @Test
     public void test301CreateDummyArt() throws InterruptedException {
         // create a workspace jh
-        client
+        Response response = client
             .target(uri.toString())
             .path("workspaces/jh")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(new Object[] {  })));
+        assertEquals(201, response.getStatus());
 
         // add DummyArt there
         Map<String,Object> m = new HashMap<>();
         m.put("template", "jacamo.rest.util.DummyArt");
         m.put("values", new Object[] { });
 
-        client
+        response =  client
             .target(uri.toString())
             .path("workspaces/jh/artifacts/da")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(new Gson().toJson(m)));
+        assertEquals(201, response.getStatus());
 
         // add obs prop in the dummy art using operation defineObsProperty
-        Response response = client
+        response = client
             .target(uri.toString())
             .path("workspaces/jh/artifacts/da/operations/doDefineObsProperty/execute")
             .request(MediaType.APPLICATION_JSON)
@@ -181,15 +185,14 @@ public class ClientWorkspaceTest {
 
         response = client
                 .target(uri.toString())
-                .path("workspaces/jh")
+                .path("workspaces/jh/artifacts/da")
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
         Map vl2 = new Gson().fromJson(response.readEntity(String.class), Map.class);
-        Map art = (Map)((Map)vl2.get("artifacts")).get("da");
-        //System.out.println(art);
-        assertEquals("jacamo.rest.util.DummyArt", art.get("type"));
-        assertEquals("1111.0", ((Map)((List)art.get("properties")).get(0)).get("count").toString());
+        //List arts = (List)vl2.get("artifacts");
+        assertEquals("jacamo.rest.util.DummyArt", vl2.get("type"));
+        assertEquals("1111", ((Map)((List)vl2.get("properties")).get(0)).get("count").toString());
 
         // run updateObsProperty
         response = client
@@ -233,7 +236,7 @@ public class ClientWorkspaceTest {
                 );
 
         // ask the agent to focus and act
-        sendMsg("belovedbob", "achieve", "jcm::focus_env_art(art_env(jh,local,da,ns1),5)");
+        sendMsg("belovedbob", "achieve", "jcm::focus_env_art(art_env(jh,da,ns1),5)");
         // ask to act
         sendMsg("belovedbob", "achieve", "test(door)");
 
@@ -247,7 +250,7 @@ public class ClientWorkspaceTest {
         // wait the agent to proceed
         Thread.sleep(3000);
         response = client.target(uri.toString())
-                .path("agents/belovedbob")
+                .path("agents/belovedbob/bb")
                 .request(MediaType.APPLICATION_JSON).get();
 
         String rStr = response.readEntity(String.class);

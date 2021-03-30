@@ -36,7 +36,7 @@ public class ClientOverviewTest {
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString(); 
         System.out.println("Response (overview/): " + rStr);
-        assertTrue(rStr.contains("cartago.NodeArtifact"));
+        assertTrue(rStr.contains("\"role\":\"house_owner\""));
         
         client.close();
     }

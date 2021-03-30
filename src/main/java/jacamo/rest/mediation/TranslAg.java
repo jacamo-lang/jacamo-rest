@@ -264,7 +264,7 @@ public class TranslAg {
      * @throws CartagoException
      *
      */
-    public JsonObject getAgentDetails(String agName) throws Exception {
+    public JsonObject getAgentOverview(String agName) throws Exception {
         var agDetails = Json.createObjectBuilder()
                 .add("agent", agName);
 

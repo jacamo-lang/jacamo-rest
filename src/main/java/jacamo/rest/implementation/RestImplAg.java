@@ -225,7 +225,7 @@ public class RestImplAg extends AbstractBinder {
     public Response getAgent(@PathParam("agentname") String agName) {
         try {
             return Response
-                    .ok( JsonFormater.getAsJsonStr( tAg.getAgentDetails(agName)))
+                    .ok( JsonFormater.getAsJsonStr( tAg.getAgentOverview(agName)))
                     .build();
         } catch (ReceiverNotFoundException e) {
             return Response.status(500, e.getMessage()).build();
