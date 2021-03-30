@@ -3,10 +3,8 @@ package jacamo.rest.mediation;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +18,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 import org.apache.tools.ant.filters.StringInputStream;
@@ -72,7 +71,6 @@ public class TranslAg {
      * @return Set of agents;
      */
     public Map<String,Map<String,Object>> getAgents() {
-        // read all data from ZK
         try {
             return JCMRest.getJCMRest().getWP();
         } catch (Exception e) {
@@ -548,32 +546,41 @@ public class TranslAg {
      * @return
      * @throws Exception
      */
-    public Map<String, Object> getJsonifiedDF() throws Exception {
+    public JsonObject getJsonifiedDF() throws Exception {
         Map<String, Set<String>> commonDF = getCommonDF();
 
         // Json of the DF
-        Map<String,Object> jsonifiedDF = new HashMap<>();
-        for (String s : commonDF.keySet()) {
-            Map<String, Object> agent = new HashMap<>();
-            agent.put("agent", s);
-            Set<String> services = new HashSet<>();
-            services.addAll(commonDF.get(s));
-            agent.put("services", services);
-            jsonifiedDF.put(s,agent);
+        var jsonifiedDF = Json.createObjectBuilder();
+        for (String ag : commonDF.keySet()) {
+            var agent = Json.createObjectBuilder()
+                    .add("agent", ag);
+            var services = Json.createArrayBuilder();
+            for (String ags: commonDF.get(ag))
+                services.add(ags);
+            agent.add("services", services);
+            jsonifiedDF.add(ag,agent);
         }
-        return jsonifiedDF;
+        return jsonifiedDF.build();
     }
 
-    public Collection<String> getJsonifiedDF(String service) throws Exception {
+    public JsonArray getJsonifiedDF(String service) throws Exception {
         Map<String, Set<String>> commonDF = getCommonDF();
 
-        Collection<String> ans = new ArrayList<>();
+        var ans = Json.createArrayBuilder();
         for (String ag : commonDF.keySet()) {
             if (commonDF.get(ag).contains(service)) {
                 ans.add(ag);
             }
         }
-        return ans;
+        return ans.build();
+    }
+
+    public JsonArray getAgJsonifiedDF(String ag) throws Exception {
+        var ans = Json.createArrayBuilder();
+        for (String s : getCommonDF().get(ag)) {
+            ans.add(s);
+        }
+        return ans.build();
     }
 
     public void subscribe(String agName, String service, String type) {

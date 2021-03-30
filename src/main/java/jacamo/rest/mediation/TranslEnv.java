@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 import cartago.AgentBodyArtifact;
@@ -138,10 +139,16 @@ public class TranslEnv {
     }
 
 
-    public Object[] getObsPropValue(String wrksName, String artName, String obsPropId) throws CartagoException {
+    public JsonArray getObsPropValue(String wrksName, String artName, String obsPropId) throws CartagoException {
+        var json = Json.createArrayBuilder();
         for (ArtifactObsProperty op : getArtInfo(wrksName, artName).getObsProperties()) {
             if (op.getName().equals(obsPropId)) {
-                return op.getValues();
+                for (Object o: op.getValues())
+                    if (o instanceof Number)
+                        json.add( Json.createValue( Double.parseDouble(o.toString())));
+                    else
+                        json.add( Json.createValue( o.toString()));
+                return json.build();
             }
         }
         return null;

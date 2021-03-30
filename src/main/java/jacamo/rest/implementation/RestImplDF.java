@@ -15,13 +15,12 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
-import com.google.gson.Gson;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import jacamo.rest.mediation.TranslAg;
+import jacamo.rest.util.JsonFormater;
 
 @Singleton
 @Path("/services")
@@ -57,11 +56,9 @@ public class RestImplDF extends AbstractBinder {
     })
     public Response getServices() {
         try {
-            Gson gson = new Gson();
-
             return Response
                     .ok()
-                    .entity(gson.toJson(tAg.getJsonifiedDF()))
+                    .entity(JsonFormater.getAsJsonStr(tAg.getJsonifiedDF()))
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception e) {
@@ -88,11 +85,9 @@ public class RestImplDF extends AbstractBinder {
     })
     public Response getService(@PathParam("serviceid") String service) {
         try {
-            Gson gson = new Gson();
-
             return Response
                     .ok()
-                    .entity(gson.toJson(tAg.getJsonifiedDF(service)))
+                    .entity(tAg.getJsonifiedDF(service).toString())
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
         } catch (Exception e) {

@@ -3,6 +3,7 @@ package jacamo.rest.implementation;
 import java.net.URI;
 
 import javax.inject.Singleton;
+import javax.json.Json;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -17,7 +18,6 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,7 +41,7 @@ public class RestImplEnv extends AbstractBinder {
 
     /**
      * Get list of workspaces.
-     * 
+     *
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         Sample: ["main","testOrg","testwks","wkstest"]
@@ -49,15 +49,18 @@ public class RestImplEnv extends AbstractBinder {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get list of workspaces.")
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
     public Response getWorkspaces() {
         try {
+            var json = Json.createArrayBuilder();
+            for (String w: tEnv.getWorkspaces())
+                json.add(w);
             return Response
                     .ok()
-                    .entity(new Gson().toJson(tEnv.getWorkspaces()))
+                    .entity( json.build().toString())
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
 
@@ -69,7 +72,7 @@ public class RestImplEnv extends AbstractBinder {
 
     /**
      * Get workspace information (its artifacts including their properties, operations, etc).
-     * 
+     *
      * @param wrksName name of the workspace
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
@@ -83,7 +86,7 @@ public class RestImplEnv extends AbstractBinder {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get workspace information (its artifacts including their properties, operations, etc).")
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
@@ -103,14 +106,14 @@ public class RestImplEnv extends AbstractBinder {
 
     /**
      * Add a workspace.
-     * 
+     *
      * @param wrksName
      * @return
      */
     @Path("/{wrksname}")
     @POST
     @ApiOperation(value = "Add a workspace.")
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(code = 201, message = "generated uri"),
             @ApiResponse(code = 500, message = "internal error")
     })
@@ -126,10 +129,10 @@ public class RestImplEnv extends AbstractBinder {
             return Response.status(500, e.getMessage()).build();
         }
     }
-    
+
     /**
      * Get artifact information (properties, operations, observers and linked artifacts).
-     * 
+     *
      * @param wrksName name of the workspace the artifact is situated in
      * @param artName  name of the artifact to be retrieved
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
@@ -142,7 +145,7 @@ public class RestImplEnv extends AbstractBinder {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get artifact information (properties, operations, observers and linked artifacts).")
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
@@ -162,7 +165,7 @@ public class RestImplEnv extends AbstractBinder {
 
     /**
      * Get value of an observable property.
-     * 
+     *
      * @param wrksName name of the workspace the artifact is situated in
      * @param artName  name of the artifact to be retrieved
      * @param obsPropId  name of the observable property
@@ -175,19 +178,18 @@ public class RestImplEnv extends AbstractBinder {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get value of an observable property.")
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
     public Response getArtifactProperties(
-            @PathParam("wrksname") String wrksName, 
-            @PathParam("artname") String artName, 
+            @PathParam("wrksname") String wrksName,
+            @PathParam("artname") String artName,
             @PathParam("propertyid") String obsPropId) {
         try {
             return Response
                     .ok()
-                    .entity(new Gson()
-                            .toJson(tEnv.getObsPropValue(wrksName, artName, obsPropId)))
+                    .entity(tEnv.getObsPropValue(wrksName, artName, obsPropId).toString())
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
 
@@ -204,14 +206,14 @@ public class RestImplEnv extends AbstractBinder {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Executes an operation in an artifact.")
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
     public Response postArtifactOperation(
-            @PathParam("wrksname") String wrksName, 
-            @PathParam("artname") String artName, 
-            @PathParam("opname") String operationName, 
+            @PathParam("wrksname") String wrksName,
+            @PathParam("artname") String artName,
+            @PathParam("opname") String operationName,
             Object[] values) {
         try {
             tEnv.execOp(wrksName, artName, operationName, values);
@@ -223,10 +225,10 @@ public class RestImplEnv extends AbstractBinder {
             return Response.status(500, e.getMessage()).build();
         }
     }
-    
+
     /**
      * Creates a new artifact from a given template.
-     * 
+     *
      * @return HTTP 200 Response (ok an array of values) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         Example of body: \"{\"template\":\"tools.Counter\",\"values\":[22]}\"
@@ -238,19 +240,19 @@ public class RestImplEnv extends AbstractBinder {
             value = "Creates a new artifact from a given template.",
             notes = "Example of body: \"{\"template\":\"tools.Counter\",\"values\":[22]}\""
             )
-    @ApiResponses(value = { 
+    @ApiResponses(value = {
             @ApiResponse(code = 201, message = "generated uri"),
             @ApiResponse(code = 500, message = "internal error")
     })
     public Response postArtifact(
-            @PathParam("wrksname") String wrksName, 
+            @PathParam("wrksname") String wrksName,
             @PathParam("artname") String artName,
-            String content, 
+            String content,
             @Context UriInfo uriInfo) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             PostArtifact m = mapper.readValue(content, PostArtifact.class);
-            
+
             tEnv.createArtefact(wrksName, artName, m.getTemplate(), m.getValues());
             return Response
                     .created(new URI(uriInfo.getBaseUri() + "workspaces/" + wrksName + "/" + artName))

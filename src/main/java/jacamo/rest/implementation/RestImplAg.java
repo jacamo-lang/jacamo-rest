@@ -448,7 +448,7 @@ public class RestImplAg extends AbstractBinder {
         try {
             return Response
                     .ok()
-                    .entity(new Gson().toJson( tAg.getCommonDF().get(agName) ))
+                    .entity( tAg.getAgJsonifiedDF(agName).toString() )
                     .header("Access-Control-Allow-Origin", "*")
                     .build();
 
