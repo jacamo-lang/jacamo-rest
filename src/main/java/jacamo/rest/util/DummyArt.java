@@ -67,7 +67,7 @@ public class DummyArt extends Artifact {
         } else {
             String nact = act;
             try {
-                nact = ASSyntax.parseTerm(act).getAsJSON("");
+                nact = ASSyntax.parseTerm(act).getAsJsonStr();
             } catch (Exception e) {
                 nact = act;
                 // ignore parsing error, use string format

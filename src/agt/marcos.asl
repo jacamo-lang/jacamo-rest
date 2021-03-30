@@ -5,9 +5,8 @@ price(banana,X) :- X = math.random * 100 + 20.
 !start.
 
 +!start
-   <- lookupArtifact("a",Aid);
-      lookupArtifact("b",Bid);
-      linkArtifacts(Aid,"out-1",Bid);
+   <- ?focused(_,a,Aid);
+      ?focused(_,b,Bid);
       .df_register(vender(banana));
       .df_register(iamhere);
       .create_agent(kk);

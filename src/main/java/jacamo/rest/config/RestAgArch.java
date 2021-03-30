@@ -74,7 +74,7 @@ public class RestAgArch extends AgArch {
                                       .target(adr)
                                       .request(MediaType.APPLICATION_XML)
                                       .accept(MediaType.TEXT_PLAIN)
-                                      .post(Entity.json( m.getAsJSON(""))); //new Gson().toJson(new jacamo.rest.util.Message(m))));
+                                      .post(Entity.json( m.getAsJsonStr())); //new Gson().toJson(new jacamo.rest.util.Message(m))));
                         } catch (Exception ee) {
                             if (fromCache) {
                                 // try again refreshing cache
@@ -84,7 +84,7 @@ public class RestAgArch extends AgArch {
                                     .target(adr)
                                     .request(MediaType.APPLICATION_XML)
                                     .accept(MediaType.TEXT_PLAIN)
-                                    .post(Entity.json( m.getAsJSON(""))); //new Gson().toJson(new jacamo.rest.util.Message(m))));
+                                    .post(Entity.json( m.getAsJsonStr())); //new Gson().toJson(new jacamo.rest.util.Message(m))));
 
                             } else {
                                 throw ee;

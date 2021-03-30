@@ -7,7 +7,6 @@
 
 plugins {
   id 'java'
-  id 'eclipse'
   id 'maven-publish'
   id "com.benjaminsproule.swagger" version "1.0.8"
 }
@@ -17,15 +16,16 @@ defaultTasks 'run'
 version '0.6-SNAPSHOT'
 group   'org.jacamo'
 
-compileJava {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(15)
+    }
 }
 
 repositories {
     //maven { url "http://jacamo.sourceforge.net/maven2" }
     maven { url "https://raw.github.com/jacamo-lang/mvn-repo/master" }
-    //maven { url "https://repo.gradle.org/gradle/libs-releases-local" }
+    maven { url "https://repo.gradle.org/gradle/libs-releases-local" }
     flatDir {
        dirs 'lib'
     }
@@ -33,10 +33,10 @@ repositories {
 }
 
 dependencies {
-    compile ('org.jacamo:jacamo:0.9') {
+    compile ('org.jacamo:jacamo:1.1-SNAPSHOT') {
         exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
-    compile 'org.jason-lang:jason:2.5.2'
+    compile 'org.jason:jason:3.0-SNAPSHOT'
 
     compile 'javax.xml.bind:jaxb-api:2.3.1'
     compile 'com.sun.xml.bind:jaxb-core:2.3.0.1'
@@ -67,6 +67,9 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.5'
     compile 'commons-io:commons-io:2.6'
+
+    implementation group: 'javax.json', name: 'javax.json-api', version: '1.1.4'
+    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 
     // https://mvnrepository.com/artifact/io.swagger/swagger-annotations
     compile 'io.swagger:swagger-annotations:1.6.1'

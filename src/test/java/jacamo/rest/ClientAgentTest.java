@@ -63,7 +63,7 @@ public class ClientAgentTest {
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString();
         System.out.println("Response (agents/marcos): " + rStr);
-        assertTrue(rStr.contains("price(banana,X)[source(self)]"));
+        assertTrue(rStr.contains("\"agent\": \"marcos\""));
 
         // Testing 500 agents/marcos2 - (marcos2 does not exist)
         response = client.target(uri.toString()).path("agents/marcos2")
@@ -136,7 +136,7 @@ public class ClientAgentTest {
         Response response;
         String rStr;
 
-        response = client.target(uri.toString()).path("agents/marcos")
+        response = client.target(uri.toString()).path("agents/marcos/bb")
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString();
         System.out.println("Response (agents/marcos): " + rStr);
@@ -158,7 +158,7 @@ public class ClientAgentTest {
         //System.out.println("*1"+s1);
         //System.out.println("*2"+m.getAsJasonMsg().getAsJSON(""));
         //System.out.println("*3"+gson.fromJson(m.getAsJasonMsg().getAsJSON(""),Message.class));
-        String s2 = gson.toJson( gson.fromJson(m.getAsJasonMsg().getAsJSON(""),Message.class));
+        String s2 = gson.toJson( gson.fromJson(m.getAsJasonMsg().getAsJsonStr(),Message.class));
         assertEquals(s1, s2);
 
         response = client.target(uri.toString()).path("agents/marcos/inbox")
@@ -166,10 +166,10 @@ public class ClientAgentTest {
                 .accept(MediaType.TEXT_PLAIN)
                 .post(Entity.json(gson.toJson(m)));
         rStr = response.readEntity(String.class).toString();
-        System.out.println("Response (agents/marcos/inbox): " + rStr);
+        //System.out.println("Response (agents/marcos/inbox): " + rStr);
         assertEquals(200, response.getStatus());
 
-        response = client.target(uri.toString()).path("agents/marcos")
+        response = client.target(uri.toString()).path("agents/marcos/bb")
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString();
         System.out.println("Response (agents/marcos): " + rStr);
@@ -223,7 +223,7 @@ public class ClientAgentTest {
 
         // 4. test
         response = client.target(uri.toString())
-                .path("agents/marcos")
+                .path("agents/marcos/bb")
                 .request(MediaType.APPLICATION_JSON).get();
 
         rStr = response.readEntity(String.class);

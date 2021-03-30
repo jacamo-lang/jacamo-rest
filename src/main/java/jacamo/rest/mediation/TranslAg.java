@@ -19,15 +19,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+
 import org.apache.tools.ant.filters.StringInputStream;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
+import cartago.AgentBodyArtifact;
+import cartago.AgentSessionArtifact;
 import cartago.ArtifactId;
 import cartago.ArtifactInfo;
+import cartago.CartagoEnvironment;
 import cartago.CartagoException;
-import cartago.CartagoService;
+import cartago.ICartagoController;
 import cartago.WorkspaceId;
 import jaca.CAgentArch;
 import jacamo.rest.JCMRest;
@@ -201,65 +204,16 @@ public class TranslAg {
      * @param agName
      * @return
      */
-    public Map<String, Object> getAgentStatus(String agName) throws JasonException {
+    public JsonObject getAgentStatus(String agName) throws JasonException {
         Agent ag = getAgent(agName);
         if (ag == null) {
             throw new ReceiverNotFoundException("agent "+agName+" does not exist in the MAS");
         }
-
-        return ag.getTS().getAgArch().getStatus();
-    }
-
-    /**
-     * get Agent Belief Base
-     *
-     * @param agName
-     * @return
-     */
-    public List<Object> getAgentsBB(String agName) {
-        Agent ag = getAgent(agName);
-        List<Object> bbs = new ArrayList<>();
-        JsonParser parser = new JsonParser();
-        for (Literal l : ag.getBB()) {
-            bbs.add( parser.parse( l.getAsJSON("") ) );
-            /*Map<String, Object> belief = new HashMap<>();
-            belief.put("belief", l.toString());
-            belief.put("isRule", l.isRule());
-            belief.put("functor", l.getFunctor());
-            if (l.getArity() > 0) {
-                List<String> termsAsStr = new ArrayList<>();
-                Iterator<Term> it = l.getTerms().iterator();
-                while (it.hasNext()) {
-                    String termAsStr = it.next().toString();
-                    termsAsStr.add(termAsStr);
-                }
-                belief.put("terms", new ArrayList<String>(termsAsStr));
-            } else {
-                belief.put("terms", new ArrayList<String>());
-            }
-
-            List<Object> annotations = new ArrayList<>();
-            for (Term t : l.getAnnots()) {
-                Map<String, Object> annot = new HashMap<>();
-                annot.put("functor", ((Literal)t).getFunctor());
-                if (((Literal)t).getArity() > 0) {
-                    List<String> termsAsStr = new ArrayList<>();
-                    Iterator<Term> it = ((Literal)t).getTerms().iterator();
-                    while (it.hasNext()) {
-                        String termAsStr = it.next().toString();
-                        termsAsStr.add(termAsStr);
-                    }
-                    annot.put("terms", new ArrayList<String>(termsAsStr));
-                } else {
-                    annot.put("terms", new ArrayList<String>());
-                }
-                annotations.add(annot);
-            }
-            belief.put("annotations", annotations);
-
-            bbs.add(belief);*/
-        }
-        return bbs;
+        var json = Json.createObjectBuilder();
+        var map = ag.getTS().getAgArch().getStatus();
+        for (String k: map.keySet())
+            json.add(k, map.get(k).toString());
+        return json.build();
     }
 
 
@@ -270,8 +224,8 @@ public class TranslAg {
      * @param label optional filter
      * @return list of string
      */
-    public Map<String,String> getAgentPlans(String agName, String label) {
-        Map<String,String> plans = new HashMap<>();
+    public JsonObject getAgentPlans(String agName, String label) {
+        var plans = Json.createObjectBuilder();
         Agent ag = getAgent(agName);
         if (ag != null) {
             PlanLibrary pl = ag.getPL();
@@ -279,13 +233,13 @@ public class TranslAg {
                 Iterator<Plan> i = pl.getPlans().iterator();
                 while (i.hasNext()) {
                     Plan p = i.next();
-                    plans.put(p.getLabel().toString(), p.toASString());
+                    plans.add(p.getLabel().toString(), p.toASString());
                 }
             } else {
-                plans.put(label, pl.get(label).toASString());
+                plans.add(label, pl.get(label).toASString());
             }
         }
-        return plans;
+        return plans.build();
     }
 
     /**
@@ -304,20 +258,24 @@ public class TranslAg {
     }
 
     /**
-     * Get agent information (namespaces, roles, missions and workspaces)
+     * Get agent information (roles, missions and workspaces)
      *
      * @param agName name of the agent
-     * @return A Map with agent information
      * @throws CartagoException
      *
      */
-    public Map<String, Object> getAgentDetails(String agName) throws Exception {
+    public JsonObject getAgentDetails(String agName) throws Exception {
+        var agDetails = Json.createObjectBuilder()
+                .add("agent", agName);
+
+        // meta data
         Map<String, Object> agentMD = JCMRest.getJCMRest().getAgentMetaData(agName);
         if (agentMD == null) {
             throw new ReceiverNotFoundException("agent "+agName+" does not exist in the MAS");
         }
-        agentMD = new HashMap<>( agentMD );
-        agentMD.put("agent", agName);
+
+        for (String k: agentMD.keySet())
+            agDetails.add(k, Json.createValue( agentMD.get(k).toString() ));
 
         Agent ag = getAgent(agName);
         if (ag != null) {
@@ -329,81 +287,102 @@ public class TranslAg {
             for (WorkspaceId wid : cartagoAgArch.getSession().getJoinedWorkspaces()) {
                 workspacesIn.add(wid.getName());
             }
-            List<String> nameSpaces = new ArrayList<>();
-            ag.getBB().getNameSpaces().forEach(x -> {
-                nameSpaces.add(x.toString());
-            });
 
             // get groups and roles this agent plays
-            List<Object> roles = new ArrayList<>();
+            var roles = Json.createArrayBuilder();
             for (GroupBoard gb : GroupBoard.getGroupBoards()) {
                 if (workspacesIn.contains(gb.getOEId())) {
                     gb.getGrpState().getPlayers().forEach(p -> {
                         if (p.getAg().equals(agName)) {
-                            Map<String, Object> groupRole = new HashMap<>();
-                            groupRole.put("group", gb.getArtId());
-                            groupRole.put("role", p.getTarget());
-                            roles.add(groupRole);
+                            roles.add(Json.createObjectBuilder()
+                                    .add("group", gb.getArtId())
+                                    .add("role",p.getTarget())
+                                    .build());
                         }
                     });
-
                 }
             }
+            agDetails.add("roles", roles.build());
 
             // get schemed this agent belongs
-            List<Object> missions = new ArrayList<>();
+            var missions = Json.createArrayBuilder();
             for (SchemeBoard schb : SchemeBoard.getSchemeBoards()) {
                 schb.getSchState().getPlayers().forEach(p -> {
                     if (p.getAg().equals(agName)) {
-                        Map<String, Object> schemeMission = new HashMap<>();
-                        schemeMission.put("scheme", schb.getArtId());
-                        schemeMission.put("mission", p.getTarget());
-                        List<Object> responsibles = new ArrayList<>();
-                        schemeMission.put("responsibles", responsibles);
-                        for (Group gb : schb.getSchState().getGroupsResponsibleFor()) {
-                            responsibles.add(gb.getId());
-                        }
+                        var schemeMission = Json.createObjectBuilder()
+                                .add("scheme", schb.getArtId())
+                                .add("mission", p.getTarget());
+
+                        var responsibles = Json.createArrayBuilder();
+                        for (Group gb : schb.getSchState().getGroupsResponsibleFor())
+                            responsibles.add( Json.createValue(gb.getId()));
+                        schemeMission.add("responsible-groups", responsibles.build());
                         missions.add(schemeMission);
                     }
                 });
             }
+            agDetails.add("missions", missions);
 
-            List<Object> workspaces = new ArrayList<>();
-            workspacesIn.forEach(wksName -> {
-                Map<String, Object> workspace = new HashMap<>();
-                workspace.put("workspace", wksName);
-                List<Object> artifacts = new ArrayList<>();
+
+            var workspaces = Json.createArrayBuilder();
+            cartagoAgArch.getAllJoinedWsps().forEach(wksId -> {
+                var workspace = Json.createObjectBuilder()
+                        .add("workspace", wksId.getFullName());
+                var artifacts = Json.createArrayBuilder();
+
+                // focused arts
                 try {
-                    for (ArtifactId aid : CartagoService.getController(wksName).getCurrentArtifacts()) {
-                        ArtifactInfo info = CartagoService.getController(wksName).getArtifactInfo(aid.getName());
+                    ICartagoController ctrl = CartagoEnvironment.getInstance().getController(wksId.getFullName());
+                    for (ArtifactId aid : ctrl.getCurrentArtifacts()) {
+                        ArtifactInfo info = ctrl.getArtifactInfo(aid.getName());
                         info.getObservers().forEach(y -> {
-                            if (y.getAgentId().getAgentName().equals(agName)) {
-                                // Build returning object
-                                Map<String, Object> artifact = new HashMap<String, Object>();
-                                artifact.put("artifact", info.getId().getName());
-                                artifact.put("type", info.getId().getArtifactType());
-                                artifacts.add(artifact);
+                            if (y.getAgentId().getAgentName().equals(agName) &&
+                                !info.getId().getArtifactType().equals(AgentSessionArtifact.class.getName()) &&
+                                !info.getId().getArtifactType().equals(AgentBodyArtifact.class.getName())) {
+                                artifacts.add(Json.createObjectBuilder()
+                                        .add("artifact", info.getId().getName())
+                                        .add("type", info.getId().getArtifactType()));
                             }
                         });
                     }
-                    workspace.put("artifacts", artifacts);
+                    var barts = artifacts.build();
+                    if (barts.size() > 0)
+                        workspace.add("artifacts", barts);
                     workspaces.add(workspace);
-                } catch (CartagoException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
-
-            List<Object> beliefs = getAgentsBB(agName);
-
-            agentMD.put("namespaces", nameSpaces);
-            agentMD.put("roles", roles);
-            agentMD.put("missions", missions);
-            agentMD.put("workspaces", workspaces);
-            agentMD.put("beliefs", beliefs);
+            agDetails.add("workspaces", workspaces);
         }
 
-        return agentMD;
+        return agDetails.build();
     }
+
+    public JsonObject getAgentBB(String agName) throws Exception {
+        var agDetails = Json.createObjectBuilder()
+                .add("agent", agName);
+
+        Agent ag = getAgent(agName);
+        if (ag != null) {
+
+            var nameSpaces = Json.createArrayBuilder();
+            ag.getBB().getNameSpaces().forEach(x -> {
+                nameSpaces.add(x.toString());
+            });
+
+            agDetails.add("namespaces", nameSpaces);
+
+            var bels = Json.createArrayBuilder();
+            for (Literal l: ag.getBB())
+                bels.add( l.getAsJson());
+            agDetails.add("beliefs", bels);
+        }
+
+        return agDetails.build();
+    }
+
+
 
     /**
      * Send a command to an agent
@@ -413,7 +392,6 @@ public class TranslAg {
      * @return Status message
      * @throws ParseException
      */
-    @SuppressWarnings("serial")
     public Unifier execCmd(Agent ag, PlanBody lCmd) throws ParseException {
         Trigger te = ASSyntax.parseTrigger("+!run_repl_expr");
         Intention i = new Intention();
