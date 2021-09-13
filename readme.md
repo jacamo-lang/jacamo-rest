@@ -8,7 +8,7 @@ Include jacamo-rest dependency in `build.gradle`:
 repositories {
     mavenCentral()
 
-    maven { url "https://raw.github.com/jacamo-lang/mvn-repo/master" }
+    maven { url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }
     maven { url "http://jacamo.sourceforge.net/maven2" }
 
 }

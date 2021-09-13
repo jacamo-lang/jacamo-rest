@@ -1,4 +1,4 @@
-# Tutorial: Integration jacamo-rest and JS-son
+raw.githubusercontent.com# Tutorial: Integration jacamo-rest and JS-son
 This tutorial explains how to integrate jacamo-rest with the
 [JS-son](https://github.com/TimKam/JS-son) JavaScript agent programming library.
 As a simple example, we re-implement the
@@ -25,7 +25,7 @@ plugins {
 repositories {
     mavenCentral()
 
-    maven { url "https://raw.github.com/jacamo-lang/mvn-repo/master" }
+    maven { url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }
     maven { url "http://jacamo.sourceforge.net/maven2" }
 
 }
