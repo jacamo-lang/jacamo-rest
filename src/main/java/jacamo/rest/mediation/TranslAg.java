@@ -53,8 +53,8 @@ import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
 import jason.asSyntax.parser.TokenMgrError;
-import jason.infra.centralised.BaseCentralisedMAS;
-import jason.infra.centralised.CentralisedAgArch;
+import jason.infra.local.BaseLocalMAS;
+import jason.infra.local.LocalAgArch;
 import jason.runtime.RuntimeServicesFactory;
 import ora4mas.nopl.GroupBoard;
 import ora4mas.nopl.SchemeBoard;
@@ -190,7 +190,7 @@ public class TranslAg {
      * @throws Exception
      */
     public void deleteAgent(String agName) throws Exception {
-        if (BaseCentralisedMAS.getRunner().getAg(agName) != null) {
+        if (BaseLocalMAS.getRunner().getAg(agName) != null) {
             if (!RuntimeServicesFactory.get().killAgent(agName, "web", 0))
                 throw new Exception("Unable to kill agent: " + agName);
         }
@@ -490,7 +490,7 @@ public class TranslAg {
      * @return Agent object
      */
     public Agent getAgent(String agName) {
-        CentralisedAgArch cag = BaseCentralisedMAS.getRunner().getAg(agName);
+        LocalAgArch cag = BaseLocalMAS.getRunner().getAg(agName);
         if (cag != null)
             return cag.getTS().getAg();
         else
@@ -522,7 +522,7 @@ public class TranslAg {
      * @throws Exception
      */
     public void addMessageToAgentMailbox(Message m, String agName) throws Exception {
-        CentralisedAgArch a = BaseCentralisedMAS.getRunner().getAg(agName);
+        LocalAgArch a = BaseLocalMAS.getRunner().getAg(agName);
         if (a != null) {
             a.receiveMsg(m.getAsJasonMsg());
         } else {

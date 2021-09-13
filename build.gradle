@@ -36,7 +36,6 @@ dependencies {
     compile ('org.jacamo:jacamo:1.1-SNAPSHOT') {
         exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
-    compile 'org.jason:jason:3.0-SNAPSHOT'
     compile 'org.jacamo:cartago:3.1-SNAPSHOT'
 
     compile 'javax.xml.bind:jaxb-api:2.3.1'
