@@ -35,3 +35,4 @@ out/
 
 # IntelliJ project files
 .idea/
+generated/swagger-ui/swagger.json
