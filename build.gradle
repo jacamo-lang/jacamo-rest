@@ -23,9 +23,7 @@ repositories {
     //maven { url "http://jacamo.sourceforge.net/maven2" }
     maven { url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }
     maven { url "https://repo.gradle.org/gradle/libs-releases-local" }
-    flatDir {
-       dirs 'lib'
-    }
+    //flatDir { dirs 'lib' }
     mavenCentral()
 }
 
@@ -33,7 +31,6 @@ dependencies {
     implementation ('org.jacamo:jacamo:1.1-SNAPSHOT') {
         exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
-    implementation 'org.jacamo:cartago:3.1-SNAPSHOT'
 
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'

@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 import jacamo.platform.DefaultPlatformImpl;
 import jacamo.rest.config.RestAgArch;
 import jacamo.rest.config.RestAppConfig;
-import jason.infra.centralised.RunCentralisedMAS;
+import jason.infra.local.RunLocalMAS;
 import jason.runtime.RuntimeServicesFactory;
 
 
@@ -291,7 +291,7 @@ public class JCMRest extends DefaultPlatformImpl {
                                 logger.info("agent "+ag+" ("+md.get("uri")+") seems not running anymore, removing from ANS! "+dead);
 
                                 ans.remove(ag);
-                                RunCentralisedMAS.getRunner().delAg(ag); // to remove entries in DF
+                                RunLocalMAS.getRunner().delAg(ag); // to remove entries in DF
                             }
                         }
                     }

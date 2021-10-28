@@ -577,8 +577,10 @@ public class TranslAg {
 
     public JsonArray getAgJsonifiedDF(String ag) throws Exception {
         var ans = Json.createArrayBuilder();
-        for (String s : getCommonDF().get(ag)) {
-            ans.add(s);
+        if (getCommonDF().get(ag) != null) {
+            for (String s : getCommonDF().get(ag)) {
+                ans.add(s);
+            }
         }
         return ans.build();
     }

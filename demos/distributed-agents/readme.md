@@ -9,9 +9,9 @@ During the execution
 - alice sends messages to karlos that sends massages back
 - bob sends a message to alice
 
-The ANS (Agent Name Service) and DF (Directory Facilitator) run in host1
+The ANS (Agent Name Service) and DF (Directory Facilitator) run at host1
 
-# To run at host 1
+# Running host 1
 
 you likely need to run some tunnelling tool to make your local MAS available in the internet, two possible options:
 
@@ -19,6 +19,7 @@ you likely need to run some tunnelling tool to make your local MAS available in 
 2. `ssh -R 80:localhost:8080 serveo.net`
 
 note the given URL, edit `host1.jcm` and place this host after `--registerURL`. It looks like
+
 ```
 mas h1 {
     agent karlos
@@ -27,11 +28,12 @@ mas h1 {
 }
 ```
 
-Run the MAS application of host 1:
+Run the MAS application at host 1:
 
 - `./gradlew h1`
 
 The output is something like
+
 ```
 [JCMRest] JaCaMo Rest API is running on http://127.0.0.1:8080/
     (as http://7a72c6d78d1b.ngrok.io/).
@@ -39,7 +41,7 @@ CArtAgO Http Server running on http://127.0.0.1:3273
 Jason Http Server running on http://127.0.0.1:3272
 ```
 
-# To run at host 2
+# Running host 2
 
 Again, run the tunnelling (assuming the MAS port is 8081)
 
@@ -47,6 +49,7 @@ Again, run the tunnelling (assuming the MAS port is 8081)
 2. `ssh -R 80:localhost:8081 serveo.net`
 
 and note the given URL. Edit `host2.jcm` and place this host after `--registerURL` and place the host given for host1 after `--connect`. It looks like
+
 ```
 mas h2 {
     agent alice
@@ -61,6 +64,7 @@ Run the MAS application of host 2:
 - `./gradlew h2`
 
 The output is something like
+
 ```
 [JCMRest] JaCaMo Rest API is running on http://127.0.0.1:8081/
     (as https://igitur.serveousercontent.com/),
@@ -74,7 +78,8 @@ Jason Http Server running on http://127.0.0.1:3275
 [alice] hi 1 from karlos
 ```
 
-some messages are also printed in host1:
+some messages are also printed at host1:
+
 ```
 [karlos] hi 10 from alice
 [karlos] hi 8 from alice
@@ -85,18 +90,19 @@ some messages are also printed in host1:
 ```
 
 
-# To run at host 3
+# Running host 3
 
 Run the tunnelling (assuming the MAS port is 8082)
 
 1. `ngrok http 8081`
 2. `ssh -R 80:localhost:8082 serveo.net`
 
-and note the given URL. Edit `host3.jcm` and place this host after `--registerURL` and place the host given for host1 after `--connect`. Then run the MAS application of host 3:
+and note the given URL. Edit `host3.jcm` and place this host after `--registerURL` and place the host given for host1 after `--connect`. Then run the MAS application at host 3:
 
 - `./gradlew h3`
 
 The output is something like
+
 ```
 JaCaMo Rest API is running on http://127.0.0.1:8082/
     (as https://insto.serveousercontent.com/),
@@ -107,6 +113,7 @@ Jason Http Server running on http://127.0.0.1:3277
 ```
 
 some messages are also printed in host2:
+
 ```
 [alice] hi 200 from bob
 ```
