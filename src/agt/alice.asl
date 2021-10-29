@@ -19,10 +19,10 @@ price(banana,10).
       .wait(1000);
       .df_deregister(vender(abacaxi));
       .wait(2000);
-      .print("adding abacaxi again....")
+      .print("adding abacaxi again....");
       .df_register(vender(abacaxi));
       .wait(2000);
-      .print("removing abacaxi again....")
+      .print("removing abacaxi again....");
       .df_deregister(vender(abacaxi));
    .
 
