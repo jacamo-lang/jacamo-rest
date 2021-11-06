@@ -365,6 +365,7 @@ public class ClientAgentTest {
     public void test401PostWP() throws Exception {
         System.out.println("\n\ntest401PostWP");
 
+        // verufy if marcos is there
         Response response = client
             .target(uri.toString())
             .path("/agents")
@@ -375,13 +376,14 @@ public class ClientAgentTest {
         System.out.println("\n\nResponse: " + response.toString() + "\n" + vl);
         assertTrue( vl.get("marcos") != null);
 
+        // infos for the new agent, special attention for the "uri"
         Map<String,String> map = new HashMap<>();
         map.put("uri", "http://myhouse");
         map.put("type", "Java Agent");
         map.put("kkk", "http://myhouse/mb");
         //System.out.println("=="+new Gson().toJson(map));
 
-        // add new entry
+        // add new entry (dummy agent named jomi)
         client
             .target(uri.toString())
             .path("/agents/jomi")
