@@ -138,8 +138,8 @@ public class RestImplEnv extends AbstractBinder {
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      *         Sample:
-     *         {"artifact":"a","operations":["observeProperty","inc"],"linkedArtifacts":["b"],
-     *         "type":"tools.Counter","properties":[{"count":10}],"observers":["marcos"]}
+     *         {"artifact":"a","operations":["observeProperty","inc"],
+     *         "type":"tools.Counter","properties":[{"count": [10]}],"observers":["marcos"]}
      */
     @Path("/{wrksname}/artifacts/{artname}")
     @GET
