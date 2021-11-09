@@ -85,12 +85,16 @@ public class TranslEnv {
         // Get artifact's properties
         var properties = Json.createArrayBuilder();
         for (ArtifactObsProperty op : info.getObsProperties()) {
+            var values = Json.createArrayBuilder();
             for (Object vl : op.getValues()) {
-                properties.add(
-                        Json.createObjectBuilder()
-                            .add(op.getName(), vl.toString())
-                        );
+                values.add(
+                        Json.createValue(vl.toString())
+                );
             }
+            properties.add(
+                    Json.createObjectBuilder()
+                        .add(op.getName(), values)
+                    );
         }
         artifact.add("properties", properties);
 

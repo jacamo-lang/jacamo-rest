@@ -188,7 +188,7 @@ public class ClientWorkspaceTest {
 
         Map vl2 = new Gson().fromJson(response.readEntity(String.class), Map.class);
         assertEquals("jacamo.rest.util.DummyArt", vl2.get("type"));
-        assertEquals("1111", ((Map)((List)vl2.get("properties")).get(0)).get("count").toString());
+        assertTrue( ((Map)((List)vl2.get("properties")).get(0)).get("count").toString().contains("1111") );
 
         // run updateObsProperty
         response = client
