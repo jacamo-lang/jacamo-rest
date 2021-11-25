@@ -18,8 +18,8 @@ import jason.runtime.RuntimeServicesFactory;
 public class JCMRuntimeServices extends DelegatedRuntimeServices {
     JCMRest restImpl = null;
     Client  client   = ClientBuilder.newClient();
-    
-    public JCMRuntimeServices(JCMRest impl) {       
+
+    public JCMRuntimeServices(JCMRest impl) {
         super(RuntimeServicesFactory.get());
         restImpl = impl;
     }
@@ -34,11 +34,11 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
                         .target( restImpl.getMainRest())
                         .path("agents/"+agName+"/services/"+service)
                         .request()
-                        .post(null);                
+                        .post(null);
             }
         }
     }
-    
+
     @Override
     public void dfDeRegister(String agName, String service, String type) {
         if (restImpl.isMain()) {
@@ -49,7 +49,7 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
                         .target( restImpl.getMainRest())
                         .path("agents/"+agName+"/services/"+service)
                         .request()
-                        .delete();                
+                        .delete();
             }
         }
     }
@@ -74,7 +74,7 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
         }
         return super.dfSearch(service, type);
     }
-    
+
     @Override
     public void dfSubscribe(String agName, String service, String type) {
         if (restImpl.isMain()) {
@@ -87,11 +87,12 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
                         .request()
                         .post(null);
             }
-        } 
+        }
     }
-    
+
     @Override
     public Collection<String> getAgentsNames() {
+        //return getWP().keySet();
         if (!restImpl.isMain()) {
             synchronized (client) {
                 Response response = client
@@ -108,9 +109,14 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
                 }
             }
         }
-        return super.getAgentsNames();
+        try {
+            return restImpl.getWP().keySet();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return super.getAgentsNames();
+        }
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Map<String, Set<String>> getDF() {
@@ -133,11 +139,43 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
             }
         }
         return super.getDF();
-    }  
-    
-    
+    }
+
+    public Map<String,Map<String,Object>> getWP() {
+        if (!restImpl.isMain()) {
+            synchronized (client) {
+                Response response = client
+                        .target( restImpl.getMainRest())
+                        .path("/agents")
+                        .request(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.TEXT_PLAIN)
+                        .get();
+                if (response.getStatus() == 200) {
+                    var responseMap = response.readEntity(Map.class);
+                    var ret = new HashMap<String,Map<String,Object>>();
+                    for (Object o: responseMap.keySet()) {
+                        try {
+                            ret.put(o.toString(), (Map)responseMap.get(o));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            ret.put(o.toString(), null);
+                        }
+                    }
+                    return ret;
+                }
+            }
+        }
+        try {
+            return restImpl.getWP();
+        } catch (Exception e) {
+            e.printStackTrace();
+            //return super.getWP();
+            return null;
+        }
+    }
+
     /*Map<String, RestAgArch> archCache = new HashMap<>();
-    
+
     protected RestAgArch getRestAgArch(String agName) {
         return archCache.computeIfAbsent(agName, k -> {
             AgArch arch = BaseCentralisedMAS.getRunner().getAg(agName).getFirstAgArch();
