@@ -41,8 +41,8 @@ public class JCMRest extends DefaultPlatformImpl {
     protected String mainRest = null;
     protected String registerURL = null;
 
-    protected Map<String, Map<String,Object>> ans = new TreeMap<>();
-    protected Map<String, Map<String,Object>> mdCache = new HashMap<>();
+    protected Map<String, Map<String,Object>> ans = new TreeMap<>();     // agent name service (agent name -> ( prop -> value )* )
+    protected Map<String, Map<String,Object>> mdCache = new HashMap<>(); // meta data cache
 
     public String getRestHost() {
         if (restServerURI == null)
