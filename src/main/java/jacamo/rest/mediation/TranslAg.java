@@ -252,7 +252,7 @@ public class TranslAg {
         if (ag == null) {
             throw new Exception("Receiver '" + agName + "' not found");
         }
-        ag.parseAS(new StringReader(plans), "RestAPI");
+        ag.load(new StringInputStream(plans), "source-from-rest-api");
     }
 
     /**
