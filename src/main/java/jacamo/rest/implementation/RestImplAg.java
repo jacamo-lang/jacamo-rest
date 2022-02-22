@@ -299,6 +299,34 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
+     * Append new pieces or the whole program into an agent.
+     *
+     * @param agName              name of the agent
+     * @param program             program to be uploaded, as an String
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     */
+    @Path("/{agentname}/program")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Append new pieces or the whole program into an agent.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response postAgentProgram(@PathParam("agentname") String agName, String program) {
+        try {
+            tAg.addAgentProgram(agName, program);
+            return Response
+                    .ok()
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+
+    /**
      * Append new plans into an agent.
      *
      * @param agName              name of the agent

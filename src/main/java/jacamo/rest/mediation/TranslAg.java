@@ -241,6 +241,21 @@ public class TranslAg {
     }
 
     /**
+     * Add a piece or the whole agent's program
+     *
+     * @param agName
+     * @param program
+     * @throws Exception
+     */
+    public void addAgentProgram(String agName, String program) throws Exception {
+        Agent ag = getAgent(agName);
+        if (ag == null) {
+            throw new Exception("Receiver '" + agName + "' not found");
+        }
+        ag.load(new StringInputStream(program), "source-from-rest-api");
+    }
+
+    /**
      * Add a plan to the agent's plan library
      *
      * @param agName
