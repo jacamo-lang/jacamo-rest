@@ -299,10 +299,10 @@ public class RestImplAg extends AbstractBinder {
     }
 
     /**
-     * Append new plans into an agent.
+     * Append new pieces or the whole program into an agent.
      *
      * @param agName              name of the agent
-     * @param plans               plans to be uploaded, as an String
+     * @param program             program to be uploaded, as an String
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      */
