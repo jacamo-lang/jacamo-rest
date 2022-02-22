@@ -360,6 +360,67 @@ public class ClientAgentTest {
         client.close();
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test012PostAgentProgram() {
+        System.out.println("\n\ntest012PostAgentProgram");
+        Response response;
+        String rStr;
+
+        // 1. add program
+        response = client.target(uri.toString())
+                .path("agents/marcos/program")
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .post(
+                        Entity.json(
+                                "+!pp <- .print(\"Plan pp\").\n" +
+                                "+qq <- .print(\"Plan qq\").\n" +
+                                "!pp.\n" +
+                                "qq."
+                                )
+                        );
+        System.out.println("Post a new program to marcos");
+        assertEquals(200, response.getStatus());
+
+        // 2. check plans
+        response = client.target(uri.toString()).path("agents/marcos/plans")
+                .request(MediaType.APPLICATION_JSON).get();
+        Map<String,String> m = response.readEntity(Map.class);
+        Iterator<String> i = m.values().iterator();
+        String p = "";
+        while (i.hasNext()) {
+            p = i.next();
+            if (p.contains(".print(\"Plan pp\").")) {
+                System.out.println("A response (agents/marcos/plans): " + p);
+                break;
+            }
+        }
+        assertTrue(p.contains(".print(\"Plan pp\")."));
+
+        i = m.values().iterator();
+        p = "";
+        while (i.hasNext()) {
+            p = i.next();
+            if (p.contains(".print(\"Plan qq\").")) {
+                System.out.println("A response (agents/marcos/plans): " + p);
+                break;
+            }
+        }
+        assertTrue(p.contains(".print(\"Plan qq\")."));
+
+        // 3. test beliefs
+        response = client.target(uri.toString())
+                .path("agents/marcos/bb")
+                .request(MediaType.APPLICATION_JSON).get();
+
+        rStr = response.readEntity(String.class);
+        System.out.println(rStr);
+        assertTrue(rStr.contains("qq[source(self)]"));
+
+        client.close();
+    }
+
     @Test
     @SuppressWarnings("rawtypes")
     public void test401PostWP() throws Exception {
