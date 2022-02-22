@@ -426,7 +426,7 @@ public class ClientAgentTest {
     public void test401PostWP() throws Exception {
         System.out.println("\n\ntest401PostWP");
 
-        // verufy if marcos is there
+        // verify if marcos is there
         Response response = client
             .target(uri.toString())
             .path("/agents")

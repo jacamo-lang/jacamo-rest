@@ -21,7 +21,7 @@ public class DummyArt extends Artifact {
     
     protected transient Logger logger  = Logger.getLogger(DummyArt.class.getName());
 
-    private URL actionTarger = null;
+    protected URL actionTarger = null;
     
     public void init() {
     }
