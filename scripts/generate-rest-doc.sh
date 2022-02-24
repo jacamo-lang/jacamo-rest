@@ -13,5 +13,5 @@ docker run --rm -v $(pwd):/opt swagger2markup/swagger2markup convert -i \
 docker run --rm -it -v $(pwd)/doc/rest-api:/documents asciidoctor/docker-asciidoctor \
     asciidoctor swagger.adoc
 
-cp doc/rest-api/swagger.html readme.html
+cp doc/rest-api/swagger.adoc doc/rest-api/readme.adoc
 #/documents/doc/rest-api.adoc
