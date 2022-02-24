@@ -49,8 +49,8 @@ public class ClientWorkspaceTest {
     }
 
     @Test
-    public void test201PostProperty() {
-        System.out.println("\n\ntest201PostProperty");
+    public void test201PostOperation() {
+        System.out.println("\n\ntest201PostOperation");
 
         Response response = client
                 .target(uri.toString())
@@ -208,6 +208,25 @@ public class ClientWorkspaceTest {
 
         assertEquals( 2222, ((Double)vl[0]).intValue(), 0 );
 
+        // run updateObsProperty using post in the obs prop
+        response = client
+                .target(uri.toString())
+                .path("workspaces/jh/artifacts/da/properties/count")
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(new Gson().toJson(new Object[] { 333 })));
+        assertEquals(200, response.getStatus());
+
+        response = client
+                .target(uri.toString())
+                .path("workspaces/jh/artifacts/da/properties/count")
+                .request(MediaType.APPLICATION_JSON)
+                .get();
+
+        vl = new Gson().fromJson(response.readEntity(String.class), Object[].class);
+
+        assertEquals( 333, ((Double)vl[0]).intValue(), 0 );
+
+
         // agent acting on the dummy art
 
         // register callback (created at https://beeceptor.com/console/jacamotest)
@@ -251,8 +270,8 @@ public class ClientWorkspaceTest {
 
         String rStr = response.readEntity(String.class);
         //System.out.println("Response (agents/marcos): " + rStr);
-        assertTrue(rStr.contains("ns1::count(2222)[artifact_id("));
-        //TODO: Next assert is causing failure on github actions. 
+        assertTrue(rStr.contains("ns1::count(333)[artifact_id("));
+        //TODO: Next assert is causing failure on github actions.
         //assertTrue(rStr.contains("bb(1111)"));
 
 

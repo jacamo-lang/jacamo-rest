@@ -86,7 +86,7 @@ public class DummyArt extends Artifact {
                 // process answer
                 String ans = response.readEntity(String.class);
                 Term   ansj = null;
-                if (response.getMediaType().toString().equals("text/plain")) {
+                if (response.getMediaType() != null && response.getMediaType().toString().equals("text/plain")) {
                     // try to parse answer as a jason term
                     try {
                     	ansj = ASSyntax.parseTerm(ans);

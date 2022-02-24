@@ -1,0 +1,1397 @@
+= REST API for JaCaMo
+
+
+[[_overview]]
+== Overview
+More information: https://github.com/jacamo-lang/jacamo-rest
+
+
+=== Version information
+[%hardbreaks]
+__Version__ : v0.7-SNAPSHOT
+
+
+=== URI scheme
+[%hardbreaks]
+__Host__ : {{host}}
+__Schemes__ : HTTP
+
+
+=== Tags
+
+* agents
+* organisations
+* services
+* workspaces
+
+
+
+
+[[_paths]]
+== Paths
+
+[[_getagents]]
+=== Get list of agent names
+....
+GET /agents
+....
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents
+----
+
+
+[[_postagent]]
+=== Create an Agent.
+....
+POST /agents/{agentname}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a,.^2a"]
+|===
+|Type|Name|Schema|Default
+|**Path**|**agentname** +
+__required__|string|
+|**Query**|**force** +
+__optional__|boolean|`"false"`
+|**Query**|**only_wp** +
+__optional__|boolean|`"false"`
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**201**|generated uri|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/json`
+
+
+==== Produces
+
+* `text/plain`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string
+----
+
+
+[[_getagent]]
+=== Get agent information (namespaces, roles, missions and workspaces).
+....
+GET /agents/{agentname}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string
+----
+
+
+[[_deleteagent]]
+=== Kill an agent.
+....
+DELETE /agents/{agentname}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string
+----
+
+
+[[_getagentbb]]
+=== Get agent belief base
+....
+GET /agents/{agentname}/bb
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/bb
+----
+
+
+[[_postagentcommand]]
+=== Send a command to an agent returning a status message.
+....
+POST /agents/{agentname}/command
+....
+
+
+==== Description
+Example: curl –request POST 'http://127.0.0.1:8080/agents/marcos/command' –header 'Content-Type: application/x-www-form-urlencoded' –data-urlencode 'c=+raining'
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|**FormData**|**c** +
+__optional__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/x-www-form-urlencoded`
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/command
+----
+
+
+===== Request formData
+[source,json]
+----
+"string"
+----
+
+
+[[_postagentmessage]]
+=== Append a message on agent's inbox.
+....
+POST /agents/{agentname}/inbox
+....
+
+
+==== Description
+Example: curl –location –request POST 'http://127.0.0.1:8080/agents/marcos/inbox' –header 'Content-Type: application/json' –data-raw '{"performative":"tell","sender":"jomi","receiver":"bob","content":"vl(10)","msgId":"34"}'
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/inbox
+----
+
+
+[[_getagentlog]]
+=== Get agent full log as text.
+....
+GET /agents/{agentname}/log
+....
+
+
+==== Description
+Example: [06-04-20 20:37:03] Command +raining: {}
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `text/plain`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/log
+----
+
+
+[[_postagentplans]]
+=== Append new plans into an agent.
+....
+POST /agents/{agentname}/plans
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/plans
+----
+
+
+[[_getagentplanstxt]]
+=== Get agent plans.
+....
+GET /agents/{agentname}/plans
+....
+
+
+==== Description
+Example: ["@l__1[source(self)]":"@l__1[source(self)] +!start &lt;- .print(hi).", "@l__2[source(self)]": "@l__2[source(self)] +sayHi[source(A)] &lt;- .print("I received hi from ",A)."]
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a,.^2a"]
+|===
+|Type|Name|Schema|Default
+|**Path**|**agentname** +
+__required__|string|
+|**Query**|**label** +
+__optional__|string|`"all"`
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/plans
+----
+
+
+[[_postagentprogram]]
+=== Append new pieces or the whole program into an agent.
+....
+POST /agents/{agentname}/program
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/program
+----
+
+
+[[_getservices]]
+=== Get services provided by a given agent.
+....
+GET /agents/{agentname}/services
+....
+
+
+==== Description
+Example: ["supply(banana)","consultant"]
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/services
+----
+
+
+[[_postagentservice]]
+=== Append a service to the agent.
+....
+POST /agents/{agentname}/services/{serviceid}
+....
+
+
+==== Description
+Example: curl –request POST 'http://127.0.0.1:8080/agents/marcos/services/gardening' –header 'Content-Type: application/json' –data-raw '{"service":"gardening(vegetables)","type":"agent"}
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|**Path**|**serviceid** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**201**|generated uri|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/services/string
+----
+
+
+[[_deleteagentservice]]
+=== Remove a service from the agent.
+....
+DELETE /agents/{agentname}/services/{serviceid}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|**Path**|**serviceid** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|generated uri|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/services/string
+----
+
+
+[[_getagentstatus]]
+=== Get agent's intentions status.
+....
+GET /agents/{agentname}/status
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* agents
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/agents/string/status
+----
+
+
+[[_getorganisationsjson]]
+=== Get list of running organisations.
+....
+GET /organisations
+....
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* organisations
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/organisations
+----
+
+
+[[_getspecificationjson]]
+=== Get organisation's information (groups, schemes and norms).
+....
+GET /organisations/{oename}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**oename** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* organisations
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/organisations/string
+----
+
+
+[[_createnewrole]]
+=== Add a new role into an organisation/group.
+....
+POST /organisations/{oename}/groups/{groupname}/roles/{roleid}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**groupname** +
+__required__|string
+|**Path**|**oename** +
+__required__|string
+|**Path**|**roleid** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/x-www-form-urlencoded`
+* `application/json`
+
+
+==== Tags
+
+* organisations
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/organisations/string/groups/string/roles/string
+----
+
+
+[[_getoverviewjson]]
+=== Get MAS overview.
+....
+GET /overview
+....
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/overview
+----
+
+
+[[_getservices]]
+=== Get MAS Directory Facilitator (agents and services).
+....
+GET /services
+....
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* services
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/services
+----
+
+
+[[_getservice]]
+=== Get list of agents providing a service
+....
+GET /services/{serviceid}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**serviceid** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* services
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/services/string
+----
+
+
+[[_dosubscribe]]
+=== subscribe to a service
+....
+POST /services/{serviceid}/subscriptions/{agentname}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**agentname** +
+__required__|string
+|**Path**|**serviceid** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Tags
+
+* services
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/services/string/subscriptions/string
+----
+
+
+[[_getworkspaces]]
+=== Get list of workspaces.
+....
+GET /workspaces
+....
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* workspaces
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/workspaces
+----
+
+
+[[_postworkspace]]
+=== Add a workspace.
+....
+POST /workspaces/{wrksname}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**wrksname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**201**|generated uri|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Tags
+
+* workspaces
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/workspaces/string
+----
+
+
+[[_getworkspace]]
+=== Get workspace information (its artifacts including their properties, operations, etc).
+....
+GET /workspaces/{wrksname}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**wrksname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* workspaces
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/workspaces/string
+----
+
+
+[[_postartifact]]
+=== Creates a new artifact from a given template.
+....
+POST /workspaces/{wrksname}/artifacts/{artname}
+....
+
+
+==== Description
+Example of body: "{"template":"tools.Counter","values":[22]}"
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**artname** +
+__required__|string
+|**Path**|**wrksname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**201**|generated uri|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/json`
+
+
+==== Tags
+
+* workspaces
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/workspaces/string/artifacts/string
+----
+
+
+[[_getartifact]]
+=== Get artifact information (properties, operations, observers and linked artifacts).
+....
+GET /workspaces/{wrksname}/artifacts/{artname}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**artname** +
+__required__|string
+|**Path**|**wrksname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* workspaces
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/workspaces/string/artifacts/string
+----
+
+
+[[_postartifactoperation]]
+=== Executes an operation in an artifact.
+....
+POST /workspaces/{wrksname}/artifacts/{artname}/operations/{opname}/execute
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**artname** +
+__required__|string
+|**Path**|**opname** +
+__required__|string
+|**Path**|**wrksname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Consumes
+
+* `application/json`
+
+
+==== Tags
+
+* workspaces
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/workspaces/string/artifacts/string/operations/string/execute
+----
+
+
+[[_setartifactproperties]]
+=== Set the value of an observable property.
+....
+POST /workspaces/{wrksname}/artifacts/{artname}/properties/{propertyid}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**artname** +
+__required__|string
+|**Path**|**propertyid** +
+__required__|string
+|**Path**|**wrksname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* workspaces
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/workspaces/string/artifacts/string/properties/string
+----
+
+
+[[_getartifactproperties]]
+=== Get value of an observable property.
+....
+GET /workspaces/{wrksname}/artifacts/{artname}/properties/{propertyid}
+....
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^4a"]
+|===
+|Type|Name|Schema
+|**Path**|**artname** +
+__required__|string
+|**Path**|**propertyid** +
+__required__|string
+|**Path**|**wrksname** +
+__required__|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|success|No Content
+|**500**|internal error|No Content
+|===
+
+
+==== Produces
+
+* `application/json`
+
+
+==== Tags
+
+* workspaces
+
+
+==== Example HTTP request
+
+===== Request path
+----
+/workspaces/string/artifacts/string/properties/string
+----
+
+
+
+
+
+
+

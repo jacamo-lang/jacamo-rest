@@ -173,19 +173,21 @@ public class TranslOrg {
         List<Object> norms = new ArrayList<>();
         org.put("norms", norms);
         if (os == null) {
-            for (OrgBoard ob : OrgBoard.getOrbBoards())
-                if (ob.getOEId().equals(oeName))
+            for (OrgBoard ob : OrgBoard.getOrbBoards()) {
+                if (ob.getOEId() != null && ob.getOEId().equals(oeName))
                     os = OS.loadOSFromURI(ob.getOSFile());
+            }
         }
-        for (Norm n : os.getNS().getNorms()) {
-            Map<String, Object> norm = new HashMap<>();
-            norms.add(norm);
-            norm.put("norm", n.getId());
-            norm.put("type", n.getType().name());
-            norm.put("role", n.getRole().toString());
-            norm.put("mission", n.getMission().toString());
+        if (os != null) {
+            for (Norm n : os.getNS().getNorms()) {
+                Map<String, Object> norm = new HashMap<>();
+                norms.add(norm);
+                norm.put("norm", n.getId());
+                norm.put("type", n.getType().name());
+                norm.put("role", n.getRole().toString());
+                norm.put("mission", n.getMission().toString());
+            }
         }
-
         return org;
 
     }

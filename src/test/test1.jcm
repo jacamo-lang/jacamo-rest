@@ -28,5 +28,7 @@ mas test1 {
 
     //platform: jacamo.rest.JCMRest("--connect localhost:2181") // connects to platform at 2181
     platform: jacamo.rest.JCMRest("--main 2181 --rest-port 8981") // connects to platform at 2181
+              jacamo.platform.EnvironmentWebInspector("false")
+              jacamo.platform.AgentWebInspector("false")
 
 }

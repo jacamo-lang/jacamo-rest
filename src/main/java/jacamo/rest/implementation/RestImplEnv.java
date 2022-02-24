@@ -1,6 +1,8 @@
 package jacamo.rest.implementation;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.inject.Singleton;
 import javax.json.Json;
@@ -198,6 +200,43 @@ public class RestImplEnv extends AbstractBinder {
             return Response.status(500, e.getMessage()).build();
         }
     }
+
+    /**
+     * Set the value of an observable property. The artifact have to implement the operation "@OPERATION public void doUpdateObsProperty(String obName, Object arg)"
+     *
+     * @param wrksName name of the workspace the artifact is situated in
+     * @param artName  name of the artifact to be retrieved
+     * @param obsPropId  name of the observable property
+     */
+    @Path("/{wrksname}/artifacts/{artname}/properties/{propertyid}")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Set the value of an observable property.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response setArtifactProperties(
+            @PathParam("wrksname") String wrksName,
+            @PathParam("artname") String artName,
+            @PathParam("propertyid") String obsPropId,
+            Object[] value) {
+        try {
+            var values = new ArrayList<Object>();
+            values.add(obsPropId);
+            values.addAll( Arrays.asList( value ));
+
+            tEnv.execOp(wrksName, artName, "doUpdateObsProperty", values.toArray());
+            return Response
+                    .ok()
+                    .build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+
 
     /**
      * Executes an operation in an artifact.
