@@ -189,7 +189,7 @@ task javadocJar (type: Jar, dependsOn: javadoc) {
 task sourceJar (type : Jar) {
     archiveBaseName = 'jacamo-rest'
     classifier = 'sources'
-    from sourceSets.main.allSource
+    //from sourceSets.main.allSource
 }
 
 
