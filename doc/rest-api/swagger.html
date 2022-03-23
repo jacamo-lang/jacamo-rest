@@ -2963,10 +2963,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getworkspaces">Get list of workspaces.</h3>
+<h3 id="_getworkspaces">Get available workspaces</h3>
 <div class="literalblock">
 <div class="content">
 <pre>GET /workspaces</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_description_7">Description</h4>
+<div class="paragraph">
+<p>workspaces are identified by a name (a string)</p>
 </div>
 </div>
 <div class="sect3">
@@ -2993,7 +2999,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p>success</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>No Content</p>
+<p>&lt; string &gt; array</p>
 </div></div></td>
 </tr>
 <tr>
@@ -3041,12 +3047,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_example_http_response">Example HTTP response</h4>
+<div class="sect4">
+<h5 id="_response_200">Response 200</h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-json" data-lang="json">[ "string" ]</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_postworkspace">Add a workspace.</h3>
+<h3 id="_postworkspace">Add a new workspace</h3>
 <div class="literalblock">
 <div class="content">
-<pre>POST /workspaces/{wrksname}</pre>
+<pre>POST /workspaces/{wrks_name}</pre>
 </div>
 </div>
 <div class="sect3">
@@ -3070,7 +3087,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><strong>Path</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>wrksname</strong><br>
+<p><strong>wrks_name</strong><br>
 <em>required</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
@@ -3144,10 +3161,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getworkspace">Get workspace information (its artifacts including their properties, operations, etc).</h3>
+<h3 id="_getworkspace">Get workspace information</h3>
 <div class="literalblock">
 <div class="content">
-<pre>GET /workspaces/{wrksname}</pre>
+<pre>GET /workspaces/{wrks_name}</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_description_8">Description</h4>
+<div class="paragraph">
+<p>information is composed of artifacts and their properties, operations, etc</p>
 </div>
 </div>
 <div class="sect3">
@@ -3171,7 +3194,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><strong>Path</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>wrksname</strong><br>
+<p><strong>wrks_name</strong><br>
 <em>required</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
@@ -3255,16 +3278,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_postartifact">Creates a new artifact from a given template.</h3>
+<h3 id="_getartifact">Get artifact information (properties, operations, observers and linked artifacts).</h3>
 <div class="literalblock">
 <div class="content">
-<pre>POST /workspaces/{wrksname}/artifacts/{artname}</pre>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_description_7">Description</h4>
-<div class="paragraph">
-<p>Example of body: "{"template":"tools.Counter","values":[22]}"</p>
+<pre>GET /workspaces/{wrks_name}/artifacts/{art_name}</pre>
 </div>
 </div>
 <div class="sect3">
@@ -3288,7 +3305,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><strong>Path</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>artname</strong><br>
+<p><strong>art_name</strong><br>
 <em>required</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
@@ -3300,7 +3317,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <p><strong>Path</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>wrksname</strong><br>
+<p><strong>wrks_name</strong><br>
 <em>required</em></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
@@ -3328,10 +3345,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>201</strong></p>
+<p><strong>200</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>generated uri</p>
+<p>success</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>No Content</p>
@@ -3352,7 +3369,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </table>
 </div>
 <div class="sect3">
-<h4 id="_consumes_9">Consumes</h4>
+<h4 id="_produces_17">Produces</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3384,10 +3401,16 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect2">
-<h3 id="_getartifact">Get artifact information (properties, operations, observers and linked artifacts).</h3>
+<h3 id="_postartifact">Creates a new artifact from a given template.</h3>
 <div class="literalblock">
 <div class="content">
-<pre>GET /workspaces/{wrksname}/artifacts/{artname}</pre>
+<pre>POST /workspaces/{wrksname}/artifacts/{artname}</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_description_9">Description</h4>
+<div class="paragraph">
+<p>Example of body: "{"template":"tools.Counter","values":[22]}"</p>
 </div>
 </div>
 <div class="sect3">
@@ -3451,10 +3474,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p><strong>200</strong></p>
+<p><strong>201</strong></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
-<p>success</p>
+<p>generated uri</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><div class="content"><div class="paragraph">
 <p>No Content</p>
@@ -3475,7 +3498,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </table>
 </div>
 <div class="sect3">
-<h4 id="_produces_17">Produces</h4>
+<h4 id="_consumes_9">Consumes</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3916,7 +3939,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-02-24 15:41:43 UTC
+Last updated 2022-02-24 21:50:24 UTC
 </div>
 </div>
 </body>

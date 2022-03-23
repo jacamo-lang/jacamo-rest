@@ -65,7 +65,7 @@ dependencies {
     implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
 
     // https://mvnrepository.com/artifact/io.swagger/swagger-annotations
-    implementation 'io.swagger:swagger-annotations:1.6.1'
+    implementation 'io.swagger:swagger-annotations:1.6.5'
 
     //implementation "io.github.swagger2markup:swagger2markup:1.3.3"
 
@@ -240,7 +240,7 @@ convertSwagger2markup {
 }
 */
 
-task docSwagger(dependsOn: ['generateSwaggerDocumentation']) { //, 'convertSwagger2markup']) {
+task docSwagger(dependsOn: ['generateSwaggerDocumentation','build']) { //, 'convertSwagger2markup']) {
 
 }
 

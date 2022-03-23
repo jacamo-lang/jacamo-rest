@@ -25,6 +25,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Example;
+import io.swagger.annotations.ExampleProperty;
 import jacamo.rest.mediation.TranslEnv;
 import jacamo.rest.util.JsonFormater;
 import jacamo.rest.util.PostArtifact;
@@ -41,16 +43,13 @@ public class RestImplEnv extends AbstractBinder {
         bind(new RestImplEnv()).to(RestImplEnv.class);
     }
 
-    /**
-     * Get list of workspaces.
-     *
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     *         Sample: ["main","testOrg","testwks","wkstest"]
-     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get list of workspaces.")
+    @ApiOperation(value = "Get available workspaces",
+            notes = "workspaces are identified by a name (a string)",
+            response = String.class,
+            responseContainer = "List"
+    )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
@@ -72,27 +71,26 @@ public class RestImplEnv extends AbstractBinder {
         }
     }
 
-    /**
-     * Get workspace information (its artifacts including their properties, operations, etc).
-     *
-     * @param wrksName name of the workspace
-     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
-     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
-     *         Sample:
-     *         {"workspace":"testwks","artifacts":{"a":{"artifact":"a","operations":["observeProperty","inc"],
-     *         "linkedArtifacts":["b"],"type":"tools.Counter","properties":[{"count":10}],"observers":["marcos"]},
-     *         "b":{"artifact":"b","operations":["observeProperty","inc"],"linkedArtifacts":[],"type":"tools.Counter",
-     *         "properties":[{"count":2}],"observers":["marcos"]}}}
-     */
-    @Path("/{wrksname}")
+    @Path("/{wrks_name}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get workspace information (its artifacts including their properties, operations, etc).")
+    @ApiOperation(value = "Get workspace information",
+        notes = "information is composed of artifacts and their properties, operations, etc"
+    )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 200, message = "success",
+                    examples = @Example( value = { @ExampleProperty( mediaType = "application/json", value =
+                            """
+            				{\"workspace\":\"testwks\",\"artifacts\":{\"a\":{\"artifact\":\"a\",\"operations\":[\"observeProperty\",\"inc\"],"
+                                       \"linkedArtifacts\":[\"b\"],\"type\":\"tools.Counter\",\"properties\":[{\"count\":10}],\"observers\":[\"marcos\"]},\n"
+            				            \"b\":{\"artifact\":\"b\",\"operations\":[\"observeProperty\",\"inc\"],\"linkedArtifacts\":[],\"type\":\"tools.Counter\",\n"
+                                        \"properties\":[{\"count\":2}],\"observers\":[\"marcos\"]}}
+                            }
+                            """ )})
+                            ),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getWorkspace(@PathParam("wrksname") String wrksName) {
+    public Response getWorkspace(@PathParam("wrks_name") String wrksName) {
         try {
             return Response
                     .ok()
@@ -106,20 +104,16 @@ public class RestImplEnv extends AbstractBinder {
         }
     }
 
-    /**
-     * Add a workspace.
-     *
-     * @param wrksName
-     * @return
-     */
-    @Path("/{wrksname}")
+    @Path("/{wrks_name}")
     @POST
-    @ApiOperation(value = "Add a workspace.")
+    @ApiOperation(value = "Add a new workspace")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "generated uri"),
+            @ApiResponse(code = 201, message = "generated uri",
+                    examples = @Example( value = { @ExampleProperty( mediaType = "plain/text", value = "http://host/workspaces/newworkspacename") } )
+            ),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response postWorkspace(@PathParam("wrksname") String wrksName, @Context UriInfo uriInfo) {
+    public Response postWorkspace(@PathParam("wrks_name") String wrksName, @Context UriInfo uriInfo) {
         try {
             tEnv.createWorkspace(wrksName);
             return Response
@@ -143,7 +137,7 @@ public class RestImplEnv extends AbstractBinder {
      *         {"artifact":"a","operations":["observeProperty","inc"],
      *         "type":"tools.Counter","properties":[{"count": [10]}],"observers":["marcos"]}
      */
-    @Path("/{wrksname}/artifacts/{artname}")
+    @Path("/{wrks_name}/artifacts/{art_name}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get artifact information (properties, operations, observers and linked artifacts).")
@@ -151,7 +145,7 @@ public class RestImplEnv extends AbstractBinder {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
     })
-    public Response getArtifact(@PathParam("wrksname") String wrksName, @PathParam("artname") String artName) {
+    public Response getArtifact(@PathParam("wrks_name") String wrksName, @PathParam("art_name") String artName) {
         try {
             return Response
                     .ok()
