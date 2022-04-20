@@ -9,12 +9,11 @@ repositories {
     mavenCentral()
 
     maven { url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }
-    maven { url "http://jacamo.sourceforge.net/maven2" }
 
 }
 
 dependencies {
-    implementation group: 'org.jacamo'     , name: 'jacamo-rest'   , version: '0.7-SNAPSHOT'
+    implementation group: 'org.jacamo'     , name: 'jacamo-rest'   , version: '0.7'
 }
 ```
 
@@ -31,6 +30,9 @@ mas yourmas {
 }
 
 ```
+
+An example is available at the [JaCaMo demos](https://github.com/jacamo-lang/jacamo/tree/master/demos/rest-comm).
+
 # About jacamo-rest...
 
 * Each agent has REST endpoints to receive messages and be inspected.
