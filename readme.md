@@ -2,7 +2,7 @@ JaCaMo REST provides a REST API to interact with agents, artifacts and organisat
 
 # Using this project
 
-The simplest way to use JaCaMo-REST is by developing your MAS with JaCaMo >= 1.1, which includes JaCaMo-REST. An example is available at the [JaCaMo demos](https://github.com/jacamo-lang/jacamo/tree/master/demos/rest-comm). Examples focused on the *integration* are also found at [demos](https://github.com/jacamo-lang/jacamo/tree/master/demos/integration).
+The simplest way to use JaCaMo-REST is by developing your MAS with JaCaMo >= 1.1, which includes JaCaMo-REST. An example is available at the [JaCaMo demos](https://github.com/jacamo-lang/jacamo/tree/master/demos/rest-comm). Examples focused on *integration* are also found at [demos](https://github.com/jacamo-lang/jacamo/tree/master/demos/integration).
 
 Otherwise, we can include jacamo-rest dependency in `build.gradle`:
 
