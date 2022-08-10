@@ -26,7 +26,15 @@ Run the python program:
   `python demo.py`
 
 
-This program prints out the main agent information (in JSON) and then post a *tell* message in the agent mail box.
+This program prints out the main agent information (in JSON) and then post a *tell* message in the agent mail box. The message is format is JSON:
+
+```
+{ "performative": "tell",
+  "sender"      : "jomi",
+  "receiver"    : "bob",
+  "content"     : "vl(10)",
+  "msgId"       : "34"}
+```
 
 The output of the python program is:
 
