@@ -43,3 +43,5 @@ The output of the python program is:
 ```
 
 In the agent side, you will notice the new belief.
+
+You find more information about the REST API at https://github.com/jacamo-lang/jacamo-rest/tree/master/doc/rest-api.
