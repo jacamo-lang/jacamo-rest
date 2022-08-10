@@ -42,10 +42,11 @@ mas yourmas {
 * For more information, see the paper: [Towards Jacamo-rest: A Resource-Oriented Abstraction for Managing Multi-Agent Systems](doc/paper.pdf)
 * Information for developers and how to contribute can be found at [contributing](doc/contributing.md).
 
-# REST API version 0.5
+# REST API versions
 
+* Full documentation: [jacamo-rest 0.7](https://app.swaggerhub.com/apis/jomihubner/JaCaMoRest/v0.7)
 * Full documentation: [jacamo-rest 0.5](https://app.swaggerhub.com/apis/cleberjamaral/jacamo-rest/0.5)
-* All endpoints accepts OPTIONS returning allowed verbs
+
 
 ## Overview
 
