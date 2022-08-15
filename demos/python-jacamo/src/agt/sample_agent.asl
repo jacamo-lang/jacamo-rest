@@ -11,6 +11,7 @@
 +!start : true <- .print("hello world.").
 
 +vl(X)[source(A)] <- .print("value is ",X," from ",A).
++count(X)         <- .print("count is ",X).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

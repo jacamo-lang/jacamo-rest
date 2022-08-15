@@ -2,14 +2,12 @@
     python_jacamo
     ---------------------------
 
-    JaCaMo Application File
+    JaCaMo Application File that has
+    - an agent name Bob
+    - an artifact named c1
 
-    This file defines the initial state of the MAS (initial agents, environment, organisation, ....)
+    A python program interacts with the agent Bob and artifact c1
 
-    (see jacamo/doc/jcm.html for more information about what can be defined in this file)
-
-    JaCaMo 1.1
-    August 10, 2022 - 13:40:22
 */
 
 mas python_jacamo {

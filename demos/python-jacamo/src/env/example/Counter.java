@@ -15,5 +15,20 @@ public class Counter extends Artifact {
         prop.updateValue(prop.intValue()+1);
         signal("tick");
     }
-}
 
+    /** the following operations are defined to allow the API REST to change observable properties */
+
+    @OPERATION public void doDefineObsProperty(String obName, Object arg) {
+        defineObsProperty(obName, arg);
+    }
+
+    @OPERATION public void doUpdateObsProperty(String obName, Object arg) {
+        ObsProperty op = getObsProperty(obName);
+        if (op == null) {
+            defineObsProperty(obName, arg);
+        } else {
+            op.updateValues(arg);
+        }
+    }
+
+}
