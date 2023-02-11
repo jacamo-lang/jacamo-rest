@@ -38,7 +38,6 @@ out/
 .idea/
 generated/swagger-ui/swagger.json
 demos/python-jacamo/build/tmp/compileJava/previous-compilation-data.bin
-settings.gradle
 .vscode/settings.json
 core/.vscode/settings.json
 core/src/test/basic-test.txt
