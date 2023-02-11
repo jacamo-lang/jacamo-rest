@@ -4,5 +4,6 @@ mas bobandalice {
     agent alice
 
     platform: jacamo.rest.JCMRest("--connect http://localhost:8080 --rest-port 8081") // connects to platform at 8080
+    //platform: jacamo.rest.JCMRest("--connect http://192.168.1.201:8080 --rest-port 8081") // connects to platform at 8080
 
 }
