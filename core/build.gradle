@@ -77,68 +77,12 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir 'src/env'
-            srcDir 'src/agt'
-            srcDir 'src/org'
             srcDir 'src/main/java'
         }
         resources {
             srcDir 'src/resources'
         }
     }
-}
-
-task run (type: JavaExec, dependsOn: 'classes') {
-    group      ' JaCaMo'
-    description 'runs the JaCaMo platform'
-    doFirst {
-        mkdir 'log'
-    }
-    main 'jacamo.infra.JaCaMoLauncher'
-    args 'src/jcm/main.jcm'
-    classpath sourceSets.main.runtimeClasspath
-}
-
-task bob (type: JavaExec, dependsOn: 'classes') {
-    group      ' JaCaMo'
-    description 'runs the JaCaMo application'
-    doFirst {
-        mkdir 'log'
-    }
-    main 'jacamo.infra.JaCaMoLauncher'
-    args 'src/jcm/bob.jcm'
-    classpath sourceSets.main.runtimeClasspath
-}
-
-// Bob for docker
-task bob_d (type: JavaExec, dependsOn: 'classes') {
-    group      ' JaCaMo'
-    description 'runs the JaCaMo application'
-    doFirst {
-        mkdir 'log'
-    }
-    main 'jacamo.infra.JaCaMoLauncher'
-    args 'src/jcm/bob-d.jcm'
-    classpath sourceSets.main.runtimeClasspath
-}
-
-task marcos (type: JavaExec, dependsOn: 'classes') {
-    group      ' JaCaMo'
-    description 'runs agent marcos'
-    doFirst {
-        mkdir 'log'
-    }
-    main 'jacamo.infra.JaCaMoLauncher'
-    args 'src/jcm/marcos.jcm'
-    classpath sourceSets.main.runtimeClasspath
-}
-
-task fixTab {
-    ant.fixcrlf(eol: 'lf',  includes: '**/*.txt,**/*.bat, **/*.adoc', srcdir: '.')
-    ant.fixcrlf(tab: 'remove', tablength: '4', javafiles: 'true', includes: '**/*.java,**/*.xml', srcdir: 'src')
-    ant.fixcrlf(tab: 'remove', tablength: '4', javafiles: 'true', includes: '**/*.java,**/*.xml,**/*.asl,**/*.jcm', srcdir: '.')
-    //ant.fixcrlf(tab: 'remove', tablength: '4', javafiles: 'true', includes: '**/*.java,**/*.xml,**/*.asl,**/*.jcm,**/*.txt', srcdir: 'doc')
-    ant.fixcrlf(tab: 'remove', tablength: '4', javafiles: 'true', includes: '*.gradle', srcdir: '.')
 }
 
 

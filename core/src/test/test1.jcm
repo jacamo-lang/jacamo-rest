@@ -1,0 +1,35 @@
+mas test1 {
+
+    agent marcos {
+        focus: testwks.a
+               testwks.b
+    }
+
+
+    workspace testwks {
+        artifact a: tools.Counter(10)
+        artifact b: tools.Counter(02)
+    }
+
+    organisation testOrg : src/test/org/org.xml {
+        group group1: group1 {
+            players: marcos role1
+                     //marcos role2
+            responsible-for: scheme1
+        }
+        scheme scheme1 : scheme1
+    }
+    //organisation buildHouse : house_building.xml {
+        //group house_group: house_group {
+            //players: marcos window_fitter
+        //}
+        //scheme build_house_sch : build_house_sch
+    //}
+
+    //platform: jacamo.rest.JCMRest("--connect localhost:2181") // connects to platform at 2181
+    platform: jacamo.rest.JCMRest("--main 2181 --rest-port 8981") // connects to platform at 2181
+              jacamo.platform.EnvironmentWebInspector("false")
+              jacamo.platform.AgentWebInspector("false")
+
+    asl-path: src/test/agt
+}
