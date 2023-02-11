@@ -2,19 +2,20 @@ JaCaMo REST provides a REST API to interact with agents, artifacts and organisat
 
 # Using this project
 
-Include jacamo-rest dependency in `build.gradle`:
+The simplest way to use JaCaMo-REST is by developing your MAS with JaCaMo >= 1.1, which includes JaCaMo-REST. An example is available at the [JaCaMo demos](https://github.com/jacamo-lang/jacamo/tree/master/demos/rest-comm). Examples focused on *integration* are also found at [demos](https://github.com/jacamo-lang/jacamo/tree/master/demos/integration).
+
+Otherwise, we can include jacamo-rest dependency in `build.gradle`:
 
 ```
 repositories {
     mavenCentral()
 
     maven { url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }
-    maven { url "http://jacamo.sourceforge.net/maven2" }
 
 }
 
 dependencies {
-    implementation group: 'org.jacamo'     , name: 'jacamo-rest'   , version: '0.7-SNAPSHOT'
+    implementation group: 'org.jacamo'     , name: 'jacamo-rest'   , version: '0.7'
 }
 ```
 
@@ -31,6 +32,8 @@ mas yourmas {
 }
 
 ```
+
+
 # About jacamo-rest...
 
 * Each agent has REST endpoints to receive messages and be inspected.
@@ -39,10 +42,11 @@ mas yourmas {
 * For more information, see the paper: [Towards Jacamo-rest: A Resource-Oriented Abstraction for Managing Multi-Agent Systems](doc/paper.pdf)
 * Information for developers and how to contribute can be found at [contributing](doc/contributing.md).
 
-# REST API version 0.5
+# REST API versions
 
+* Full documentation: [jacamo-rest 0.7](https://app.swaggerhub.com/apis/jomihubner/JaCaMoRest/v0.7)
 * Full documentation: [jacamo-rest 0.5](https://app.swaggerhub.com/apis/cleberjamaral/jacamo-rest/0.5)
-* All endpoints accepts OPTIONS returning allowed verbs
+
 
 ## Overview
 

@@ -1,0 +1,24 @@
+/*
+    python_jacamo
+    ---------------------------
+
+    JaCaMo Application File that has
+    - an agent name Bob
+    - an artifact named c1
+
+    A python program interacts with the agent Bob and artifact c1
+
+*/
+
+mas python_jacamo {
+
+    agent bob: sample_agent.asl {
+      focus: w.c1
+    }
+
+    workspace w {
+      artifact c1: example.Counter(3)
+    }
+
+    platform: jacamo.rest.JCMRest("--rest-port 8080")
+}

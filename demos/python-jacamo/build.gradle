@@ -1,0 +1,102 @@
+/*
+   Project python_jacamo
+
+   Gradle build file for JaCaMo Applications
+   August 10, 2022 - 13:40:22
+*/
+
+defaultTasks 'run'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+version '1.0'
+group   'org.jacamo'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(15)
+    }
+}
+
+repositories {
+    maven { url "https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master" }
+    maven { url "https://repo.gradle.org/gradle/libs-releases" }
+
+    //maven { url "http://jacamo.sourceforge.net/maven2" }
+    //maven { url "https://jade.tilab.com/maven/" }
+
+    flatDir { dirs 'lib' }
+
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.jacamo:jacamo:1.1')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/env'
+            srcDir 'src/agt'
+            srcDir 'src/org'
+            srcDir 'src/int'
+            srcDir 'src/java'
+        }
+        resources {
+            srcDir 'src/resources'
+        }
+    }
+}
+
+task run (type: JavaExec, dependsOn: 'classes') {
+    group       ' JaCaMo'
+    description 'runs the JaCaMo application'
+    doFirst {
+        mkdir 'log'
+    }
+    main 'jacamo.infra.JaCaMoLauncher'
+    args 'python_jacamo.jcm'
+    // jvmArgs '-Xss15m'
+    classpath sourceSets.main.runtimeClasspath
+}
+
+
+task uberJar(type: Jar, dependsOn: 'classes') {
+    group      ' JaCaMo'
+    description 'creates a single runnable jar file with all dependencies'
+    duplicatesStrategy 'exclude'
+
+    manifest {
+        attributes 'Main-Class': 'jacamo.infra.JaCaMoLauncher'
+    }
+    archiveBaseName = 'jacamo-python_jacamo' // the name must start with jacamo so that jacamo...jar is found in the classpath
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    from (project.projectDir.absolutePath) {
+        include '**/*.asl'
+        include '**/*.xml'
+        include '**/*.sai'
+        include '**/*.ptl'
+        include '**/*.jcm'
+        include '*.properties'
+    }
+    from (project.buildDir.absolutePath + '/jcm') {
+        include '**/*'
+    }
+    with jar
+
+    doFirst {
+        copy {
+            from 'python_jacamo.jcm'
+            rename 'python_jacamo.jcm','default.jcm'
+            into project.buildDir.absolutePath + '/jcm'
+        }
+    }
+}
+
+clean {
+    delete 'bin'
+    delete 'build'
+    delete 'log'
+}

@@ -205,7 +205,9 @@ public class RestImplEnv extends AbstractBinder {
     @Path("/{wrksname}/artifacts/{artname}/properties/{propertyid}")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Set the value of an observable property.")
+    @ApiOperation(value = "Set the value of an observable property.",
+            notes = "Example of body: \" [ 13 ] \""
+    )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "success"),
             @ApiResponse(code = 500, message = "internal error")
