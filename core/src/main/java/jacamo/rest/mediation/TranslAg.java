@@ -345,7 +345,7 @@ public class TranslAg {
             var workspaces = Json.createArrayBuilder();
             cartagoAgArch.getAllJoinedWsps().forEach(wksId -> {
                 var workspace = Json.createObjectBuilder()
-                        .add("workspace", wksId.getFullName());
+                        .add("workspace", wksId.getName());
                 var artifacts = Json.createArrayBuilder();
 
                 // focused arts
