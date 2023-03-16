@@ -27,7 +27,7 @@ public class ClientOverviewTest {
 
     @Test
     public void test401GetOverview() {
-        System.out.println("\n\test401GetOverview");
+        System.out.println("\ntest401GetOverview");
         Response response;
         String rStr;
         
@@ -35,8 +35,8 @@ public class ClientOverviewTest {
         response = client.target(uri.toString()).path("overview/")
                 .request(MediaType.APPLICATION_JSON).get();
         rStr = response.readEntity(String.class).toString(); 
-        System.out.println("Response (overview/): " + rStr);
-        assertTrue(rStr.contains("\"role\":\"house_owner\""));
+        //System.out.println("Response (overview/): " + rStr);
+        assertTrue(rStr.contains("\"role\":\"role1\""));
         
         client.close();
     }

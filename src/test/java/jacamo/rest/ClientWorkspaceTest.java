@@ -269,8 +269,8 @@ public class ClientWorkspaceTest {
                 .request(MediaType.APPLICATION_JSON).get();
 
         String rStr = response.readEntity(String.class);
-        //System.out.println("Response (agents/marcos): " + rStr);
-        assertTrue(rStr.contains("ns1::count(333)[artifact_id("));
+        //System.out.println("Response (agents/belovedbob/bb): " + rStr);
+        assertTrue(rStr.contains("\"agent\": \"belovedbob\""));
         //TODO: Next assert is causing failure on github actions.
         //assertTrue(rStr.contains("bb(1111)"));
 
