@@ -8,7 +8,7 @@ plugins {
   id "com.benjaminsproule.swagger" version "1.0.14"
 }
 
-defaultTasks 'run'
+defaultTasks 'build'
 
 version '0.8-SNAPSHOT'
 group   'org.jacamo'
