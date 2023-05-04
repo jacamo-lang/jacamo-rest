@@ -44,9 +44,8 @@ mas yourmas {
 
 # REST API versions
 
-* Full documentation: [jacamo-rest 0.7](https://app.swaggerhub.com/apis/jomihubner/JaCaMoRest/v0.7)
-* Full documentation: [jacamo-rest 0.5](https://app.swaggerhub.com/apis/cleberjamaral/jacamo-rest/0.5)
-
+* Full documentation: [jacamo-rest 0.7](https://app.swaggerhub.com/apis/sma-das/jacamo-rest/0.7)
+* Full documentation: [jacamo-rest 0.5](https://app.swaggerhub.com/apis/sma-das/jacamo-rest/0.5)
 
 ## Overview
 
