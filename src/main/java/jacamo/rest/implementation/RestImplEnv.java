@@ -3,6 +3,7 @@ package jacamo.rest.implementation;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import javax.inject.Singleton;
 import javax.json.Json;
@@ -17,6 +18,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import ch.unisg.ics.interactions.wot.td.ThingDescription;
+import ch.unisg.ics.interactions.wot.td.io.TDGraphWriter;
+import ch.unisg.ics.interactions.wot.td.io.TDWriter;
+import ch.unisg.ics.interactions.wot.td.io.json.TDJsonWriter;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +39,7 @@ import io.swagger.annotations.ExampleProperty;
 import jacamo.rest.mediation.TranslEnv;
 import jacamo.rest.util.JsonFormater;
 import jacamo.rest.util.PostArtifact;
+
 
 @Singleton
 @Path("/workspaces")
@@ -69,6 +79,46 @@ public class RestImplEnv extends AbstractBinder {
             e.printStackTrace();
             return Response.status(500, e.getMessage()).build();
         }
+    }
+
+
+    @GET
+    @Produces(RDFProcessing.TURTLE)
+    public Response getWorkspacesTurtle(){
+        Model m = getWorkspacesRDF();
+        String s = RDFProcessing.writeToString(RDFFormat.TURTLE, m);
+        return Response
+                .ok()
+                //.entity(JsonFormater.getAsJsonStr(tEnv.getArtifact(wrksName, artName)))
+                .entity(s)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+    }
+
+    @Path("/")
+    @GET
+    @Produces(RDFProcessing.JSONLD)
+    public Response getWorkspacesJsonLD(){
+        Model m = getWorkspacesRDF();
+        String s = RDFProcessing.writeToString(RDFFormat.JSONLD, m);
+        return Response
+                .ok()
+                //.entity(JsonFormater.getAsJsonStr(tEnv.getArtifact(wrksName, artName)))
+                .entity(s)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+    }
+
+    public Model getWorkspacesRDF(){
+        ModelBuilder builder = new ModelBuilder();
+        Resource mainNode = RDFProcessing.rdf.createIRI(RDFProcessing.baseUrl+"/workspaces/");
+        TranslEnv translEnv = new TranslEnv();
+        Collection<String> workspaces = translEnv.getWorkspaces();
+        for (String workspace: workspaces){
+            Resource workspaceUrl = RDFProcessing.rdf.createIRI(RDFProcessing.baseUrl+"workspaces/"+workspace);
+            builder.add(mainNode, RDFProcessing.rdf.createIRI("https://ci.mines-stetienne.fr/hmas/core#directlyContains"), workspaceUrl);
+        }
+        return builder.build();
     }
 
     @Path("/{wrks_name}")
@@ -158,6 +208,71 @@ public class RestImplEnv extends AbstractBinder {
             return Response.status(500, e.getMessage()).build();
         }
     }
+
+    /**
+     * Get artifact information (properties, operations, observers and linked artifacts).
+     *
+     * @param wrksName name of the workspace the artifact is situated in
+     * @param artName  name of the artifact to be retrieved
+     * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
+     *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
+     *         Sample:
+     *         {"artifact":"a","operations":["observeProperty","inc"],
+     *         "type":"tools.Counter","properties":[{"count": [10]}],"observers":["marcos"]}
+     */
+    @Path("/{wrks_name}/artifacts/{art_name}")
+    @GET
+    @Produces(RDFProcessing.TURTLE)
+    @ApiOperation(value = "Get artifact information (properties, operations, observers and linked artifacts).")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response getArtifactTurtle(@PathParam("wrks_name") String wrksName, @PathParam("art_name") String artName){
+        try {
+            ThingDescription td = tEnv.getArtifactTD(wrksName, artName);
+            TDGraphWriter writer = new TDGraphWriter(td);
+            String s  = writer.write();
+            return Response
+                    .ok()
+                    //.entity(JsonFormater.getAsJsonStr(tEnv.getArtifact(wrksName, artName)))
+                    .entity(s) //TODO: check
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+
+    @Path("/{wrks_name}/artifacts/{art_name}")
+    @GET
+    @Produces(RDFProcessing.JSONLD)
+    @ApiOperation(value = "Get artifact information (properties, operations, observers and linked artifacts).")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 500, message = "internal error")
+    })
+    public Response getArtifactJSONLD(@PathParam("wrks_name") String wrksName, @PathParam("art_name") String artName){
+        try {
+            ThingDescription td = tEnv.getArtifactTD(wrksName, artName);
+            TDJsonWriter writer = new TDJsonWriter(td);
+            String s  = writer.write();
+            return Response
+                    .ok()
+                    //.entity(JsonFormater.getAsJsonStr(tEnv.getArtifact(wrksName, artName)))
+                    .entity(s) //TODO: check
+                    .header("Access-Control-Allow-Origin", "*")
+                    .build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(500, e.getMessage()).build();
+        }
+    }
+
+
 
     /**
      * Get value of an observable property.

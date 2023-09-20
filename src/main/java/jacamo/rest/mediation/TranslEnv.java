@@ -9,24 +9,17 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
-import cartago.AgentBodyArtifact;
-import cartago.AgentIdCredential;
-import cartago.ArtifactConfig;
-import cartago.ArtifactId;
-import cartago.ArtifactInfo;
-import cartago.ArtifactObsProperty;
-import cartago.CartagoEnvironment;
-import cartago.CartagoEvent;
-import cartago.CartagoException;
-import cartago.ICartagoCallback;
-import cartago.ICartagoContext;
-import cartago.ICartagoController;
-import cartago.Op;
-import cartago.Workspace;
-import cartago.WorkspaceDescriptor;
+import cartago.*;
+import ch.unisg.ics.interactions.wot.td.ThingDescription;
+import ch.unisg.ics.interactions.wot.td.affordances.ActionAffordance;
+import ch.unisg.ics.interactions.wot.td.affordances.Form;
+import ch.unisg.ics.interactions.wot.td.affordances.PropertyAffordance;
 import jacamo.platform.EnvironmentWebInspector;
+import jacamo.rest.implementation.RDFProcessing;
 
 public class TranslEnv {
+
+
 
     /**
      * Get list of workspaces in JSON format.
@@ -125,6 +118,29 @@ public class TranslEnv {
         artifact.add("linkedArtifacts", linkedArtifacts);*/
 
         return artifact.build();
+    }
+
+    public ThingDescription getArtifactTD(String wrksName, String artName) throws CartagoException {
+        ThingDescription.Builder tdBuilder = new ThingDescription.Builder(artName);
+        var info = getArtInfo(wrksName, artName);
+        for (ArtifactObsProperty property: info.getObsProperties()){
+            Form form = new Form.Builder(RDFProcessing.baseUrl +"workspaces/"+wrksName+"/artifacts/"+artName+"/properties/"+property.getName())
+                    .setMethodName("GET")
+                    .build();
+            PropertyAffordance.Builder propertyAffordanceBuilder = new PropertyAffordance.Builder(property.getName(), form);
+
+            tdBuilder.addProperty(propertyAffordanceBuilder.build());
+        }
+        for (OpDescriptor operation: info.getOperations()){
+            Form form = new Form.Builder(RDFProcessing.baseUrl +"workspaces/"+wrksName+"/artifacts/"+artName+"/operations/"+operation.getKeyId()+"/execute")
+                    .setMethodName("GET")
+                    .build();
+            ActionAffordance.Builder actionAffordanceBuilder = new ActionAffordance.Builder(operation.getKeyId(), form);
+
+            tdBuilder.addAction(actionAffordanceBuilder.build());
+
+        }
+        return tdBuilder.build();
     }
 
     public void createWorkspace(String wrksName) throws CartagoException {

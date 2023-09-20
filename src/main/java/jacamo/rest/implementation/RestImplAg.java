@@ -490,7 +490,7 @@ public class RestImplAg extends AbstractBinder {
      * Append a service to the agent.
      *
      * @param agName agent name
-     * @param serviceid service identification
+     * @param service service identification
      * @param values a map of services (optional)
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
@@ -533,7 +533,7 @@ public class RestImplAg extends AbstractBinder {
      * Remove a service from the agent.
      *
      * @param agName agent name
-     * @param serviceid service identification
+     * @param service service identification
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      */

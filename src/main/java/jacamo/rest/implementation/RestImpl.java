@@ -1,9 +1,6 @@
 package jacamo.rest.implementation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -12,6 +9,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.util.ModelBuilder;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import com.google.gson.Gson;
@@ -34,6 +35,47 @@ public class RestImpl extends AbstractBinder {
     protected void configure() {
         bind(new RestImpl()).to(RestImpl.class);
     }
+
+    @Path("/")
+    @GET
+    @Produces(RDFProcessing.TURTLE)
+    public Response getInitialInfoTurtle(){
+        Model m = getInitialInfo();
+        String s = RDFProcessing.writeToString(RDFFormat.TURTLE, m);
+        return Response
+                .ok()
+                //.entity(JsonFormater.getAsJsonStr(tEnv.getArtifact(wrksName, artName)))
+                .entity(s)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+    }
+
+    @Path("/")
+    @GET
+    @Produces(RDFProcessing.JSONLD)
+    public Response getInitialInfoJsonLD(){
+        Model m = getInitialInfo();
+        String s = RDFProcessing.writeToString(RDFFormat.JSONLD, m);
+        return Response
+                .ok()
+                //.entity(JsonFormater.getAsJsonStr(tEnv.getArtifact(wrksName, artName)))
+                .entity(s)
+                .header("Access-Control-Allow-Origin", "*")
+                .build();
+    }
+
+    public Model getInitialInfo(){
+        ModelBuilder builder = new ModelBuilder();
+        Resource mainNode = RDFProcessing.rdf.createIRI(RDFProcessing.baseUrl);
+        TranslEnv translEnv = new TranslEnv();
+        Collection<String> workspaces = translEnv.getWorkspaces();
+        for (String workspace: workspaces){
+            Resource workspaceUrl = RDFProcessing.rdf.createIRI(RDFProcessing.baseUrl+"workspaces/"+workspace);
+            builder.add(mainNode, RDFProcessing.rdf.createIRI("https://example.org/contains"), workspaceUrl);
+        }
+        return builder.build();
+    }
+
 
     /**
      * Get MAS overview.

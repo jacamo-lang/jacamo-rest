@@ -105,7 +105,7 @@ public class RestImplOrg extends AbstractBinder {
      * 
      * @param oeName name of the organisation
      * @param groupName name of the group
-     * @param role name of the new role
+     * @param roleid name of the new role
      * @return HTTP 200 Response (ok status) or 500 Internal Server Error in case of
      *         error (based on https://tools.ietf.org/html/rfc7231#section-6.6.1)
      */

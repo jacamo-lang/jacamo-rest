@@ -400,8 +400,8 @@ public class TranslAg {
     /**
      * Send a command to an agent
      *
-     * @param agName name of the agent
-     * @param sCmd   command to be executed
+     * @param ag name of the agent
+     * @param lCmd   command to be executed
      * @return Status message
      * @throws ParseException
      */
@@ -626,7 +626,7 @@ public class TranslAg {
      * Remove a service from a given agent
      *
      * @param agName
-     * @param values
+     * @param service
      * @throws Exception
      */
     public void removeServiceToAgent(String agName, String service) throws Exception {
