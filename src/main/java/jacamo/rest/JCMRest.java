@@ -40,6 +40,7 @@ public class JCMRest extends DefaultPlatformImpl {
     protected URI restServerURI = null;
     protected String mainRest = null;
     protected String registerURL = null;
+    protected String hostAddress = null;
 
     protected Map<String, Map<String,Object>> ans = new TreeMap<>();     // agent name service (agent name -> ( prop -> value )* )
     protected Map<String, Map<String,Object>> mdCache = new HashMap<>(); // meta data cache
@@ -118,6 +119,11 @@ public class JCMRest extends DefaultPlatformImpl {
                     if (!registerURL.endsWith("/"))
                         registerURL += "/";
                 }
+                
+                if(la.equals("--host-address")){
+                   hostAddress = a;
+                }
+
 
                 la = a;
             }
@@ -154,7 +160,12 @@ public class JCMRest extends DefaultPlatformImpl {
             return null;
         }
         try {
-            restServerURI = UriBuilder.fromUri("http://"+InetAddress.getLocalHost().getHostAddress()+"/").port(port).build();
+        
+            if(hostAddress==null)
+               restServerURI = UriBuilder.fromUri("http://"+InetAddress.getLocalHost().getHostAddress()+"/").port(port).build();
+            else
+               restServerURI = UriBuilder.fromUri("http://"+ hostAddress +"/").port(port).build();
+               
 
             RestAppConfig rc = new RestAppConfig();
 
