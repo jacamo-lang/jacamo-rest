@@ -1,6 +1,8 @@
 package jacamo.rest.mediation;
 
+import java.io.InputStream;
 import java.io.StringReader;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +23,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
+import jason.asSemantics.*;
 import org.apache.tools.ant.filters.StringInputStream;
 
 import cartago.AgentBodyArtifact;
@@ -37,18 +40,11 @@ import jacamo.rest.util.Message;
 import jason.JasonException;
 import jason.ReceiverNotFoundException;
 import jason.architecture.AgArch;
-import jason.asSemantics.Agent;
-import jason.asSemantics.CircumstanceListener;
-import jason.asSemantics.IntendedMeans;
-import jason.asSemantics.Intention;
-import jason.asSemantics.Option;
-import jason.asSemantics.TransitionSystem;
-import jason.asSemantics.Unifier;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
-import jason.asSyntax.PlanLibrary;
+import jason.pl.PlanLibrary;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
@@ -96,11 +92,21 @@ public class TranslAg {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{ include(\"$jacamoJar/templates/common-cartago.asl\") }\n");
         stringBuilder.append("{ include(\"$jacamoJar/templates/common-moise.asl\") }\n");
-        ag.load(new StringInputStream( stringBuilder.toString()), "source-from-rest-api");
+
+        load(ag,new StringInputStream( stringBuilder.toString()), "source-from-rest-api");
         createAgLog(givenName, ag);
         return givenName;
     }
 
+    private void load(Agent ag, InputStream in, String sourceId) throws Exception {
+        ag.parseAS(in, sourceId);
+
+        if (ag.getPL().hasMetaEventPlans())
+            ag.getTS().addGoalListener(new GoalListenerForMetaEvents(ag.getTS()));
+
+        ag.addInitialBelsInBB();
+        ag.addInitialGoalsInTS();
+    }
 
     /**
      * Creates a new entry in the WP
@@ -252,7 +258,7 @@ public class TranslAg {
         if (ag == null) {
             throw new Exception("Receiver '" + agName + "' not found");
         }
-        ag.load(new StringInputStream(program), "source-from-rest-api");
+        load(ag, new StringInputStream(program), "source-from-rest-api");
     }
 
     /**
@@ -340,7 +346,7 @@ public class TranslAg {
             var workspaces = Json.createArrayBuilder();
             cartagoAgArch.getAllJoinedWsps().forEach(wksId -> {
                 var workspace = Json.createObjectBuilder()
-                        .add("workspace", wksId.getFullName());
+                        .add("workspace", wksId.getName());
                 var artifacts = Json.createArrayBuilder();
 
                 // focused arts
@@ -400,8 +406,8 @@ public class TranslAg {
     /**
      * Send a command to an agent
      *
-     * @param agName name of the agent
-     * @param sCmd   command to be executed
+     * @param ag     name of the agent
+     * @param lCmd   command to be executed
      * @return Status message
      * @throws ParseException
      */
@@ -600,7 +606,7 @@ public class TranslAg {
         return ans.build();
     }
 
-    public void subscribe(String agName, String service, String type) {
+    public void subscribe(String agName, String service, String type) throws RemoteException {
         RuntimeServicesFactory.get().dfSubscribe(agName, service, type);
     }
 
@@ -626,11 +632,10 @@ public class TranslAg {
      * Remove a service from a given agent
      *
      * @param agName
-     * @param values
+     * @param service
      * @throws Exception
      */
     public void removeServiceToAgent(String agName, String service) throws Exception {
         RuntimeServicesFactory.get().dfDeRegister(agName, service, "no-type");
     }
-
 }

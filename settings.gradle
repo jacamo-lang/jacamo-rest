@@ -1,0 +1,2 @@
+rootProject.name = 'jacamo-rest'
+include 'core', 'examples:basic'

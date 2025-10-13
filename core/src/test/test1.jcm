@@ -11,7 +11,7 @@ mas test1 {
         artifact b: tools.Counter(02)
     }
 
-    organisation testOrg : org.xml {
+    organisation testOrg : src/test/org/org.xml {
         group group1: group1 {
             players: marcos role1
                      //marcos role2
@@ -31,4 +31,5 @@ mas test1 {
               jacamo.platform.EnvironmentWebInspector("false")
               jacamo.platform.AgentWebInspector("false")
 
+    asl-path: src/test/agt
 }
