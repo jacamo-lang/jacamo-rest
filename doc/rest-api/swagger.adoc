@@ -8,7 +8,7 @@ More information: https://github.com/jacamo-lang/jacamo-rest
 
 === Version information
 [%hardbreaks]
-__Version__ : v0.7-SNAPSHOT
+__Version__ : v0.9-SNAPSHOT
 
 
 === URI scheme

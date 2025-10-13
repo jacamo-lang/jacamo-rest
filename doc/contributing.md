@@ -14,14 +14,14 @@
 
 ## Compiling and running using gradle
 
-* Requirements: jdk >= 15
+* Requirements: jdk >= 21
 * Considering you have cloned this repository using `$ git clone http://github.com/jacamo-lang/jacamo-rest`
-* In the root folder of the project execute on mac/linux `$ ./gradlew run`, on windows `$ gradlew run`.
-* To test this project, run ``./gradlew test``. For details, please, see [unit tests](https://github.com/jacamo-lang/jacamo-rest/tree/master/src/test/java/jacamo/rest).
+* In the root folder of the project execute on mac/linux `$ ./gradlew :core:build`.
+* To test this project, run ``./gradlew :core:test``. For details, please, see [unit tests](https://github.com/jacamo-lang/jacamo-rest/tree/master/src/test/java/jacamo/rest).
 
 ### Other examples using gradle
-* `$ ./gradlew marcos` runs agent marcos and the REST platform.
-* `$ ./gradlew bob` runs agents bob and alice. Bob sends a message to marcos using its rest API.
+* `$ ./gradlew :examples:basic:marcos` runs agent marcos and the REST platform.
+* `$ ./gradlew :examples:basic:bob` runs agents bob and alice. Bob sends a message to marcos using its rest API.
 
 ## Using a local docker (example of two machines communicating)
 ```sh
