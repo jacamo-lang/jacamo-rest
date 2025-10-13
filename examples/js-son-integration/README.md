@@ -1,4 +1,4 @@
-raw.githubusercontent.com# Tutorial: Integration jacamo-rest and JS-son
+# Tutorial: Integration jacamo-rest and JS-son
 This tutorial explains how to integrate jacamo-rest with the
 [JS-son](https://github.com/TimKam/JS-son) JavaScript agent programming library.
 As a simple example, we re-implement the
