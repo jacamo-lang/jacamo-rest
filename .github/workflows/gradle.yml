@@ -17,9 +17,9 @@ jobs:
       with:
         java-version: 21
     - name: Grant execute permission for gradlew
-      run: chmod +x ./core/gradlew
+      run: chmod +x ./gradlew
     - name: Build with Gradle
-      run: ./core/gradlew build -x test
+      run: ./gradlew :core:build -x test
 
   test:
 
@@ -32,6 +32,6 @@ jobs:
         with:
           java-version: 21
       - name: Grant execute permission for gradlew
-        run: chmod +x ./core/gradlew
+        run: chmod +x ./gradlew
       - name: Test with Gradle
-        run: ./core/gradlew test
+        run: ./gradlew :core:test
