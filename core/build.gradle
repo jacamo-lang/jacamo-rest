@@ -10,12 +10,12 @@ plugins {
 
 defaultTasks 'build'
 
-version '0.8-SNAPSHOT'
+version '0.9-SNAPSHOT'
 group   'org.jacamo'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    api('org.jacamo:jacamo:1.1') {
+    api('org.jacamo:jacamo:1.3.0') {
         exclude group: 'org.slf4j', module: 'slf4j-nop'
         changing = true
     }
@@ -117,25 +117,25 @@ task stage(dependsOn: ['jar', 'copyToLib', 'clean']) {
 stage.dependsOn(copyToLib)
 
 // the following lines is used to avoid errors while generating javadoc
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-      tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
-      }
-    }
-}
+//if (JavaVersion.current().isJava8Compatible()) {
+//    allprojects {
+//      tasks.withType(Javadoc) {
+//        options.addStringOption('Xdoclint:none', '-quiet')
+//      }
+//    }
+//}
 
-task javadocJar (type: Jar, dependsOn: javadoc) {
-    archiveBaseName = 'jacamo-rest'
-    classifier = 'javadoc'
-    from '${docsDir}/../../doc/api'
-}
-
-task sourceJar (type : Jar) {
-    archiveBaseName = 'jacamo-rest'
-    classifier = 'sources'
-    //from sourceSets.main.allSource
-}
+//task javadocJar (type: Jar, dependsOn: javadoc) {
+//    archiveBaseName = 'jacamo-rest'
+//    classifier = 'javadoc'
+//    from '${docsDir}/../../doc/api'
+//}
+//
+//task sourceJar (type : Jar) {
+//    archiveBaseName = 'jacamo-rest'
+//    classifier = 'sources'
+//    //from sourceSets.main.allSource
+//}
 
 task testScenario1 (type: JavaExec, dependsOn: 'classes') {
     group      ' JaCaMo'
@@ -152,8 +152,8 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            artifact sourceJar
-            artifact javadocJar
+//            artifact sourceJar
+//            artifact javadocJar
 
             artifactId 'jacamo-rest'
         }

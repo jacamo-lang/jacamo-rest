@@ -2,6 +2,7 @@ package jacamo.rest.mediation;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,7 +44,7 @@ import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
-import jason.asSyntax.PlanLibrary;
+import jason.pl.PlanLibrary;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
@@ -605,7 +606,7 @@ public class TranslAg {
         return ans.build();
     }
 
-    public void subscribe(String agName, String service, String type) {
+    public void subscribe(String agName, String service, String type) throws RemoteException {
         RuntimeServicesFactory.get().dfSubscribe(agName, service, type);
     }
 

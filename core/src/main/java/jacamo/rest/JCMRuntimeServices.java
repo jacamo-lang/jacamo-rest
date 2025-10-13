@@ -1,5 +1,6 @@
 package jacamo.rest;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
     }
 
     @Override
-    public void dfRegister(String agName, String service, String type) {
+    public void dfRegister(String agName, String service, String type) throws RemoteException {
         if (restImpl.isMain()) {
             super.dfRegister(agName, service, type);
         } else {
@@ -40,7 +41,7 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
     }
 
     @Override
-    public void dfDeRegister(String agName, String service, String type) {
+    public void dfDeRegister(String agName, String service, String type) throws RemoteException {
         if (restImpl.isMain()) {
             super.dfDeRegister(agName, service, type);
         } else {
@@ -55,7 +56,7 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
     }
 
     @Override
-    public Collection<String> dfSearch(String service, String type) {
+    public Collection<String> dfSearch(String service, String type) throws RemoteException {
         if (!restImpl.isMain()) {
             synchronized (client) {
                 Response response = client
@@ -76,7 +77,7 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
     }
 
     @Override
-    public void dfSubscribe(String agName, String service, String type) {
+    public void dfSubscribe(String agName, String service, String type) throws RemoteException {
         if (restImpl.isMain()) {
             super.dfSubscribe(agName, service, type);
         } else {
@@ -91,7 +92,7 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
     }
 
     @Override
-    public Collection<String> getAgentsNames() {
+    public Collection<String> getAgentsName() throws RemoteException {
         //return getWP().keySet();
         if (!restImpl.isMain()) {
             synchronized (client) {
@@ -113,13 +114,13 @@ public class JCMRuntimeServices extends DelegatedRuntimeServices {
             return restImpl.getWP().keySet();
         } catch (Exception e) {
             e.printStackTrace();
-            return super.getAgentsNames();
+            return super.getAgentsName();
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Map<String, Set<String>> getDF() {
+    public Map<String, Set<String>> getDF() throws RemoteException {
         if (!restImpl.isMain()) {
             synchronized (client) {
                 Response response = client

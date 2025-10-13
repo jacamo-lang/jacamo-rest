@@ -2,6 +2,7 @@ package jacamo.rest;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -256,14 +257,24 @@ public class JCMRest extends DefaultPlatformImpl {
     class ClearDeadAgents extends Thread {
         @Override
         public void run() {
-            while (!RuntimeServicesFactory.get().isRunning()) {
+            while (true) {
+                try {
+                    if (RuntimeServicesFactory.get().isRunning()) break;
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
                 try {
                     sleep(1000);
                 } catch (InterruptedException e) {
                 }
             }
             Client client = ClientBuilder.newClient();
-            while (RuntimeServicesFactory.get().isRunning()) {
+            while (true) {
+                try {
+                    if (!RuntimeServicesFactory.get().isRunning()) break;
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
                 try {
                     sleep(4000);
 
