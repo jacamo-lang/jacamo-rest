@@ -36,7 +36,7 @@ public class RestImpl extends AbstractBinder {
         bind(new RestImpl()).to(RestImpl.class);
     }
 
-    @Path("/")
+
     @GET
     @Produces(RDFProcessing.TURTLE)
     public Response getInitialInfoTurtle(){
@@ -50,7 +50,7 @@ public class RestImpl extends AbstractBinder {
                 .build();
     }
 
-    @Path("/")
+
     @GET
     @Produces(RDFProcessing.JSONLD)
     public Response getInitialInfoJsonLD(){
@@ -67,12 +67,15 @@ public class RestImpl extends AbstractBinder {
     public Model getInitialInfo(){
         ModelBuilder builder = new ModelBuilder();
         Resource mainNode = RDFProcessing.rdf.createIRI(RDFProcessing.baseUrl);
+        Resource overviewNode = RDFProcessing.rdf.createIRI(RDFProcessing.baseUrl+"overview/");
+        builder.add(mainNode, RDFProcessing.rdf.createIRI("https://example.org/contains"), overviewNode);
         TranslEnv translEnv = new TranslEnv();
         Collection<String> workspaces = translEnv.getWorkspaces();
         for (String workspace: workspaces){
             Resource workspaceUrl = RDFProcessing.rdf.createIRI(RDFProcessing.baseUrl+"workspaces/"+workspace);
             builder.add(mainNode, RDFProcessing.rdf.createIRI("https://example.org/contains"), workspaceUrl);
         }
+
         return builder.build();
     }
 
