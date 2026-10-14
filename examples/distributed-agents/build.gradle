@@ -14,7 +14,7 @@ group   'org.jacamo'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(15)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -30,8 +30,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.jacamo', name: 'jacamo', version: '1.1-SNAPSHOT'
-    compile 'org.jacamo:jacamo-rest:0.7-SNAPSHOT'
+    implementation('org.jacamo:jacamo:1.1')
 }
 
 sourceSets {
@@ -54,7 +53,7 @@ task h1 (type: JavaExec, dependsOn: 'classes') {
     doFirst {
         mkdir 'log'
     }
-    main 'jacamo.infra.JaCaMoLauncher'
+    mainClass = 'jacamo.infra.JaCaMoLauncher'
     args 'host1.jcm'
     classpath sourceSets.main.runtimeClasspath
 }
@@ -65,7 +64,7 @@ task h2 (type: JavaExec, dependsOn: 'classes') {
     doFirst {
         mkdir 'log'
     }
-    main 'jacamo.infra.JaCaMoLauncher'
+    mainClass = 'jacamo.infra.JaCaMoLauncher'
     args 'host2.jcm'
     classpath sourceSets.main.runtimeClasspath
 }
@@ -76,39 +75,11 @@ task h3 (type: JavaExec, dependsOn: 'classes') {
     doFirst {
         mkdir 'log'
     }
-    main 'jacamo.infra.JaCaMoLauncher'
+    mainClass = 'jacamo.infra.JaCaMoLauncher'
     args 'host3.jcm'
     classpath sourceSets.main.runtimeClasspath
 }
 
-task uberJar(type: Jar, dependsOn: 'classes') {
-    group      ' JaCaMo'
-    description 'creates a single runnable jar file with all dependencies'
-
-    manifest {
-        attributes 'Main-Class': 'jacamo.infra.JaCaMoLauncher'
-    }
-    baseName = 'jacamo-distributed_agents' // the name must start with jacamo so that jacamo...jar is found in the classpath
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    from (project.projectDir.absolutePath) {
-        include '**/*.asl'
-        include '**/*.xml'
-        include '**/*.jcm'
-        include '*.properties'
-    }
-    from (project.buildDir.absolutePath + '/jcm') {
-        include '**/*'
-    }
-    with jar
-
-    doFirst {
-        copy {
-            from 'distributed_agents.jcm'
-            rename 'distributed_agents.jcm','default.jcm'
-            into project.buildDir.absolutePath + '/jcm'
-        }
-    }
-}
 
 clean {
     delete 'bin'

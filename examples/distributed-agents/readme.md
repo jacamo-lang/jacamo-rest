@@ -94,7 +94,7 @@ some messages are also printed at host1:
 
 Run the tunnelling (assuming the MAS port is 8082)
 
-1. `ngrok http 8081`
+1. `ngrok http 8082`
 2. `ssh -R 80:localhost:8082 serveo.net`
 
 and note the given URL. Edit `host3.jcm` and place this host after `--registerURL` and place the host given for host1 after `--connect`. Then run the MAS application at host 3:
