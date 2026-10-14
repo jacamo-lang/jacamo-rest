@@ -6,7 +6,7 @@ In this demo we run agents in three machines:
 - host3 runs bob
 
 During the execution
-- alice sends messages to karlos that sends massages back
+- alice sends messages to karlos that sends messages back
 - bob sends a message to alice
 
 The ANS (Agent Name Service) and DF (Directory Facilitator) run at host1

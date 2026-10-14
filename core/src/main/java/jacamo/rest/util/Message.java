@@ -4,7 +4,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Adaptor for Jason Message and Rest Message
- *
  */
 @XmlRootElement(name = "message")
 public class Message {
