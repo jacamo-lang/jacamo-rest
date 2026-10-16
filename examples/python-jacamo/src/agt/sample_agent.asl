@@ -8,7 +8,7 @@
 
 /* Plans */
 
-+!start : true <- .print("hello world.").
++!start <- .df_register(sell(bananas)); .print("hello world.").
 
 +vl(X)[source(A)] <- .print("value is ",X," from ",A).
 +count(X)         <- .print("count is ",X).
